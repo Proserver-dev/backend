@@ -1,0 +1,18 @@
+{
+  "name": "testnodeapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "exports": "./app.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
