@@ -48,5 +48,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, () => {
-  logToFile('logs/log.txt', `server running at https://testnodeapp.machala.dev:${port}`);
+  logToFile('logs/log.txt', `server running at port ${port}`);
 });

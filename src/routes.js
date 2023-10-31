@@ -5,8 +5,9 @@ const { logToFile } = require('./functions');
 
 // Endpoint dla strony głównej
 router.get('/', (req, res) => {
+  var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   res.send('<h1>Hello world 123</h1>');
-  logToFile('logs/log.txt', `run endpoint GET https://testnodeapp.machala.dev/`);
+  logToFile('logs/log.txt', `run endpoint GET ${fullUrl}`);
 });
 
 // Endpoint dla logów
