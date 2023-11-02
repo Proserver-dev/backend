@@ -1,0 +1,16 @@
+{
+    "dev": {
+        "username": "your_mysql_username",
+        "password": "your_mysql_password",
+        "database": "your_database_name",
+        "host": "localhost",
+        "dialect": "mysql"
+    },
+    "prod": {
+        "username": "your_mysql_username",
+        "password": "your_mysql_password",
+        "database": "your_production_database_name",
+        "host": "localhost",
+        "dialect": "mysql"
+    }
+}  

@@ -5,11 +5,16 @@
   "main": "app.js",
   "exports": "./app.js",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.2",
     "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
+    "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.1",
     "socket.io": "^4.7.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

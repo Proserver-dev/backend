@@ -8,15 +8,13 @@ const { SETTINGS } = require('./settings');
 const { mainSocket } = require('./src/socketio/Main');
 
 const app = express();
-
 app.use('/', router);
 
 const server = http.createServer(app);
-
 const io = socketIo(server, { cors: SETTINGS.SOCKET_IO.CORS });
 
 io.on('connection', (socket) => {
-    mainSocket(socket, io)
+    mainSocket(io, socket)
 });
 
 server.listen(SETTINGS.PORT, () => {

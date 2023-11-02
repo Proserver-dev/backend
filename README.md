@@ -17,3 +17,15 @@ Opcjonalnie, aby lokalny serwer był widoczny na zewnątrz:
 
 1. Po zrobieniu klona repozytorium zrób kopię pliku `settings.example.js` i nazwij go `settings.js`. Uzupełnij w nim dane konfiguracyjne dla Twojego lokalnego środowiska
 2. Jeśli dodajesz nowe wartości do pliku `settings.js` uzupełnij je również w pliku example, żeby było wiadomo jakie dane w tym pliku są wymagane. Plik `settings.js` jest tylko dla Ciebie i nie będzie wysyłany do zdalnego repo
+
+# Baza danych
+
+Odpalenie migracji wraz z wyborem środowiska:
+- `npx sequelize db:migrate --env dev`
+- `npx sequelize db:migrate --env prod`
+
+Powyższe polecenia wykonają tylko nowe migracje (te, które jeszcze nie były wykonane).
+
+Aby wycofać wszystkie migracje należy wykonać polecenie 
+- `npx sequelize db:migrate:undo:all --env dev`
+- `npx sequelize db:migrate:undo:all --env prod`

@@ -2,3 +2,4 @@ node_modules
 tmp
 ngrok.exe
 settings.js
+config/db_mysql.json
