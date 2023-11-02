@@ -15,8 +15,10 @@ const server = http.createServer(app);
 
 const io = socketIo(server, { cors: SETTINGS.SOCKET_IO.CORS });
 
-io.on('connection', (socket) => mainSocket(socket, io));
+io.on('connection', (socket) => {
+    mainSocket(socket, io)
+});
 
 server.listen(SETTINGS.PORT, () => {
-  logToFile(`server running at port ${SETTINGS.PORT}`);
+    logToFile(`server running at port ${SETTINGS.PORT}`);
 });
