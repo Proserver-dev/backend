@@ -95,8 +95,12 @@ const userRefreshToken = async (req, res) => {
 
         res.json({ token: newToken });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Błąd odświeżania tokena' });
+        if (error instanceof jwt.TokenExpiredError) {
+            res.status(401).json({ error: 'Refresh-Token jest nieaktualny' });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: 'Błąd odświeżania tokena' });
+        }
     } 
 }
 

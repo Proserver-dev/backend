@@ -25,8 +25,12 @@ const requireJWT = async (req, res, next) => {
     req.user = user.toJSON();
     next();
   } catch (error) {
-    console.error(error);
-    return res.status(401).json({ error: 'Błąd weryfikacji tokenu' });
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ error: 'Token jest nieaktualny' });
+    } else {
+      console.error(error);
+      return res.status(401).json({ error: 'Błąd weryfikacji tokenu' });
+    }
   }
 };
 
