@@ -9,7 +9,8 @@ router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', LogController.getLogs);
 router.get('/logs', LogController.getLogs);
 
-router.post('/user/login', UserController.userLogin);
+router.post('/auth/login', UserController.userLogin);
+router.post('/auth/refresh', UserController.userRefreshToken);
 router.post('/user/register', UserController.userRegister);
 
 
