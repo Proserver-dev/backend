@@ -9,7 +9,19 @@ const User = sequelize.define('User', {
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    get() {
+      if (this.getDataValue('passwordVisible')) {
+        return this.getDataValue('password');
+      }
+      return undefined;
+    }
+  },
+  passwordVisible: {
+    type: DataTypes.VIRTUAL, // To jest wirtualne pole
+    set(value) {
+      this.setDataValue('passwordVisible', value);
+    }
   },
   userName: {
     type: DataTypes.STRING,
@@ -33,8 +45,21 @@ const User = sequelize.define('User', {
   }
 }, {
   timestamps: true, // Automatycznie dodaje updatedAt i createdAt
-  underscored: true, // Ustala konwencję nazw kolumn na snake_case
-  tableName: 'users' // Ustala nazwę tabeli
+  underscored: false, // Ustala konwencję nazw kolumn na camelCase ; true to snake_case
+  tableName: 'users', // Ustala nazwę tabeli
+  toJSON() {
+    return {
+      id: this.id,
+      email: this.email,
+      userName: this.userName,
+      nameLastname: this.nameLastname,
+      deviceToken: this.deviceToken,
+      registerToken: this.registerToken,
+      loginToken: this.loginToken,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
+    };
+  }
 });
 
 module.exports = User;
