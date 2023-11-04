@@ -11,6 +11,7 @@ const { SETTINGS } = require('./settings');
 const { mainSocket } = require('./src/socketio/Main');
 
 const app = express();
+app.set("json replacer", null);
 
 const upload = multer({ 
     dest: 'files/', // Location where files will be saved

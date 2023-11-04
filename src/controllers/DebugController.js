@@ -2,7 +2,7 @@ const fs = require('fs');
 const myCache = require('../utils/node-cache')
 const { getLogFileName } = require('../functions');
 const { saveLogFromEndpointRequest } = require('../functions');
-const API_RESULTS = require('../constants/api_results')
+const API_RESULTS = require('../constants/apiResults')
 
 function getLogs(req, res) {
     let fileName = getLogFileName();

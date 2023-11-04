@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/UserModel');
 const { saveLogFromEndpointRequest } = require('../functions');
 const { SETTINGS } = require('../../settings');
-const HEADERS_KEYS = require('../constants/headers_keys')
-const API_RESULTS = require('../constants/api_results')
+const HEADERS_KEYS = require('../constants/headersKeys')
+const API_RESULTS = require('../constants/apiResults')
 
 const userLogin = async (req, res) => {
     saveLogFromEndpointRequest(req)
