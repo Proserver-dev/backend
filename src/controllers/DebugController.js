@@ -1,4 +1,5 @@
 const fs = require('fs');
+const myCache = require('../utils/node-cache')
 const { getLogFileName } = require('../functions');
 
 function getLogs(req, res) {
@@ -20,6 +21,22 @@ function getLogs(req, res) {
     });
 }
 
+function getSocketConnections(req, res) {
+  const allData = myCache.data;
+  const dataArray = [];
+
+  for (const key in allData) {
+      if (key.startsWith("connection_")) {
+          const socketId = key.replace("connection_", "");
+          const userValue = allData[key].v;
+
+          dataArray.push({ socket_id: socketId, user_id: userValue });
+      }
+  }
+
+  res.json(dataArray);
+}
+
 module.exports = {
-    getLogs
+    getLogs, getSocketConnections
 };

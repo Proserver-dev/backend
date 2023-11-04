@@ -1,14 +1,8 @@
-const redis = require('redis');
-const { logToFile } = require('../functions');
+const Redis = require('ioredis');
 
-const redisClient = redis.createClient();
-
-redisClient.on('connect', () => {
-    logToFile('Połączono z Redis');
-});
-
-redisClient.on('error', (err) => {
-    logToFile('Błąd połączenia z Redis:', err);
+const redisClient = new Redis({
+    enableOfflineQueue: true,
+    lazyConnect: true
 });
 
 module.exports = redisClient;

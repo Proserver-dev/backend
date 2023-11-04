@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const redisClient = require('../utils/redis');
+// const redisClient = require('../utils/redis');
+const myCache = require('../utils/node-cache')
 const { SETTINGS } = require('../../settings');
 const { logToFile } = require('../../src/functions')
 const { disconnect } = require('./Disconnect')
@@ -13,16 +14,17 @@ function mainSocket(io, socket) {
 
             const userId = decodedToken.userId;
             logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${userId}`);
-            redisClient.hSet('connections', socket.id, userId);
+            // redisClient.hset('connections', socket.id, userId);
+            myCache.set(`connection_${socket.id}`, userId)
 
-            // Nasłuchuj wiadomości od klienta
+            /// Nasłuchuj wiadomości od klienta
             socket.on('message', (data) => {
                 message(io, socket, data)
             });
 
-            // Nasłuchuj rozłączenia klienta
-            socket.on('disconnect', (socket) => {
-                disconnect(socket, userId)
+            /// Nasłuchuj rozłączenia klienta
+            socket.on('disconnect', () => {
+                disconnect(socket, userId, myCache)
             });
 
         } else {

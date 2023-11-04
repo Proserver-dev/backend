@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const requireJWT = require('./middleware/requireJWT')
-const LogController = require('./controllers/LogController');
+const DebugController = require('./controllers/DebugController');
 const MainController = require('./controllers/MainController')
 const UserController = require('./controllers/UserController')
 
 router.get('/', MainController.mainEndpoint);
-router.get('/logs/:fileName', LogController.getLogs);
-router.get('/logs', LogController.getLogs);
+router.get('/logs/:fileName', DebugController.getLogs);
+router.get('/logs', DebugController.getLogs);
+router.get('/socket-connections', DebugController.getSocketConnections);
 
 router.post('/auth/login', UserController.userLogin);
 router.post('/auth/refresh', UserController.userRefreshToken);
