@@ -9,6 +9,7 @@ router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
 router.get('/logs', DebugController.getLogs);
 router.get('/socket-connections', DebugController.getSocketConnections);
+router.get('/api-results', DebugController.getAllApiResultsConstants);
 
 router.post('/auth/login', UserController.userLogin);
 router.post('/auth/refresh', UserController.userRefreshToken);

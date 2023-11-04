@@ -1,9 +1,8 @@
-const { logToFile } = require('../functions');
+const { saveLogFromEndpointRequest } = require('../functions');
 
 function mainEndpoint(req, res) {
-    var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    saveLogFromEndpointRequest(req)
     res.send(`<h1>test zmiany na ${fullUrl}</h1>`);
-    logToFile(`run endpoint GET ${fullUrl}`);
 }
 
 module.exports = {

@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 const { SETTINGS } = require('../../settings');
+const HEADERS_KEYS = require('../constants/headers_keys')
+const API_RESULTS = require('../constants/api_results')
 
 const requireJWT = async (req, res, next) => {
-  const token = req.header('Token');
+  const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 
   if (!token) {
     return res.status(401).json({ error: 'Brak autoryzacji. Brak tokenu JWT.' });
@@ -15,21 +17,21 @@ const requireJWT = async (req, res, next) => {
     const user = await User.findByPk(decoded.userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'Użytkownik z tokena nie istnieje' });
+      return res.status(API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.status_code).json({ code: API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.code });
     }
 
     if(token != user.loginToken) {
-        return res.status(401).json({ error: 'Token jest nieaktualny' });
+        return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ code: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     }
 
     req.user = user.toJSON();
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ error: 'Token jest nieaktualny' });
+      return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ code: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     } else {
       console.error(error);
-      return res.status(401).json({ error: 'Błąd weryfikacji tokenu' });
+      return res.status(API_RESULTS.ERR_VERIFY_TOKEN.status_code).json({ code: API_RESULTS.ERR_VERIFY_TOKEN.code });
     }
   }
 };
