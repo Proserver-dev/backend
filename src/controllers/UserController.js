@@ -62,6 +62,7 @@ const getAllUsers = async (req, res) => {
 }
 
 const getMe = async (req, res) => {
+    saveLogFromEndpointRequest(req)
     res.json(req.user);
 }
 
