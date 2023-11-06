@@ -31,9 +31,7 @@ const userLogin = async (req, res) => {
             return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
         }
     
-        user.passwordVisible = true;
         const passwordMatch = await bcrypt.compare(password, user.password);
-        user.passwordVisible = false;
     
         if (!passwordMatch) {
           return res.status(API_RESULTS.ERR_WRONG_PASSWORD.status_code).json({ error: API_RESULTS.ERR_WRONG_PASSWORD.code });

@@ -15,7 +15,7 @@ router.get('/socket-connections', DebugController.getSocketConnections);
 router.get('/api-results', DebugController.getAllApiResultsConstants);
 
 router.post('/auth/login', AuthController.userLogin);
-router.post('/auth/refresh', AuthController.userRefreshToken);
+router.get('/auth/refresh', AuthController.userRefreshToken);
 
 router.post('/user/register', UserController.userRegister);
 
