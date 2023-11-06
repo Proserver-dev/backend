@@ -15,7 +15,7 @@ function getLogs(req, res) {
     fs.readFile(`logs/${fileName}`, 'utf8', (err, data) => {
       if (err) {
         console.error(`Błąd odczytu pliku ${fileName} : `, err);
-        res.status(API_RESULTS.ERR_READ_FILE.status_code).json({ code: API_RESULTS.ERR_READ_FILE.code, file: fileName });
+        res.status(API_RESULTS.ERR_READ_FILE.status_code).json({ error: API_RESULTS.ERR_READ_FILE.code, file: fileName });
       } else {
         result = result.concat(`<pre>${data}</pre>`);
         res.send(result)
