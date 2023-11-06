@@ -57,6 +57,10 @@ const addRole = async (req, res) => {
 
     const { name } = req.body;
     const short = generateSlug(name);
+
+    if(!name) {
+        return res.status(API_RESULTS.ERR_PROVIDE_NAME_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_NAME_FIELD.code });
+    }
   
     if (isRoleBlocked(name)) {
         return res.status(API_RESULTS.ERR_ROLE_NAME_IS_RESERVED.status_code).json({ error: API_RESULTS.ERR_ROLE_NAME_IS_RESERVED.code });
