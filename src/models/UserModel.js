@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
+const Role = require('./RoleModel');
 
 const User = sequelize.define('User', {
   email: {
@@ -10,18 +11,6 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
-    get() {
-      if (this.getDataValue('passwordVisible')) {
-        return this.getDataValue('password');
-      }
-      return undefined;
-    }
-  },
-  passwordVisible: {
-    type: DataTypes.VIRTUAL, // To jest wirtualne pole
-    set(value) {
-      this.setDataValue('passwordVisible', value);
-    }
   },
   userName: {
     type: DataTypes.STRING,
@@ -42,24 +31,29 @@ const User = sequelize.define('User', {
   loginToken: {
     type: DataTypes.STRING,
     allowNull: true
-  }
+  },
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 }, {
   timestamps: true, // Automatycznie dodaje updatedAt i createdAt
   underscored: false, // Ustala konwencję nazw kolumn na camelCase ; true to snake_case
   tableName: 'users', // Ustala nazwę tabeli
-  toJSON() {
-    return {
-      id: this.id,
-      email: this.email,
-      userName: this.userName,
-      nameLastname: this.nameLastname,
-      deviceToken: this.deviceToken,
-      registerToken: this.registerToken,
-      loginToken: this.loginToken,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
-    };
-  }
 });
+
+User.belongsTo(Role, { foreignKey: 'roleId' });
+
+User.prototype.toJSON = function() {
+  return { 
+    id: this.id,
+    email: this.email,
+    userName: this.userName,
+    nameLastname: this.nameLastname,
+    role: this.roleId,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt
+  };
+};
 
 module.exports = User;

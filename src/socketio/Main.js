@@ -46,6 +46,7 @@ function mainSocket(io, socket) {
             socket.emit(SOCKET_EVENTS.AUTH_FAIL, { error: 'Token jest nieaktualny, nie udało się połączyć z serwerem' });
         } else {
             logToFile('Socket.io - Błąd weryfikacji tokenu JWT - ' + error.message);
+            socket.emit(SOCKET_EVENTS.AUTH_FAIL, { error: 'Błąd weryfikacji tokenu JWT, nie udało się połączyć z serwerem' });
         }
         socket.disconnect(true);
     }

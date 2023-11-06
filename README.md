@@ -32,6 +32,17 @@ Aby wycofać wszystkie migracje należy wykonać polecenie
 - `npx sequelize db:migrate:undo:all --env dev`
 - `npx sequelize db:migrate:undo:all --env prod`
 
+Aby utworzyć nową migrację należy wykonać polecenie:
+`npx sequelize-cli migration:generate --name create-nazwatabeli-table`
+
+Aby wykonać seedery należy wykonać polecenie:
+`npx sequelize-cli db:seed:all --env dev`
+`npx sequelize-cli db:seed:all --env prod`
+
+Aby wykonać tylko jeden wskazany plik seedera należy wykonać polecenie:
+`npx sequelize-cli db:seed --env dev --seed seeders/20231104134500-create-roles.js`
+`npx sequelize-cli db:seed --env prod --seed seeders/20231104134500-create-roles.js`
+
 
 # Generowanie kluczy do alg. RS256
 

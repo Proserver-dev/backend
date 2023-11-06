@@ -8,7 +8,7 @@ const requireJWT = async (req, res, next) => {
   const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 
   if (!token) {
-    return res.status(401).json({ error: 'Brak autoryzacji. Brak tokenu JWT.' });
+    return res.status(API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
   }
 
   try {
@@ -17,21 +17,21 @@ const requireJWT = async (req, res, next) => {
     const user = await User.findByPk(decoded.userId);
 
     if (!user) {
-      return res.status(API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.status_code).json({ code: API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.code });
+      return res.status(API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.code });
     }
 
     if(token != user.loginToken) {
-        return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ code: API_RESULTS.ERR_TOKEN_EXPIRED.code });
+        return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     }
 
-    req.user = user.toJSON();
+    req.user = user;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ code: API_RESULTS.ERR_TOKEN_EXPIRED.code });
+      return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     } else {
       console.error(error);
-      return res.status(API_RESULTS.ERR_VERIFY_TOKEN.status_code).json({ code: API_RESULTS.ERR_VERIFY_TOKEN.code });
+      return res.status(API_RESULTS.ERR_VERIFY_TOKEN.status_code).json({ error: API_RESULTS.ERR_VERIFY_TOKEN.code });
     }
   }
 };
