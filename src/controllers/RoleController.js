@@ -1,6 +1,7 @@
 const { ROLE_BLOCKED } = require('../constants/roleBlocked')
 const Role = require('../models/RoleModel')
 const API_RESULTS = require('../constants/apiResults')
+const { saveLogFromEndpointRequest } = require('../functions');
 
 /// Middleware do generowania sluga z nazwy
 const generateSlug = (name) => {
