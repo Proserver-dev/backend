@@ -19,6 +19,8 @@ router.post('/auth/refresh', AuthController.userRefreshToken);
 
 router.post('/user/register', UserController.userRegister);
 
+router.get('/users/me', requireJWT, UserController.getMe);
+router.get('/users/:id', UserController.getAllUsers);
 router.get('/users', UserController.getAllUsers);
 
 router.get('/roles/:id', requireJWT, RoleController.getRoles);

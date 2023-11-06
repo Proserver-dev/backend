@@ -61,4 +61,8 @@ const getAllUsers = async (req, res) => {
     } 
 }
 
-module.exports = { userRegister, getAllUsers }
+const getMe = async (req, res) => {
+    res.json(req.user);
+}
+
+module.exports = { userRegister, getAllUsers, getMe }
