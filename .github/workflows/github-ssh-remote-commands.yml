@@ -23,4 +23,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          script: . pull_backend.sh
+          script: |
+            . .bashrc 
+            . pull_backend.sh
