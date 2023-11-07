@@ -38,7 +38,7 @@ const userLogin = async (req, res) => {
         }
 
         const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
-        const refreshToken = jwt.sign({ userId: user.id, token: loginToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
+        const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
 
         // jeśli user jeszcze nie ma role_id (jest nullem), to przy logowaniu od razu przypisujemy domyślną rolę
         if(!user.roleId) {
@@ -81,9 +81,12 @@ const userRefreshToken = async (req, res) => {
             return res.status(API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.code });
         }
 
-        if(user.loginToken !== decodedRefreshToken.token) {
+        // to nie jest dobre, ponieważ loginToken nie jest odświeżany wewnątrz refreshTokena - czyli refreshToken działałby tylko dla jednego odświeżenia, a przy drugim requeście już byłby wygasły
+        /*
+        if(user.loginToken !== decodedRefreshToken.loginToken) {
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
+        */
 
         const user_role = await Role.findByPk(user.roleId)
 
@@ -93,7 +96,9 @@ const userRefreshToken = async (req, res) => {
                 return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
             }
 
-            if(deviceToken != user.deviceToken) {
+            if(deviceToken !== user.deviceToken
+                || decodedRefreshToken.deviceToken !== user.deviceToken 
+                || decodedRefreshToken.deviceToken !== deviceToken) {
                 return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
             }
         }
