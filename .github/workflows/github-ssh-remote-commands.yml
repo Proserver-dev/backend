@@ -24,5 +24,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            . .bashrc 
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             . pull_backend.sh
