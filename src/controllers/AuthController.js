@@ -38,7 +38,7 @@ const userLogin = async (req, res) => {
         }
 
         const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
-        const refreshToken = jwt.sign({ userId: user.id }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
+        const refreshToken = jwt.sign({ userId: user.id, token: loginToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
 
         // jeśli user jeszcze nie ma role_id (jest nullem), to przy logowaniu od razu przypisujemy domyślną rolę
         if(!user.roleId) {
@@ -79,6 +79,10 @@ const userRefreshToken = async (req, res) => {
 
         if (!user) {
             return res.status(API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_FROM_TOKEN_NOT_EXISTS.code });
+        }
+
+        if(user.loginToken !== decodedRefreshToken.token) {
+            res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
         const user_role = await Role.findByPk(user.roleId)
