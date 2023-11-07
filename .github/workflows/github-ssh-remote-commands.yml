@@ -16,6 +16,12 @@ jobs:
         with:
           node-version: 16.20.2
 
+      - name: Install npm packages
+        run: npm install -g npm
+
+      - name: Install npx
+        run: npm install -g npx
+
       - name: Run SSH script test
         uses: appleboy/ssh-action@v1.0.0
         with:
