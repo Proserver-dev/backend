@@ -54,7 +54,7 @@ const userLogin = async (req, res) => {
             await user.update({ loginToken, deviceToken });
         }
 
-        user.roleId = await Role.findByPk(user.roleId)
+        user.roleId = user_role
     
         res.json({ token: loginToken, refreshToken, user });
     } catch (error) {

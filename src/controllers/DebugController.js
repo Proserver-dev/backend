@@ -17,7 +17,9 @@ function getLogs(req, res) {
         console.error(`Błąd odczytu pliku ${fileName} : `, err);
         res.status(API_RESULTS.ERR_READ_FILE.status_code).json({ error: API_RESULTS.ERR_READ_FILE.code, file: fileName });
       } else {
-        result = result.concat(`<pre>${data}</pre>`);
+        const lines = data.split('\n').reverse();
+        const reversedData = lines.join('\n');
+        result = result.concat(`<pre>${reversedData}</pre>`);
         res.send(result)
       }
     });

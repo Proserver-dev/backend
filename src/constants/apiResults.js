@@ -9,6 +9,7 @@ const API_RESULTS = {
     ERR_EDIT_ROLE: { descripiton: "Wystąpił błąd podczas aktualizacji roli", code: 'ERR_EDIT_ROLE', status_code: 500 },
     ERR_DELETE_ROLE: { descripiton: "Wystąpił błąd podczas usuwania roli", code: 'ERR_DELETE_ROLE', status_code: 500 },
     ERR_GET_USERS: { descripiton: "Wystąpił błąd podczas pobierania użytkowników", code: 'ERR_GET_USERS', status_code: 500 },
+    ERR_GET_MESSAGES: { description: "Wystąpił błąd podczas pobierania wiadomości", code: 'ERR_GET_MESSAGES', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { descripiton: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { descripiton: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },

@@ -51,8 +51,8 @@ User.prototype.toJSON = function() {
     userName: this.userName,
     nameLastname: this.nameLastname,
     role: this.roleId,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt
+    updatedAt: this.updatedAt,
+    createdAt: this.createdAt
   };
 };
 

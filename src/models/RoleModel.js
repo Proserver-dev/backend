@@ -22,8 +22,8 @@ Role.prototype.toJSON = function() {
     id: this.id,
     name: this.name,
     short: this.short,
-    // createdAt: this.createdAt,
-    // updatedAt: this.updatedAt
+    // updatedAt: this.updatedAt,
+    // createdAt: this.createdAt
   };
 };
 

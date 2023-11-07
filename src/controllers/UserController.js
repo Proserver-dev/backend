@@ -42,23 +42,34 @@ const userRegister = async (req, res) => {
     }
 }
 
-const getAllUsers = async (req, res) => {
-    saveLogFromEndpointRequest(req)
+async function getAllUsers(req, res) {
+    saveLogFromEndpointRequest(req);
+
+    const { limit, offset } = req.query;
+
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+    const parsedOffset = offset ? parseInt(offset, 10) : 0;
+
     try {
-        if(req.params.id) {
-            const user = await User.findByPk(req.params.id)
-            if(user) {
-                return res.json(user)
+        if (req.params.id) {
+            const user = await User.findByPk(req.params.id);
+            if (user) {
+                return res.json(user);
             } else {
-                return res.json({})
+                return res.json({});
             }
         }
 
-        const users = await User.findAll();
+        const users = await User.findAndCountAll({
+            order: [['createdAt', 'DESC']],
+            limit: parsedLimit,
+            offset: parsedOffset,
+        });
+
         res.json(users);
     } catch (error) {
         res.status(API_RESULTS.ERR_GET_USERS.status_code).json({ error: API_RESULTS.ERR_GET_USERS.code });
-    } 
+    }
 }
 
 const getMe = async (req, res) => {

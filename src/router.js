@@ -7,6 +7,7 @@ const DebugController = require('./controllers/DebugController');
 const MainController = require('./controllers/MainController')
 const RoleController = require('./controllers/RoleController')
 const UserController = require('./controllers/UserController')
+const MessageController = require('./controllers/MessageController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -28,6 +29,8 @@ router.get('/roles', requireJWT, RoleController.getRoles);
 router.post('/roles', requireJWT, RoleController.addRole);
 router.put('/roles/:id', requireJWT, RoleController.editRole);
 router.delete('/roles/:id', requireJWT, RoleController.deleteRole);
+
+router.get('/messages-to-all', requireJWT, MessageController.getAllMessagesToAll)
 
 router.get('/test', (req, res) => {
     res.status(200).json([
