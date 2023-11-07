@@ -3,8 +3,10 @@ const User = require('../models/UserModel');
 const { SETTINGS } = require('../../settings');
 const HEADERS_KEYS = require('../constants/headersKeys')
 const API_RESULTS = require('../constants/apiResults')
+const { logToFile } = require('../functions');
 
 const requireJWT = async (req, res, next) => {
+  var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 
   if (!token) {
@@ -21,6 +23,7 @@ const requireJWT = async (req, res, next) => {
     }
 
     if(token != user.loginToken) {
+        logToFile(`run endpoint ${req.method} ${fullUrl} - login token expired`);
         return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     }
 
@@ -28,6 +31,7 @@ const requireJWT = async (req, res, next) => {
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
+      logToFile(`run endpoint ${req.method} ${fullUrl} - login token expired`);
       return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     } else {
       console.error(error);
