@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 16.20.2
 
-      - name: Run SSH script
+      - name: Run SSH script test
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
