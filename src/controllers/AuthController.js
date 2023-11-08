@@ -252,6 +252,7 @@ const userLogin = async (req, res) => {
 
 const userRefreshToken = async (req, res) => {
     saveLogFromEndpointRequest(req)
+    // TODO: może tutaj też trzeba przekazać loginToken ? 
     const refreshToken = req.header(HEADERS_KEYS.REFRESH_TOKEN);
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
@@ -304,6 +305,7 @@ const userRefreshToken = async (req, res) => {
         if (error instanceof jwt.TokenExpiredError) {
             // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty refreshToken
             // w takiej sytuacji może zróbmy request do /auth/logout z podaniem userId w body requesta jeśli jest taka możliwość (dłuższy komentarz poniżej)
+            // TODO: jeśli w tym endpoincie (/auth/refresh) będzie przekazany również loginToken, to w tym miejscu mogę spróbować wyszukać go w bazie i temu userowi wyzerować loginToken
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         } else {
             console.error(error);
@@ -347,8 +349,15 @@ const userLogout = async (req, res) => {
 
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
-            // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty token
-            return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });    
+            const user = await User.findOne({ where: { loginToken: token } });
+
+            if(user) {
+                user.update({ loginToken: null });
+                res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
+            } else {
+                // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty token i nie znaleziono go w bazie
+                return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });   
+            } 
         } else {
             console.error(error);
             res.status(API_RESULTS.ERR_LOGOUT_ERROR.status_code).json({ error: API_RESULTS.ERR_LOGOUT_ERROR.code });
