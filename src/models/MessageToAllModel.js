@@ -9,7 +9,7 @@ const User = require('./UserModel')
     },
     message: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     type: {
       type: DataTypes.STRING,
