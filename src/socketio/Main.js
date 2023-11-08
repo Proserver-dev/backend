@@ -5,6 +5,7 @@ const { logToFile } = require('../../src/functions')
 const { disconnect } = require('./Disconnect')
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const { messageToAll } = require('./messageToAll');
+const { getSocketIdByUserId } = require('../utils/socketio')
 
 async function mainSocket(io, socket) {
     const token = socket.handshake.headers['token'];
@@ -17,25 +18,30 @@ async function mainSocket(io, socket) {
 
     try {
         const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET, { algorithms: SETTINGS.LOGIN_TOKEN.ALGORITHM });
-        if (decodedToken && decodedToken.userId) {
-
-            const currentUserId = decodedToken.userId;
-
-            logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${currentUserId}`);
-            myCache.set(`connection_${socket.id}`, currentUserId)
-
-            // TODO: jeśli admin, to tutaj można przypisać socket do "room" dla adminów
-            // socket.join("admins");
-
-            socket.on(SOCKET_EVENTS.SEND_MESSAGE_TO_ALL, (data) => { messageToAll(io, socket, data, currentUserId) })
-
-            socket.on('disconnect', () => { disconnect(socket, currentUserId, myCache) });
-
-        } else {
+        if (!decodedToken || !decodedToken.userId) {
             logToFile('Socket.io - Błąd uwierzytelniania - Niepoprawny token JWT');
             socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Niepoprawny token JWT' });
-            socket.disconnect(true);
+            return socket.disconnect(true);
         }
+
+        const currentUserId = decodedToken.userId;
+
+        if(getSocketIdByUserId(currentUserId)) {
+            logToFile(`Socket.io - Użytkownik id:${currentUserId} jest już połączony z socketem. Kolejne połączenie zostało odrzucone`);
+            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Jesteś już połączony z socketem' });
+            return socket.disconnect(true);
+        }
+
+        logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${currentUserId}`);
+        myCache.set(`connection_${socket.id}`, currentUserId)
+
+        // TODO: jeśli admin, to tutaj można przypisać socket do "room" dla adminów
+        // socket.join("admins");
+
+        socket.on(SOCKET_EVENTS.SEND_MESSAGE_TO_ALL, (data) => { messageToAll(io, socket, data, currentUserId) })
+
+        socket.on('disconnect', () => { disconnect(socket, currentUserId, myCache) });
+
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             logToFile('Socket.io - Token jest nieaktualny');
