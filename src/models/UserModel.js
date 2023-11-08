@@ -24,7 +24,7 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
-  registerToken: {
+  authPin: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -35,6 +35,10 @@ const User = sequelize.define('User', {
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  isActivated: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
 }, {
   timestamps: true, // Automatycznie dodaje updatedAt i createdAt
@@ -47,6 +51,7 @@ User.belongsTo(Role, { foreignKey: 'roleId' });
 User.prototype.toJSON = function() {
   return { 
     id: this.id,
+    isActivated: this.isActivated,
     email: this.email,
     userName: this.userName,
     nameLastname: this.nameLastname,
