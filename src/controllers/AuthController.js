@@ -88,6 +88,11 @@ const userRefreshToken = async (req, res) => {
         }
         */
 
+        // jeśli loginToken tego usera został wyczyszczony (np. przez globalne wylogowanie)
+        if(!user.loginToken) {
+            return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
+        }
+
         const user_role = await Role.findByPk(user.roleId)
 
         // ominięcie deviceToken jeśli token odświeża admin

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
+const Role = require('../models/RoleModel');
 const { SETTINGS } = require('../../settings');
 const HEADERS_KEYS = require('../constants/headersKeys')
 const API_RESULTS = require('../constants/apiResults')
@@ -27,6 +28,8 @@ const requireJWT = async (req, res, next) => {
         return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     }
 
+    const user_role = await Role.findByPk(user.roleId)
+    user.roleId = user_role
     req.user = user;
     next();
   } catch (error) {

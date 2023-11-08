@@ -1,3 +1,4 @@
+const { Sequelize } = require('sequelize');
 const { logToFile } = require('../../src/functions');
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const MessageToAll = require('../models/MessageToAllModel');
@@ -17,10 +18,24 @@ async function messageToAll(io, socket, data, currentUserId) {
     if(message) {
         // TODO: to trochę spowalnia emisję, ale to sprawdzenie musi być, żeby tylko admin mógł taką emisję zrobić
         const currentUser = await User.findByPk(currentUserId);
-        const role = await Role.findByPk(currentUser.roleId);
+        const role = await Role.findByPk(currentUser.roleId); // admin role
         if(role.short === "admin") {
             logToFile(`Event: ${SOCKET_EVENTS.SEND_MESSAGE_TO_ALL} | client: all | message: ${message} | type: ${data.type} | sendBy: ${currentUser.id}`);
             MessageToAll.create({ sendBy: currentUser.id, message, type: data.type })
+            if(data.type == "forceLogout") {
+                // wszyscy użytkownikcy, których roleId jest różne od role.id admina i loginToken jest różny od null
+                const [updatedCount, updatedUsers] = await User.update(
+                    { loginToken: null },
+                    { 
+                        where: { 
+                            roleId: { [Sequelize.Op.ne]: role.id },
+                            loginToken: { [Sequelize.Op.ne]: null }
+                        } 
+                    }
+                );
+                logToFile(`Wylogowano ${updatedCount} użytkowników`)
+            }
+
             io.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
             // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
 
