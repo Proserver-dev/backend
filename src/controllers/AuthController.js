@@ -14,7 +14,7 @@ const generateAuthPin = () => {
     return Math.floor(100000 + Math.random() * 900000)
 }
 
-const userRegister = async (req, res) => {
+const register = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
@@ -77,7 +77,7 @@ const userRegister = async (req, res) => {
     }
 }
 
-const userActivate = async (req, res) => {
+const activateAccount = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
     try {
@@ -129,7 +129,7 @@ const userActivate = async (req, res) => {
     }
 }
 
-const userResendEmail = async (req, res) => {
+const resendEmailActivationCode = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
     try {
@@ -187,7 +187,7 @@ const userResendEmail = async (req, res) => {
     }
 }
 
-const userLogin = async (req, res) => {
+const login = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
     try {
@@ -250,11 +250,15 @@ const userLogin = async (req, res) => {
     }
 }
 
-const userRefreshToken = async (req, res) => {
+const refreshLoginToken = async (req, res) => {
     saveLogFromEndpointRequest(req)
-    // TODO: może tutaj też trzeba przekazać loginToken ? 
+    const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
     const refreshToken = req.header(HEADERS_KEYS.REFRESH_TOKEN);
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    if (!token) {
+        return res.status(API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
+    }
 
     if(!refreshToken) {
         return res.status(API_RESULTS.ERR_PROVIDE_REFRESH_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_REFRESH_TOKEN.code });
@@ -278,6 +282,13 @@ const userRefreshToken = async (req, res) => {
 
         // jeśli loginToken tego usera został wyczyszczony (np. przez globalne wylogowanie)
         if(!user.loginToken) {
+            // tutaj nie ma po co czyścić loginToken - i tak jest nullem
+            return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
+        }
+
+        // jeśli zapisany w bazie ostatni loginToken jest inny od tego przekazanego z żądaniem o odświeżenie tokena
+        if(user.loginToken !== token) {
+            // tutaj nie powinniśmy czyścić loginToken, może być sytuacja że ktoś użyje starego (ale jeszcze ważnego) refreshToken + jakiś randomowy token w celu ataku
             return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
@@ -303,9 +314,16 @@ const userRefreshToken = async (req, res) => {
         res.json({ token: newToken });
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
+            // jeśli refreshToken wygasł to wylogowujemy usera w apce
+
+            const user = await User.findOne({ where: { loginToken: token } });
+
+            if(user) {
+                user.update({ loginToken: null });
+                return res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
+            }
+
             // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty refreshToken
-            // w takiej sytuacji może zróbmy request do /auth/logout z podaniem userId w body requesta jeśli jest taka możliwość (dłuższy komentarz poniżej)
-            // TODO: jeśli w tym endpoincie (/auth/refresh) będzie przekazany również loginToken, to w tym miejscu mogę spróbować wyszukać go w bazie i temu userowi wyzerować loginToken
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         } else {
             console.error(error);
@@ -314,7 +332,7 @@ const userRefreshToken = async (req, res) => {
     } 
 }
 
-const userLogout = async (req, res) => {
+const logout = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 
@@ -365,4 +383,4 @@ const userLogout = async (req, res) => {
     }
 }
 
-module.exports = { userRegister, userActivate, userResendEmail, userLogin, userRefreshToken, userLogout }
+module.exports = { register, activateAccount, resendEmailActivationCode, login, refreshLoginToken, logout }

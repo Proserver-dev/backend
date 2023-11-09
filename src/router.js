@@ -15,12 +15,12 @@ router.get('/logs', DebugController.getLogs);
 router.get('/socket-connections', DebugController.getSocketConnections);
 router.get('/api-results', DebugController.getAllApiResultsConstants);
 
-router.post('/auth/register', AuthController.userRegister);
-router.post('/auth/activate', AuthController.userActivate);
-router.post('/auth/resend', AuthController.userResendEmail);
-router.post('/auth/login', AuthController.userLogin);
-router.get('/auth/refresh', AuthController.userRefreshToken);
-router.post('/auth/logout', AuthController.userLogout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
+router.post('/auth/register', AuthController.register);
+router.post('/auth/activate', AuthController.activateAccount);
+router.post('/auth/resend', AuthController.resendEmailActivationCode);
+router.post('/auth/login', AuthController.login);
+router.get('/auth/refresh', AuthController.refreshLoginToken);
+router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
 
 router.get('/users/me', requireJWT, UserController.getMe);
 router.get('/users/:id', UserController.getAllUsers);
