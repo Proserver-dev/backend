@@ -23,6 +23,15 @@ const SETTINGS = {
         'TTL': '', // Xm, Xd
         'PRIVATE_KEY': privateKey,
         'PUBLIC_KEY': publicKey
+    },
+    'SMTP': {
+        'HOST': 'host',
+        'PORT': 465,
+        'SECURE': true,
+        'AUTH': {
+            'USER': 'user@domain.com',
+            'PASS': 'secret'
+        }
     }
 }
 

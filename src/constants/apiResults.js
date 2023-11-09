@@ -10,6 +10,9 @@ const API_RESULTS = {
     ERR_DELETE_ROLE: { descripiton: "Wystąpił błąd podczas usuwania roli", code: 'ERR_DELETE_ROLE', status_code: 500 },
     ERR_GET_USERS: { descripiton: "Wystąpił błąd podczas pobierania użytkowników", code: 'ERR_GET_USERS', status_code: 500 },
     ERR_GET_MESSAGES: { description: "Wystąpił błąd podczas pobierania wiadomości", code: 'ERR_GET_MESSAGES', status_code: 500 },
+    ERR_LOGOUT_ERROR: { description: "Wystąpił problem z wylogowaniem", code: 'ERR_LOGOUT_ERROR', status_code: 500 },
+    ERR_SEND_EMAIL: { description: 'Wystąpił problem z wysyłką wiadomości email', code: 'ERR_SEND_EMAIL', status_code: 500 },
+    ERR_ACTIVATE_ACCOUNT_ERROR: { description: 'Wystąpił problem z aktywacją konta', code: 'ERR_ACTIVATE_ACCOUNT_ERROR', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { descripiton: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { descripiton: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
@@ -32,11 +35,16 @@ const API_RESULTS = {
     ERR_ROLE_EDIT_ALREADY_EXISTS: { descripiton: "Nie możesz zmienić nazwy roli na taką, taka już istnieje", code: 'ERR_ROLE_EDIT_ALREADY_EXISTS', status_code: 400 },
     ERR_ROLE_DELETE_NAME_IS_RESERVED: { descripiton: "Nie możesz usunąć tej roli, jest ona zablokowana", code: 'ERR_ROLE_DELETE_NAME_IS_RESERVED', status_code: 403 },
     ERR_ADMIN_PRIVILEGES_REQUIRED: { descripiton: "Ta czynność wymaga uprawnień admina", code: 'ERR_ADMIN_PRIVILEGES_REQUIRED', status_code: 403 },
+    ERR_WRONG_AUTH_PIN: { description: 'PIN aktywacyjny jest niepoprawny', code: 'ERR_WRONG_AUTH_PIN', status_code: 400 },
+    ERR_USER_IS_ALREADY_ACTIVATED: { description: 'Użytkownik jest już aktywowany', code: 'ERR_USER_IS_ALREADY_ACTIVATED', status_code: 400 },
+    ERR_USER_IS_NOT_ACTIVATED: { description: 'Użytkownik jeszcze nie został aktywowany. Musisz potwierdzić maila', code: 'ERR_USER_IS_NOT_ACTIVATED', status_code: 400 },
+    ERR_INVALID_EMAIL_ADDRESS: { description: 'Adres email jest niepoprawny', code: 'ERR_INVALID_EMAIL_ADDRESS', status_code: 400 },
 
     SUCCESS_CREATED_ROLE: { descripiton: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { descripiton: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
     SUCCESS_DELETE_ROLE: { descripiton: "Pomyślnie usunięto rolę", code: 'SUCCESS_DELETE_ROLE', status_code: 200 },
-    SUCCESS_USER_REGISTERED: { descripiton: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 }
+    SUCCESS_USER_REGISTERED: { descripiton: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 },
+    SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 }
 }
 
 module.exports = API_RESULTS
