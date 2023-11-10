@@ -38,7 +38,7 @@ app.post('/disconnect/:userId', async (req, res) => {
     if(socketId) {
         // socket.emit('messageToAll', { type: 'forceLogout' }) // ewentualnie można coś jeszcze wyemitować, żeby odłączyć stare połączenie z socketem tego usera realtime (i obsłużyć w apce)
 
-        const socket = io.sockets.sockets.get(socketId);
+        const socket = Array.from(io.sockets.sockets.values()).find(s => s.id === socketId);
 
         socket.disconnect(true)
         myCache.del(`connection_${socket}`)
