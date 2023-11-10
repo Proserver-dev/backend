@@ -31,12 +31,14 @@ const io = socketIo(server, { cors: SETTINGS.SOCKET_IO.CORS });
 // TODO: trzeba będzie lepiej zabezpieczyć ten endpoint, np przekazując token (bezpośrednio z endpointa logowania, przed wysłaniem zwrotki o pomyslnym zalogowaniu z tokenami)
 app.post('/disconnect/:userId', async (req, res) => {
     const userId = req.params.userId;
-    const socket = getSocketIdByUserId(userId)
+    const socketId = getSocketIdByUserId(userId)
 
     logToFile(`TEST - id=${userId} - ${socket}`)
 
-    if(socket) {
+    if(socketId) {
         // socket.emit('messageToAll', { type: 'forceLogout' }) // ewentualnie można coś jeszcze wyemitować, żeby odłączyć stare połączenie z socketem tego usera realtime (i obsłużyć w apce)
+
+        const socket = io.sockets.sockets.get(socketId);
 
         socket.disconnect(true)
         myCache.del(`connection_${socket}`)
