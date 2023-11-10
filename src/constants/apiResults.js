@@ -13,6 +13,7 @@ const API_RESULTS = {
     ERR_LOGOUT_ERROR: { description: "Wystąpił problem z wylogowaniem", code: 'ERR_LOGOUT_ERROR', status_code: 500 },
     ERR_SEND_EMAIL: { description: 'Wystąpił problem z wysyłką wiadomości email', code: 'ERR_SEND_EMAIL', status_code: 500 },
     ERR_ACTIVATE_ACCOUNT_ERROR: { description: 'Wystąpił problem z aktywacją konta', code: 'ERR_ACTIVATE_ACCOUNT_ERROR', status_code: 500 },
+    ERR_SOMETHING_WENT_WRONG: { description: 'Coś poszło nie tak', code: 'ERR_SOMETHING_WENT_WRONG', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { descripiton: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { descripiton: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
