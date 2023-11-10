@@ -40,10 +40,12 @@ app.post('/disconnect/:userId', async (req, res) => {
 
         const socket = Array.from(io.sockets.sockets.values()).find(s => s.id === socketId);
 
-        socket.disconnect(true)
-        myCache.del(`connection_${socket}`)
-        logToFile(`Socket.io - rozłączono użytkownika id=${userId} poprzez request HTTP`)
-        res.status(200).json({ success: 'Rozłączono pomyślnie', userId, socket });
+        if(socket) {
+            socket.disconnect(true)
+            myCache.del(`connection_${socket}`)
+            logToFile(`Socket.io - rozłączono użytkownika id=${userId} poprzez request HTTP`)
+            res.status(200).json({ success: 'Rozłączono pomyślnie', userId, socket });
+        }
     } else {
         logToFile(`Socket.io - nie znaleziono aktywnego połączenia id=${userId} przy próbie rozłączenia poprzez request HTTP`)
         res.status(404).json({ error: 'Brak aktywnego połączenia dla tego użytkownika' });
