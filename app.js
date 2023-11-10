@@ -43,7 +43,7 @@ app.post('/disconnect/:userId', async (req, res) => {
 
             logToFile(`connected - id=${userValue} - ${socketId}`)
 
-            if(userValue === userId) {
+            if(userValue == userId) {
                 result = socketId
             }
         }

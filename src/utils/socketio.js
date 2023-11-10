@@ -9,7 +9,7 @@ function getSocketIdByUserId(user_id) {
             const socketId = key.replace("connection_", "");
             const userValue = allData[key].v;
 
-            if(userValue === user_id) {
+            if(userValue == user_id) {
                 result = socketId
             }
         }
