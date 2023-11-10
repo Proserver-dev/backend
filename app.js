@@ -33,7 +33,7 @@ app.post('/disconnect/:userId', async (req, res) => {
     const userId = req.params.userId;
     const socketId = getSocketIdByUserId(userId)
 
-    logToFile(`TEST - id=${userId} - ${socket}`)
+    logToFile(`TEST - id=${userId} - ${socketId}`)
 
     if(socketId) {
         // socket.emit('messageToAll', { type: 'forceLogout' }) // ewentualnie można coś jeszcze wyemitować, żeby odłączyć stare połączenie z socketem tego usera realtime (i obsłużyć w apce)
