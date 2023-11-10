@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
 
-const myCache = require('../utils/node-cache')
+const myCache = require('./src/utils/node-cache')
 const { logToFile } = require('./src/functions');
 const { router } = require('./src/router');
 const { SETTINGS } = require('./settings');
