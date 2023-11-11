@@ -26,10 +26,16 @@ async function mainSocket(io, socket) {
 
         const currentUserId = decodedToken.userId;
 
-        if(getSocketIdByUserId(currentUserId)) {
-            logToFile(`Socket.io - Użytkownik id:${currentUserId} jest już połączony z socketem. Kolejne połączenie zostało odrzucone`);
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Jesteś już połączony z socketem' });
-            return socket.disconnect(true);
+        const checkConnectedSocket = getSocketIdByUserId(currentUserId)
+        if(checkConnectedSocket) {
+            // logToFile(`Socket.io - Użytkownik id:${currentUserId} jest już połączony z socketem. Kolejne połączenie zostało odrzucone`);
+            // socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Jesteś już połączony z socketem' });
+            // return socket.disconnect(true);
+
+            logToFile(`Socket.io - Użytkownik id:${currentUserId} był już połączony z socketem. Stare połączenie zostało zerwane`);
+            const oldSocket = Array.from(io.sockets.sockets.values()).find(s => s.id === checkConnectedSocket);
+            // pewnie trzeba jeszcze skasować z node_cache i może wysłać emit do starego socketa
+            oldSocket.disconnect(true)
         }
 
         logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${currentUserId}`);
