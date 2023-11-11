@@ -320,7 +320,6 @@ const refreshLoginToken = async (req, res) => {
 
             if(user) {
                 user.update({ loginToken: null });
-                return res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
             }
 
             // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty refreshToken

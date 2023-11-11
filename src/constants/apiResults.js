@@ -2,7 +2,7 @@ const API_RESULTS = {
     ERR_LOGIN_ERROR: { descripiton: "Błąd logowania", code: 'ERR_LOGIN_ERROR', status_code: 500 },
     ERR_REGISTER_ERROR: { descripiton: "Błąd rejestracji", code: 'ERR_REGISTER_ERROR', status_code: 500 },
     ERR_REFRESH_TOKEN: { descripiton: "Błąd odświeżania tokena", code: 'ERR_REFRESH_TOKEN', status_code: 500 },
-    ERR_VERIFY_TOKEN: { descripiton: "Błąd weryfikacji tokenu", code: 'ERR_VERIFY_TOKEN', status_code: 500 },
+    ERR_VERIFY_TOKEN: { descripiton: "Błąd weryfikacji tokenu", code: 'ERR_VERIFY_TOKEN', status_code: 401 },
     ERR_READ_FILE: { descripiton: "Błąd odczytu pliku", code: 'ERR_READ_FILE', status_code: 500 },
     ERR_GET_ROLES: { descripiton: "Wystąpił błąd podczas pobierania ról", code: 'ERR_GET_ROLES', status_code: 500 },
     ERR_CREATE_ROLE: { descripiton: "Wystąpił błąd podczas dodawania roli", code: 'ERR_CREATE_ROLE', status_code: 500 },
