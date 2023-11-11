@@ -4,6 +4,7 @@ const SOCKET_EVENTS = {
     RECEIVE_PRIVATE_MESSAGE: 'privateMessage',
     SEND_MESSAGE_TO_ALL: 'messageToAll',
     RECEIVE_MESSAGE_TO_ALL: 'messageToAll',
+    NEW_SOCKET_CONNECTION: 'newSocketConnection'
 }
 
 module.exports = SOCKET_EVENTS

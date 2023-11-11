@@ -34,30 +34,6 @@ app.use((err, req, res, next) => {
 const server = http.createServer(app);
 const io = socketIo(server, { cors: SETTINGS.SOCKET_IO.CORS });
 
-// TODO: trzeba będzie lepiej zabezpieczyć ten endpoint, np przekazując token (bezpośrednio z endpointa logowania, przed wysłaniem zwrotki o pomyslnym zalogowaniu z tokenami)
-app.post('/disconnect/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    const socketId = getSocketIdByUserId(userId)
-
-    logToFile(`TEST - id=${userId} - ${socketId}`)
-
-    if(socketId) {
-        // socket.emit('messageToAll', { type: 'forceLogout' }) // ewentualnie można coś jeszcze wyemitować, żeby odłączyć stare połączenie z socketem tego usera realtime (i obsłużyć w apce)
-
-        const socket = Array.from(io.sockets.sockets.values()).find(s => s.id === socketId);
-
-        if(socket) {
-            socket.disconnect(true)
-            myCache.del(`connection_${socket}`)
-            logToFile(`Socket.io - rozłączono użytkownika id=${userId} poprzez request HTTP`)
-            res.status(200).json({ success: 'Rozłączono pomyślnie', userId, socket });
-        }
-    } else {
-        logToFile(`Socket.io - nie znaleziono aktywnego połączenia id=${userId} przy próbie rozłączenia poprzez request HTTP`)
-        res.status(404).json({ error: 'Brak aktywnego połączenia dla tego użytkownika' });
-    }
-})
-
 io.on('connection', (socket) => {
     mainSocket(io, socket)
 });

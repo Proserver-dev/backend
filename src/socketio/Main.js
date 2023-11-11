@@ -34,7 +34,7 @@ async function mainSocket(io, socket) {
 
             logToFile(`Socket.io - Użytkownik id:${currentUserId} był już połączony z socketem. Stare połączenie zostało zerwane`);
             const oldSocket = Array.from(io.sockets.sockets.values()).find(s => s.id === checkConnectedSocket);
-            // pewnie trzeba jeszcze skasować z node_cache i może wysłać emit do starego socketa
+            oldSocket.emit(SOCKET_EVENTS.NEW_SOCKET_CONNECTION, { logout: true })
             oldSocket.disconnect(true)
         }
 
