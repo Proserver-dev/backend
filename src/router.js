@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const requireJWT = require('./middleware/requireJWT')
+const requireAdmin = require('./middleware/requireAdmin')
 
 const AuthController = require('./controllers/AuthController')
 const DebugController = require('./controllers/DebugController');
@@ -8,6 +9,7 @@ const MainController = require('./controllers/MainController')
 const RoleController = require('./controllers/RoleController')
 const UserController = require('./controllers/UserController')
 const MessageController = require('./controllers/MessageController')
+const AuthHistoryController = require('./controllers/AuthHistoryController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -33,6 +35,8 @@ router.put('/roles/:id', requireJWT, RoleController.editRole);
 router.delete('/roles/:id', requireJWT, RoleController.deleteRole);
 
 router.get('/messages-to-all', requireJWT, MessageController.getAllMessagesToAll)
+
+router.get('/admin/users/get-auth-history', requireJWT, requireAdmin, AuthHistoryController.getAuthHistory)
 
 router.get('/test', (req, res) => {
     res.status(200).json([

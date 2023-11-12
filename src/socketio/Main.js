@@ -5,10 +5,11 @@ const { logToFile } = require('../../src/functions')
 const { disconnect } = require('./Disconnect')
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const { messageToAll } = require('./messageToAll');
-const { getSocketIdByUserId } = require('../utils/socketio')
+const { getSocketIdByUserId } = require('../utils/socketio');
+const HEADERS_KEYS = require('../constants/headersKeys');
 
 async function mainSocket(io, socket) {
-    const token = socket.handshake.headers['token'];
+    const token = socket.handshake.headers[HEADERS_KEYS.LOGIN_TOKEN.toLowerCase()];
 
     if(!token) {
         logToFile('Socket.io - Musisz przekazać Token w nagłówku');

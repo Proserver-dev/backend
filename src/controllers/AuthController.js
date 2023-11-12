@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
+const AuthHistory = require('../models/AuthHistory')
 const { saveLogFromEndpointRequest } = require('../functions');
 const isValidEmail = require('../utils/isValidEmail')
 const { SETTINGS } = require('../../settings');
@@ -52,6 +53,8 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const registerPin = generateAuthPin();
         const user = await User.create({ email, password: hashedPassword, userName, nameLastname, deviceToken, roleId: default_role, authPin: registerPin });
+
+        AuthHistory.create({ userId: user.id, type: 'register', content: 'Utworzenie konta przy rejestracji' })
 
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
@@ -118,6 +121,7 @@ const activateAccount = async (req, res) => {
         const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
 
         await user.update({ loginToken, isActivated: true, authPin: newAuthPin });
+        AuthHistory.create({ userId: user.id, type: 'activate', content: 'Aktywowano konto pinem z maila oraz zwrócono tokeny do logowania' })
 
         const user_role = await Role.findByPk(user.roleId)
         user.roleId = user_role
@@ -165,6 +169,7 @@ const resendEmailActivationCode = async (req, res) => {
 
         const newAuthPin = generateAuthPin()
         await user.update({ authPin: newAuthPin });
+        AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
@@ -243,6 +248,7 @@ const login = async (req, res) => {
 
         user.roleId = user_role
     
+        AuthHistory.create({ userId: user.id, type: 'login', content: 'Pomyślnie zalogowano' })
         res.json({ token: loginToken, refreshToken, user });
     } catch (error) {
         console.error(error);
@@ -283,12 +289,14 @@ const refreshLoginToken = async (req, res) => {
         // jeśli loginToken tego usera został wyczyszczony (np. przez globalne wylogowanie)
         if(!user.loginToken) {
             // tutaj nie ma po co czyścić loginToken - i tak jest nullem
+            AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - !user.loginToken' })
             return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
         // jeśli zapisany w bazie ostatni loginToken jest inny od tego przekazanego z żądaniem o odświeżenie tokena
         if(user.loginToken !== token) {
             // tutaj nie powinniśmy czyścić loginToken, może być sytuacja że ktoś użyje starego (ale jeszcze ważnego) refreshToken + jakiś randomowy token w celu ataku
+            AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - user.loginToken !== token' })
             return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
@@ -320,6 +328,9 @@ const refreshLoginToken = async (req, res) => {
 
             if(user) {
                 user.update({ loginToken: null });
+                AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - wyczyszczno loginToken' })
+            } else {
+                AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - nie udało się wyczyścić loginToken' })
             }
 
             // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty refreshToken
@@ -362,6 +373,7 @@ const logout = async (req, res) => {
 
         // bez await, bo odpowiedź API nie musi czekać na aktualizację w bazie danych
         user.update({ loginToken: null });
+        AuthHistory.create({ userId: user.id, type: 'logout', content: 'Pomyślnie wylogowano' })
         res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
 
     } catch (error) {
@@ -370,6 +382,7 @@ const logout = async (req, res) => {
 
             if(user) {
                 user.update({ loginToken: null });
+                AuthHistory.create({ userId: user.id, type: 'logout', content: 'Pomyślnie wylogowano' })
                 res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
             } else {
                 // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty token i nie znaleziono go w bazie

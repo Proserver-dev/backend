@@ -1,6 +1,7 @@
 const API_RESULTS = require('../constants/apiResults');
 const { saveLogFromEndpointRequest } = require('../functions');
 const MessageToAll = require('../models/MessageToAllModel')
+const User = require('../models/UserModel')
 
 async function getAllMessagesToAll(req, res) {
     saveLogFromEndpointRequest(req);
@@ -17,7 +18,16 @@ async function getAllMessagesToAll(req, res) {
             offset: parsedOffset,
         });
 
-        res.status(200).json(messages);
+        const userIds = Array.from(new Set(messages.rows.map((message) => message.sendBy)));
+
+        const users = await Promise.all(userIds.map((userId) => User.findByPk(userId)));
+
+        const messagesWithUsers = messages.rows.map((message) => ({
+        ...message.toJSON(),
+        sendBy: users.find((user) => user.id === message.sendBy),
+        }));
+
+        res.status(200).json({ count: messages.count, rows: messagesWithUsers });
     } catch (error) {
         res.status(API_RESULTS.ERR_GET_MESSAGES.status_code).json({ error: API_RESULTS.ERR_GET_MESSAGES.code });
     }
