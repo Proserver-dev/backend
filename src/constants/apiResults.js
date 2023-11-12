@@ -14,6 +14,9 @@ const API_RESULTS = {
     ERR_SEND_EMAIL: { description: 'Wystąpił problem z wysyłką wiadomości email', code: 'ERR_SEND_EMAIL', status_code: 500 },
     ERR_ACTIVATE_ACCOUNT_ERROR: { description: 'Wystąpił problem z aktywacją konta', code: 'ERR_ACTIVATE_ACCOUNT_ERROR', status_code: 500 },
     ERR_SOMETHING_WENT_WRONG: { description: 'Coś poszło nie tak', code: 'ERR_SOMETHING_WENT_WRONG', status_code: 500 },
+    ERR_GET_AUTH_HISTORY: { description: 'Wystąpił problem z pobraniem auth history', code: 'ERR_GET_AUTH_HISTORY', status_code: 500 },
+    ERR_GET_APP_CONFIG: { description: 'Wystąpił problem z pobraniem konfiguracji aplikacji', code: 'ERR_GET_APP_CONFIG', status_code: 500 },
+    ERR_EDIT_APP_CONFIG: { description: 'Wystąpił problem z edycją konfiguracji aplikacji', code: 'ERR_EDIT_APP_CONFIG', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { descripiton: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { descripiton: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
@@ -40,6 +43,8 @@ const API_RESULTS = {
     ERR_USER_IS_ALREADY_ACTIVATED: { description: 'Użytkownik jest już aktywowany', code: 'ERR_USER_IS_ALREADY_ACTIVATED', status_code: 400 },
     ERR_USER_IS_NOT_ACTIVATED: { description: 'Użytkownik jeszcze nie został aktywowany. Musisz potwierdzić maila', code: 'ERR_USER_IS_NOT_ACTIVATED', status_code: 400 },
     ERR_INVALID_EMAIL_ADDRESS: { description: 'Adres email jest niepoprawny', code: 'ERR_INVALID_EMAIL_ADDRESS', status_code: 400 },
+    ERR_REGISTRATION_DISABLED: { description: 'Rejestracja jest wyłączona', code: 'ERR_REGISTRATION_DISABLED', status_code: 423 },
+    ERR_LOGIN_DISABLED: { description: 'Logowanie jest wyłączone', code: 'ERR_LOGIN_DISABLED', status_code: 423 },
 
     SUCCESS_CREATED_ROLE: { descripiton: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { descripiton: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },

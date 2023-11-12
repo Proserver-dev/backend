@@ -25,7 +25,7 @@ const getAuthHistory = async (req, res) => {
       res.json(authHistoryList);
     } catch (error) {
       console.error('Error fetching auth history:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(API_RESULTS.ERR_GET_AUTH_HISTORY.status_code).json({ error: API_RESULTS.ERR_GET_AUTH_HISTORY.code });
     }
 }
 

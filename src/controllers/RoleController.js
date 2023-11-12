@@ -25,11 +25,6 @@ const isShortFieldUnique = async (short, id) => {
 const getRoles = async (req, res) => {
     saveLogFromEndpointRequest(req)
 
-    const authRole = await Role.findByPk(req.user.roleId.id)
-    if(authRole?.short != "admin") {
-        return res.status(API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.status_code).json({ error: API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.code });
-    }
-
     try {
         if(req.params.id) {
             const role = await Role.findByPk(req.params.id)
@@ -49,11 +44,6 @@ const getRoles = async (req, res) => {
 
 const addRole = async (req, res) => {
     saveLogFromEndpointRequest(req)
-
-    const authRole = await Role.findByPk(req.user.roleId.id)
-    if(authRole?.short != "admin") {
-        return res.status(API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.status_code).json({ error: API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.code });
-    }
 
     const { name } = req.body;
     const short = generateSlug(name);
@@ -80,11 +70,6 @@ const addRole = async (req, res) => {
 
 const editRole = async (req, res) => {
     saveLogFromEndpointRequest(req)
-
-    const authRole = await Role.findByPk(req.user.roleId.id)
-    if(authRole?.short != "admin") {
-        return res.status(API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.status_code).json({ error: API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.code });
-    }
 
     const { name } = req.query;
 
@@ -130,11 +115,6 @@ const editRole = async (req, res) => {
 
 const deleteRole = async (req, res) => {
     saveLogFromEndpointRequest(req)
-
-    const authRole = await Role.findByPk(req.user.roleId.id)
-    if(authRole?.short != "admin") {
-        return res.status(API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.status_code).json({ error: API_RESULTS.ERR_ADMIN_PRIVILEGES_REQUIRED.code });
-    }
 
     const role = await Role.findByPk(req.params.id);
   

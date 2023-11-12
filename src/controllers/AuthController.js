@@ -10,6 +10,8 @@ const { DEFAULT_ROLE } = require('../constants/roleBlocked')
 const HEADERS_KEYS = require('../constants/headersKeys')
 const API_RESULTS = require('../constants/apiResults')
 const emailClient = require('../utils/emailClient')
+const getAppSetting = require('../utils/getAppSetting')
+const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
 
 const generateAuthPin = () => {
     return Math.floor(100000 + Math.random() * 900000)
@@ -18,6 +20,12 @@ const generateAuthPin = () => {
 const register = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    const isRegistrationEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.REGISTRATION_ENABLED.key)
+    if(!isRegistrationEnabled) {
+        const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.REGISTRATION_DISABLED_REASON.key)
+        return res.status(API_RESULTS.ERR_REGISTRATION_DISABLED.status_code).send({ error: API_RESULTS.ERR_REGISTRATION_DISABLED.code, reason })
+    }
 
     if(!deviceToken) {
         return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
@@ -83,6 +91,13 @@ const register = async (req, res) => {
 const activateAccount = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
+    if(!isLoginEnabled) {
+        const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
+        return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
+    }
+
     try {
         const { authPin, email } = req.body;
 
@@ -117,8 +132,10 @@ const activateAccount = async (req, res) => {
         }
 
         const newAuthPin = generateAuthPin()
-        const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
-        const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
+        const loginTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_TOKEN_LIFE_TIME.key)
+        const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: loginTokenTTL });
+        const refreshTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.REFRESH_TOKEN_LIFE_TIME.key)
+        const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: refreshTokenTTL });
 
         await user.update({ loginToken, isActivated: true, authPin: newAuthPin });
         AuthHistory.create({ userId: user.id, type: 'activate', content: 'Aktywowano konto pinem z maila oraz zwrócono tokeny do logowania' })
@@ -136,6 +153,13 @@ const activateAccount = async (req, res) => {
 const resendEmailActivationCode = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
+    if(!isLoginEnabled) {
+        const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
+        return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
+    }
+
     try {
         const { email } = req.body;
 
@@ -222,6 +246,15 @@ const login = async (req, res) => {
         if(!deviceToken && user_role?.short != "admin") {
             return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
         }
+
+        // admin zawsze może się zalogować, nawet jeśli logowanie jest wyłączone
+        if(user_role?.short != "admin") {
+            const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
+            if(!isLoginEnabled) {
+                const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
+                return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
+            }
+        }
     
         const passwordMatch = await bcrypt.compare(password, user.password);
     
@@ -229,8 +262,10 @@ const login = async (req, res) => {
           return res.status(API_RESULTS.ERR_WRONG_PASSWORD.status_code).json({ error: API_RESULTS.ERR_WRONG_PASSWORD.code });
         }
 
-        const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
-        const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: SETTINGS.REFRESH_TOKEN.TTL });
+        const loginTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_TOKEN_LIFE_TIME.key)
+        const loginToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: loginTokenTTL });
+        const refreshTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.REFRESH_TOKEN_LIFE_TIME.key)
+        const refreshToken = jwt.sign({ userId: user.id, deviceToken: deviceToken }, SETTINGS.REFRESH_TOKEN.PRIVATE_KEY, { algorithm: SETTINGS.REFRESH_TOKEN.ALGORITHM, expiresIn: refreshTokenTTL });
 
         // jeśli user jeszcze nie ma role_id (jest nullem), to przy logowaniu od razu przypisujemy domyślną rolę
         if(!user.roleId) {
@@ -315,6 +350,15 @@ const refreshLoginToken = async (req, res) => {
             }
         }
 
+        // admin zawsze może odświeżyć token, nawet jeśli logowanie jest wyłączone
+        if(user_role?.short != "admin") {
+            const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
+            if(!isLoginEnabled) {
+                const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
+                return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
+            }
+        }
+
         const newToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
 
         await user.update({ loginToken: newToken });
@@ -329,6 +373,8 @@ const refreshLoginToken = async (req, res) => {
             if(user) {
                 user.update({ loginToken: null });
                 AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - wyczyszczno loginToken' })
+                // TODO: tutaj prawdopodobnie trzeba będzie wygenerować nowy token i refreshToken (bo stary przekazany token się zgadza z ostatnim zapisanym)
+                
             } else {
                 AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - nie udało się wyczyścić loginToken' })
             }
