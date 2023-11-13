@@ -103,6 +103,10 @@ const editRole = async (req, res) => {
         return res.status(API_RESULTS.ERR_ROLE_EDIT_NAME_IS_RESERVED.status_code).json({ error: API_RESULTS.ERR_ROLE_EDIT_NAME_IS_RESERVED.code });
     }
 
+    if (isRoleBlocked(name)) {
+        return res.status(API_RESULTS.ERR_ROLE_EDIT_NAME_IS_RESERVED.status_code).json({ error: API_RESULTS.ERR_ROLE_EDIT_NAME_IS_RESERVED.code });
+    }
+
     if(name != role.name && !(await isShortFieldUnique(short))) {
         return res.status(API_RESULTS.ERR_ROLE_EDIT_ALREADY_EXISTS.status_code).json({ error: API_RESULTS.ERR_ROLE_EDIT_ALREADY_EXISTS.code });
     }
