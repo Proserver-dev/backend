@@ -377,7 +377,8 @@ const refreshLoginToken = async (req, res) => {
                 // TODO: tutaj prawdopodobnie trzeba będzie wygenerować nowy token i refreshToken (bo stary przekazany token się zgadza z ostatnim zapisanym)
                 
             } else {
-                AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - nie udało się wyczyścić loginToken' })
+                // tutaj nie możemy zapisać, bo nie znamy user.id
+                // AuthHistory.create({ userId: user.id, type: 'logout', content: 'Refresh-Token wygasł - wylogowano - nie udało się wyczyścić loginToken' })
             }
 
             // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty refreshToken
