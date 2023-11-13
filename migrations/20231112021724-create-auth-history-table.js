@@ -1,14 +1,15 @@
 'use strict';
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('messages_to_all', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('auth_history', {
       id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
       },
-      sendBy: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -18,17 +19,17 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      message: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
       type: {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      content: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       createdAt: {
-        type: Sequelize.DATE,
         allowNull: false,
+        type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     }, {
@@ -36,7 +37,7 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('messages_to_all');
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('auth_history');
   },
 };

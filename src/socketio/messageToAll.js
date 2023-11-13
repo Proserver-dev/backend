@@ -4,6 +4,7 @@ const SOCKET_EVENTS = require('../constants/socketEvents');
 const MessageToAll = require('../models/MessageToAllModel');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
+const AuthHistory = require('../models/AuthHistory')
 
 async function messageToAll(io, socket, data, currentUserId) {
     const { message, type } = data
@@ -34,17 +35,33 @@ async function messageToAll(io, socket, data, currentUserId) {
             // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
 
             if(data.type == "forceLogout") {
-                // wszyscy użytkownikcy, których roleId jest różne od role.id admina i loginToken jest różny od null
-                const [updatedCount, updatedUsers] = await User.update(
-                    { loginToken: null },
-                    { 
-                        where: { 
-                            roleId: { [Sequelize.Op.ne]: role.id },
-                            loginToken: { [Sequelize.Op.ne]: null }
-                        } 
-                    }
-                );
-                logToFile(`Wylogowano ${updatedCount} użytkowników`)
+                try {
+                    // wszyscy użytkownikcy, których roleId jest różne od role.id admina i loginToken jest różny od null
+                    const usersToLogout = await User.findAll({
+                      where: {
+                        roleId: { [Sequelize.Op.ne]: role.id },
+                        loginToken: { [Sequelize.Op.ne]: null },
+                      },
+                    });
+                
+                    const updatePromises = usersToLogout.map(async (user) => {
+                      await User.update({ loginToken: null }, { where: { id: user.id } });
+                    });
+                
+                    await AuthHistory.bulkCreate(
+                      usersToLogout.map((user) => ({
+                        userId: user.id,
+                        type: 'logout',
+                        content: 'Pomyślnie wylogowano - poprzez forceLogout',
+                      }))
+                    );
+                
+                    await Promise.all(updatePromises);
+                
+                    logToFile(`Wylogowano ${usersToLogout.length} użytkowników`);
+                  } catch (error) {
+                    // console.error('Error during force logout:', error);
+                  }
             }
         } else {
             // TODO: tylko admin może wyemitować wiadomość do wszystkich. W tym miejscu dać jakiś error lub po prostu nic nie robić
