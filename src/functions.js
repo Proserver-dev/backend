@@ -44,7 +44,13 @@ function getLogFileName(date = null) {
 
 function saveLogFromEndpointRequest(req) {
   var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-  logToFile(`run endpoint ${req.method} ${fullUrl}`);
+  let userId = ""
+
+  if(req.user.id) {
+    userId = `- userId: ${req.user.id}`
+  }
+
+  logToFile(`run endpoint ${req.method} ${fullUrl} ${userId}`);
 }
 
 module.exports = {
