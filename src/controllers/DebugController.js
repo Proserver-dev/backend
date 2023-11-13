@@ -3,6 +3,7 @@ const myCache = require('../utils/node-cache')
 const { getLogFileName } = require('../functions');
 const { saveLogFromEndpointRequest } = require('../functions');
 const API_RESULTS = require('../constants/apiResults')
+const User = require('../models/UserModel');
 
 function getLogs(req, res) {
     let fileName = getLogFileName();
@@ -25,7 +26,7 @@ function getLogs(req, res) {
     });
 }
 
-function getSocketConnections(req, res) {
+async function getSocketConnections(req, res) {
   saveLogFromEndpointRequest(req)
   const allData = myCache.data;
   const dataArray = [];
@@ -33,9 +34,9 @@ function getSocketConnections(req, res) {
   for (const key in allData) {
       if (key.startsWith("connection_")) {
           const socketId = key.replace("connection_", "");
-          const userValue = allData[key].v;
-
-          dataArray.push({ socket_id: socketId, user_id: userValue });
+          const userId = allData[key].v;
+          const user = await User.findByPk(userId);
+          dataArray.push({ socket_id: socketId, userId, user });
       }
   }
 
