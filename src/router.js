@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const requireJWT = require('./middleware/requireJWT')
+const requireAdmin = require('./middleware/requireAdmin')
 
 const AuthController = require('./controllers/AuthController')
 const DebugController = require('./controllers/DebugController');
@@ -8,6 +9,8 @@ const MainController = require('./controllers/MainController')
 const RoleController = require('./controllers/RoleController')
 const UserController = require('./controllers/UserController')
 const MessageController = require('./controllers/MessageController')
+const AuthHistoryController = require('./controllers/AuthHistoryController')
+const AppConfigurationsController = require('./controllers/AppConfigurationsController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -26,13 +29,18 @@ router.get('/users/me', requireJWT, UserController.getMe);
 router.get('/users/:id', UserController.getAllUsers);
 router.get('/users', UserController.getAllUsers);
 
-router.get('/roles/:id', requireJWT, RoleController.getRoles);
-router.get('/roles', requireJWT, RoleController.getRoles);
-router.post('/roles', requireJWT, RoleController.addRole);
-router.put('/roles/:id', requireJWT, RoleController.editRole);
-router.delete('/roles/:id', requireJWT, RoleController.deleteRole);
+router.get('/roles/:id', requireJWT, requireAdmin, RoleController.getRoles);
+router.get('/roles', requireJWT, requireAdmin, RoleController.getRoles);
+router.post('/roles', requireJWT, requireAdmin, RoleController.addRole);
+router.put('/roles/:id', requireJWT, requireAdmin, RoleController.editRole);
+router.delete('/roles/:id', requireJWT, requireAdmin, RoleController.deleteRole);
 
-router.get('/messages-to-all', requireJWT, MessageController.getAllMessagesToAll)
+router.get('/messages-to-all', requireJWT, requireAdmin, MessageController.getAllMessagesToAll)
+
+router.get('/admin/users/get-auth-history', requireJWT, requireAdmin, AuthHistoryController.getAuthHistory)
+
+router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)
+router.put('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.editAppConfigurations)
 
 router.get('/test', (req, res) => {
     res.status(200).json([

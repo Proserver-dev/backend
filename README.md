@@ -35,6 +35,9 @@ Aby wycofać wszystkie migracje należy wykonać polecenie
 Aby utworzyć nową migrację należy wykonać polecenie:
 - `npx sequelize-cli migration:generate --name create-nazwatabeli-table`
 
+Aby utwórzyć nowy plik seedera należy wykonać polecenie:
+- `npx sequelize-cli seed:generate --name create-roles`
+
 Aby wykonać seedery należy wykonać polecenie:
 - `npx sequelize-cli db:seed:all --env dev`
 - `npx sequelize-cli db:seed:all --env prod`

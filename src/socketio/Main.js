@@ -5,10 +5,21 @@ const { logToFile } = require('../../src/functions')
 const { disconnect } = require('./Disconnect')
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const { messageToAll } = require('./messageToAll');
-const { getSocketIdByUserId } = require('../utils/socketio')
+const { getSocketIdByUserId } = require('../utils/socketio');
+const HEADERS_KEYS = require('../constants/headersKeys');
+const getAppSetting = require('../utils/getAppSetting')
+const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
+const API_RESULTS = require('../constants/apiResults')
 
 async function mainSocket(io, socket) {
-    const token = socket.handshake.headers['token'];
+    const token = socket.handshake.headers[HEADERS_KEYS.LOGIN_TOKEN.toLowerCase()];
+
+    const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
+    if(!isLoginEnabled) {
+        const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
+        socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason });
+        return socket.disconnect(true);
+    }
 
     if(!token) {
         logToFile('Socket.io - Musisz przekazać Token w nagłówku');
