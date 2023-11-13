@@ -46,7 +46,7 @@ function saveLogFromEndpointRequest(req) {
   var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   let userId = ""
 
-  if(req.user.id) {
+  if(req.user && req.user.id) {
     userId = `- userId: ${req.user.id}`
   }
 
