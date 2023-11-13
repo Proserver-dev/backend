@@ -359,7 +359,8 @@ const refreshLoginToken = async (req, res) => {
             }
         }
 
-        const newToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: SETTINGS.LOGIN_TOKEN.TTL });
+        const loginTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_TOKEN_LIFE_TIME.key)
+        const newToken = jwt.sign({ userId: user.id }, SETTINGS.JWT_SECRET, { algorithm: SETTINGS.LOGIN_TOKEN.ALGORITHM, expiresIn: loginTokenTTL });
 
         await user.update({ loginToken: newToken });
 
