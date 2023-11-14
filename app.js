@@ -31,8 +31,28 @@ app.use((err, req, res, next) => {
     res.status(API_RESULTS.ERR_SOMETHING_WENT_WRONG.status_code).send({ error: API_RESULTS.ERR_SOMETHING_WENT_WRONG.code, err });
 });
 
+const allTransports = [
+    'websocket',
+    'polling',
+    'polling-xhr',
+    'polling-jsonp',
+    'flashsocket',
+    'htmlfile',
+    'xhr-polling',
+    'xhr-multipart',
+    'xhr-streaming',
+    'jsonp-polling',
+];
+
 const server = http.createServer(app);
-const io = socketIo(server, { cors: SETTINGS.SOCKET_IO.CORS });
+const io = socketIo(server, { 
+    cors: SETTINGS.SOCKET_IO.CORS,
+    allowRequest: (req, callback) => {
+        const isAllowed = true /* sprawdź czy żądanie jest dozwolone */;
+        callback(null, isAllowed);
+    },
+    transports: allTransports,
+});
 
 io.on('connection', (socket) => {
     mainSocket(io, socket)
