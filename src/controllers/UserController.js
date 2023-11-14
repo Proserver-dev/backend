@@ -31,7 +31,7 @@ async function getAllUsers(req, res) {
         });
 
         const usersWithRoles = await Promise.all(
-            users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.role) }))
+            users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.roleId) }))
         );
 
         const modifiedUsers = { ...users, rows: usersWithRoles };
