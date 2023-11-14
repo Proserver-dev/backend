@@ -45,15 +45,22 @@ const allTransports = [
 ];
 
 const server = http.createServer(app);
+// ors: SETTINGS.SOCKET_IO.CORS,
 const io = socketIo(server, { 
-    cors: SETTINGS.SOCKET_IO.CORS,
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'POST', 'DELETE'],
+        credentials: true,
+        allowedHeaders: ['*']
+    },
     allowRequest: (req, callback) => {
-        const isAllowed = true /* sprawdź czy żądanie jest dozwolone */;
+        const isAllowed = true;
         callback(null, isAllowed);
     },
     transports: allTransports,
     allowUpgrades: true,
-    allowEIO3: true
+    allowEIO3: true,
+    maxHttpBufferSize: 1e8
 });
 
 io.on('connection', (socket) => {
