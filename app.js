@@ -52,6 +52,7 @@ const io = socketIo(server, {
         callback(null, isAllowed);
     },
     transports: allTransports,
+    allowUpgrades: true
 });
 
 io.on('connection', (socket) => {
