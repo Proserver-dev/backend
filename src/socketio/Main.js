@@ -14,15 +14,18 @@ const API_RESULTS = require('../constants/apiResults')
 async function mainSocket(io, socket) {
     const token = socket.handshake.headers[HEADERS_KEYS.LOGIN_TOKEN.toLowerCase()];
 
+    logToFile(`Socket.io - próba połączenia usera z socketem...`)
+
     const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
     if(!isLoginEnabled) {
+        logToFile(`Socket.io - próba połączenia, ale logowanie jest wyłączone`)
         const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
         socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason });
         return socket.disconnect(true);
     }
 
     if(!token) {
-        logToFile('Socket.io - Musisz przekazać Token w nagłówku');
+        logToFile(`Socket.io - próba połączenia, ale musisz przekazać Token w nagłówku`)
         socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Musisz przekazać Token w nagłówku' });
         return socket.disconnect(true);
     }
