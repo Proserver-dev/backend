@@ -30,7 +30,13 @@ async function getAllUsers(req, res) {
             offset: parsedOffset,
         });
 
-        res.json(users);
+        const usersWithRoles = await Promise.all(
+            users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.role) }))
+        );
+
+        const modifiedUsers = { ...users, rows: usersWithRoles };
+
+        res.json(modifiedUsers);
     } catch (error) {
         res.status(API_RESULTS.ERR_GET_USERS.status_code).json({ error: API_RESULTS.ERR_GET_USERS.code });
     }
