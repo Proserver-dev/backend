@@ -56,6 +56,7 @@ User.prototype.toJSON = function() {
     userName: this.userName,
     nameLastname: this.nameLastname,
     role: this.roleId,
+    isLoggedIn: !!this.loginToken,
     updatedAt: this.updatedAt,
     createdAt: this.createdAt
   };
