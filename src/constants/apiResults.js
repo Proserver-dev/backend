@@ -45,6 +45,7 @@ const API_RESULTS = {
     ERR_INVALID_EMAIL_ADDRESS: { description: 'Adres email jest niepoprawny', code: 'ERR_INVALID_EMAIL_ADDRESS', status_code: 400 },
     ERR_REGISTRATION_DISABLED: { description: 'Rejestracja jest wyłączona', code: 'ERR_REGISTRATION_DISABLED', status_code: 423 },
     ERR_LOGIN_DISABLED: { description: 'Logowanie jest wyłączone', code: 'ERR_LOGIN_DISABLED', status_code: 423 },
+    ERR_EMAIL_SEND_THROTTLE: { description: 'You have exceeded the limit of requests. Please try again later.', code: 'ERR_EMAIL_SEND_THROTTLE', status_code: 429 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },

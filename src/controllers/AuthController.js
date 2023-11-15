@@ -79,6 +79,8 @@ const register = async (req, res) => {
                 res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
             } else {
                 console.log('E-mail wysłany: ' + info.response);
+                const now = Date.now();
+                user.update({ lastEmailSentTime: now })
                 res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
             }
         });
@@ -189,10 +191,20 @@ const resendEmailActivationCode = async (req, res) => {
             return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
         }
 
+        const now = Date.now();
+        const lastEmailSentTime = user.lastEmailSentTime || 0;
+        const elapsedTimeSinceLastEmail = now - lastEmailSentTime;
+
+        const time = await getAppSetting(APP_CONFIGURATION_DEFAULT.THROTTLE_TIME_SENDING_EMAILS.key)
+
+        if (elapsedTimeSinceLastEmail < time) {
+            return res.status(API_RESULTS.ERR_EMAIL_SEND_THROTTLE.status_code).json({ error: API_RESULTS.ERR_EMAIL_SEND_THROTTLE.code });
+        }
+
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
         const newAuthPin = generateAuthPin()
-        await user.update({ authPin: newAuthPin });
+        await user.update({ authPin: newAuthPin, lastEmailSentTime: now });
         AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
         const mailOptions = {

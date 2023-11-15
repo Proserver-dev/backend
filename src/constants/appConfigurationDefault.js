@@ -24,6 +24,10 @@ const APP_CONFIGURATION_DEFAULT = {
     REFRESH_TOKEN_LIFE_TIME: {
         key: 'REFRESH_TOKEN_LIFE_TIME',
         value: SETTINGS.REFRESH_TOKEN.TTL
+    },
+    THROTTLE_TIME_SENDING_EMAILS: {
+        key: 'THROTTLE_TIME_SENDING_EMAILS',
+        value: 60000
     }
 }
 

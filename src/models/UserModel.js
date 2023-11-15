@@ -32,6 +32,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  lastEmailSentTime: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null
+  },
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
