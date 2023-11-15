@@ -7,7 +7,7 @@ const process = require('process');
 const basename = path.basename(__filename);
 const { SETTINGS } = require('../../settings')
 const env = SETTINGS.ENV
-const config = require(__dirname + '/../../config/db_mysql.json')[env];
+const config = require(__dirname + '/../../db_mysql.json')[env];
 const db = {};
 
 let sequelize;

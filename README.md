@@ -17,7 +17,7 @@ Opcjonalnie, aby lokalny serwer był widoczny na zewnątrz:
 
 1. Po zrobieniu klona repozytorium zrób kopię pliku `settings.example.js` i nazwij go `settings.js`. Uzupełnij w nim dane konfiguracyjne dla Twojego lokalnego środowiska
 2. Jeśli dodajesz nowe wartości do pliku `settings.js` uzupełnij je również w pliku example, żeby było wiadomo jakie dane w tym pliku są wymagane. Plik `settings.js` jest tylko dla Ciebie i nie będzie wysyłany do zdalnego repo
-3. W katalogu `config` zrób kopię pliku `db_mysql.example.json` i nazwij go `db_mysql.json` - uzupełnij go odpowiednimi danymi dla Twojego środowiska
+3. Zrób kopię pliku `db_mysql.example.json` i nazwij go `db_mysql.json` - uzupełnij go odpowiednimi danymi dla Twojego środowiska
 4. Konieczne jest wygenerowanie pary kluczy `private-key.pem` oraz `public-key.pem` o długości klucza minimum 2048-bit do szyfrowania RS256 dla Refresh-Token. Można to zrobić np [TUTAJ](https://cryptotools.net/rsagen) albo za pomocą skryptu SH (patrz niżej "Generowanie kluczy")
 
 # Baza danych

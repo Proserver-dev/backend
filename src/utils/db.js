@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize')
-const dbConfig = require('../../config/db_mysql.json')
+const dbConfig = require('../../db_mysql.json')
 const { SETTINGS } = require('../../settings')
 
 const env = SETTINGS.ENV
