@@ -440,7 +440,15 @@ const refreshLoginToken = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-    // #swagger.tags = ['Auth']
+    /*
+    #swagger.tags = ['Auth']
+
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        description: 'Jeśli refreshToken i loginToken będą nieważne, to posłuży do wyczyszczenia loginToken w bazie',
+        required: true
+    }
+    */
 
     saveLogFromEndpointRequest(req)
     const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
