@@ -7,6 +7,8 @@ const HEADERS_KEYS = require('../constants/headersKeys')
 const API_RESULTS = require('../constants/apiResults')
 
 async function getAllUsers(req, res) {
+    // #swagger.tags = ['Users']
+
     saveLogFromEndpointRequest(req);
 
     const { limit, offset } = req.query;
@@ -43,7 +45,29 @@ async function getAllUsers(req, res) {
 }
 
 const getMe = async (req, res) => {
+    // #swagger.tags = ['Users']
     saveLogFromEndpointRequest(req)
+
+    /* 
+    #swagger.responses[200] = {
+        description: 'Zwraca obiekt aktualnie zalogowanego użytkownika',
+        schema: {
+            id: 1,
+            isActivated: true,
+            email: "john@doe.dev",
+            userName: "john123",
+            nameLastname: "John Doe",
+            role: {
+                id: 1,
+                name: "User",
+                short: "user"
+            },
+            isLoggedIn: true,
+            updatedAt: "2023-11-15T04:17:54.000Z",
+            createdAt: "2023-11-07T20:16:13.000Z"
+        }
+    } 
+    */
     res.json(req.user);
 }
 

@@ -4,6 +4,8 @@ const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault'
 const API_RESULTS = require('../constants/apiResults')
 
 const getAppConfigurations = async (req, res) => {
+    // #swagger.tags = ['Admin']
+
     saveLogFromEndpointRequest(req)
     try {
         const config = await AppConfiguration.findAll();
@@ -14,6 +16,8 @@ const getAppConfigurations = async (req, res) => {
 }
 
 const editAppConfigurations = async (req, res) => {
+    // #swagger.tags = ['Admin']
+    
     saveLogFromEndpointRequest(req)
     try {
         const fields = req.query;

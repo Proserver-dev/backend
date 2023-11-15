@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./swaggerConfig');
+const swaggerDefinitions = require('./swagger/swaggerDefinitions')
 
 const myCache = require('./src/utils/node-cache')
 const { logToFile } = require('./src/functions');
@@ -26,7 +26,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(upload.any());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinitions));
 app.use('/', router);
 
 app.use((err, req, res, next) => {

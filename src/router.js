@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const swaggerDefinitions = require('./swaggerDefinitions');
 const requireJWT = require('./middleware/requireJWT')
 const requireAdmin = require('./middleware/requireAdmin')
 
@@ -26,12 +25,7 @@ router.post('/auth/login', AuthController.login);
 router.get('/auth/refresh', AuthController.refreshLoginToken);
 router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
 
-/**
- * @swagger
- * /users/me:
- *   get:
- *     ${swaggerDefinitions.userMe.summary}
- */
+
 router.get('/users/me', requireJWT, UserController.getMe);
 
 

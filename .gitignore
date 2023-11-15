@@ -5,3 +5,4 @@ settings.js
 config/db_mysql.json
 private-key.pem
 public-key.pem
+swagger/swaggerDefinitions.json

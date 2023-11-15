@@ -4,6 +4,8 @@ const MessageToAll = require('../models/MessageToAllModel')
 const User = require('../models/UserModel')
 
 async function getAllMessagesToAll(req, res) {
+    // #swagger.tags = ['Admin']
+
     saveLogFromEndpointRequest(req);
 
     try {
