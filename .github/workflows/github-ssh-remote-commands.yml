@@ -1,21 +1,21 @@
-name: SSH Remote Commands
-on:
-  push:
-    branches:
-      - main
+#name: SSH Remote Commands
+#on:
+#  push:
+#    branches:
+#      - main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run SSH script
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            . pull_backend.sh
+#jobs:
+#  deploy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Run SSH script
+#        uses: appleboy/ssh-action@v1.0.0
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#          port: ${{ secrets.SSH_PORT }}
+#          script: |
+#            export NVM_DIR=~/.nvm
+#            source ~/.nvm/nvm.sh
+#            . pull_backend.sh
