@@ -23,6 +23,8 @@ const isShortFieldUnique = async (short, id) => {
 };
 
 const getRoles = async (req, res) => {
+    // #swagger.tags = ['Roles']
+
     saveLogFromEndpointRequest(req)
 
     try {
@@ -43,6 +45,8 @@ const getRoles = async (req, res) => {
 }
 
 const addRole = async (req, res) => {
+    // #swagger.tags = ['Roles']
+
     saveLogFromEndpointRequest(req)
 
     const { name } = req.body;
@@ -69,6 +73,8 @@ const addRole = async (req, res) => {
 }
 
 const editRole = async (req, res) => {
+    // #swagger.tags = ['Roles']
+
     saveLogFromEndpointRequest(req)
 
     const { name } = req.query;
@@ -118,6 +124,8 @@ const editRole = async (req, res) => {
 }
 
 const deleteRole = async (req, res) => {
+    // #swagger.tags = ['Roles']
+    
     saveLogFromEndpointRequest(req)
 
     const role = await Role.findByPk(req.params.id);

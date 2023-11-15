@@ -1,6 +1,11 @@
 const AuthHistory = require('../models/AuthHistory')
+const { saveLogFromEndpointRequest } = require('../functions');
 
 const getAuthHistory = async (req, res) => {
+    // #swagger.tags = ['Admin']
+
+    saveLogFromEndpointRequest(req)
+
     try {
       const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
       const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;

@@ -18,6 +18,10 @@ const generateAuthPin = () => {
 }
 
 const register = async (req, res) => {
+    // #swagger.tags = ['Auth']
+    // #swagger.summary = 'Some summary...'
+    // #swagger.description = 'Some description...'
+
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
@@ -79,6 +83,8 @@ const register = async (req, res) => {
                 res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
             } else {
                 console.log('E-mail wysłany: ' + info.response);
+                const now = Date.now();
+                user.update({ lastEmailSentTime: now })
                 res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
             }
         });
@@ -89,6 +95,9 @@ const register = async (req, res) => {
 }
 
 const activateAccount = async (req, res) => {
+    // #swagger.tags = ['Auth']
+    // #swagger.summary = 'Some summary...'
+
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
@@ -151,6 +160,8 @@ const activateAccount = async (req, res) => {
 }
 
 const resendEmailActivationCode = async (req, res) => {
+    // #swagger.tags = ['Auth']
+
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
@@ -189,10 +200,20 @@ const resendEmailActivationCode = async (req, res) => {
             return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
         }
 
+        const now = Date.now();
+        const lastEmailSentTime = user.lastEmailSentTime || 0;
+        const elapsedTimeSinceLastEmail = now - lastEmailSentTime;
+
+        const time = await getAppSetting(APP_CONFIGURATION_DEFAULT.THROTTLE_TIME_SENDING_EMAILS.key)
+
+        if (elapsedTimeSinceLastEmail < time) {
+            return res.status(API_RESULTS.ERR_EMAIL_SEND_THROTTLE.status_code).json({ error: API_RESULTS.ERR_EMAIL_SEND_THROTTLE.code });
+        }
+
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
         const newAuthPin = generateAuthPin()
-        await user.update({ authPin: newAuthPin });
+        await user.update({ authPin: newAuthPin, lastEmailSentTime: now });
         AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
         const mailOptions = {
@@ -217,6 +238,8 @@ const resendEmailActivationCode = async (req, res) => {
 }
 
 const login = async (req, res) => {
+    // #swagger.tags = ['Auth']
+
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
     try {
@@ -292,12 +315,37 @@ const login = async (req, res) => {
 }
 
 const refreshLoginToken = async (req, res) => {
+    /* 
+    #swagger.tags = ['Auth']
+
+    
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        description: 'Jeśli refreshToken i loginToken będą nieważne, to posłuży do wyczyszczenia loginToken w bazie',
+        required: true
+    }
+
+    #swagger.parameters['Refresh-Token'] = {
+        in: 'header',
+        description: 'Wymagany do odświeżenia loginToken',
+        required: true
+    }
+
+    #swagger.parameters['Device-Token'] = {
+        in: 'header',
+        description: 'Wymagany do weryfikacji usera',
+        required: true
+    }
+
+    */
+
     saveLogFromEndpointRequest(req)
     const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
     const refreshToken = req.header(HEADERS_KEYS.REFRESH_TOKEN);
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
     if (!token) {
+        // #swagger.responses[400] = { error: 'ERR_PROVIDE_LOGIN_TOKEN' }
         return res.status(API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
     }
 
@@ -385,12 +433,15 @@ const refreshLoginToken = async (req, res) => {
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         } else {
             console.error(error);
+            // #swagger.responses[500] = { error: 'ERR_REFRESH_TOKEN' }
             res.status(API_RESULTS.ERR_REFRESH_TOKEN.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN.code });
         }
     } 
 }
 
 const logout = async (req, res) => {
+    // #swagger.tags = ['Auth']
+
     saveLogFromEndpointRequest(req)
     const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 

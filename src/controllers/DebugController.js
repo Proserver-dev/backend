@@ -6,6 +6,8 @@ const API_RESULTS = require('../constants/apiResults')
 const User = require('../models/UserModel');
 
 function getLogs(req, res) {
+    // #swagger.tags = ['Debug']
+
     let fileName = getLogFileName();
 
     if(req.params.fileName != null)
@@ -27,6 +29,8 @@ function getLogs(req, res) {
 }
 
 async function getSocketConnections(req, res) {
+  // #swagger.tags = ['Debug']
+
   saveLogFromEndpointRequest(req)
   const allData = myCache.data;
   const dataArray = [];
@@ -44,6 +48,8 @@ async function getSocketConnections(req, res) {
 }
 
 function getAllApiResultsConstants(req, res) {
+  // #swagger.tags = ['Debug']
+  
   saveLogFromEndpointRequest(req)
   res.json(API_RESULTS)
 }

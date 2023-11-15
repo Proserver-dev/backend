@@ -25,7 +25,10 @@ router.post('/auth/login', AuthController.login);
 router.get('/auth/refresh', AuthController.refreshLoginToken);
 router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
 
+
 router.get('/users/me', requireJWT, UserController.getMe);
+
+
 router.get('/users/:id', UserController.getAllUsers);
 router.get('/users', UserController.getAllUsers);
 
@@ -41,47 +44,5 @@ router.get('/admin/users/get-auth-history', requireJWT, requireAdmin, AuthHistor
 
 router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)
 router.put('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.editAppConfigurations)
-
-router.get('/test', (req, res) => {
-    res.status(200).json([
-        {
-          "description": "Example description 1",
-          "imageUrl": "https://picsum.photos/200/300",
-          "modificationDate": "2023-11-02T12:00:00Z",
-          "orderId": 1,
-          "title": "Example Title 1",
-          "url": "https://example.com/page1"
-        },
-        {
-          "description": "Example description 2",
-          "imageUrl": "https://picsum.photos/250/350",
-          "modificationDate": "2023-11-02T13:30:00Z",
-          "orderId": 2,
-          "title": "Example Title 2",
-          "url": "https://example.com/page2"
-        }
-      ]);
-})
-
-router.get('/test2', requireJWT, (req, res) => {
-  res.status(200).json([
-      {
-        "description": "Example description 1",
-        "imageUrl": "https://picsum.photos/200/300",
-        "modificationDate": "2023-11-02T12:00:00Z",
-        "orderId": 1,
-        "title": "Example Title 1",
-        "url": "https://example.com/page1"
-      },
-      {
-        "description": "Example description 2",
-        "imageUrl": "https://picsum.photos/250/350",
-        "modificationDate": "2023-11-02T13:30:00Z",
-        "orderId": 2,
-        "title": "Example Title 2",
-        "url": "https://example.com/page2"
-      }
-    ]);
-})
 
 module.exports = { router };
