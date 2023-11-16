@@ -7,7 +7,27 @@ const HEADERS_KEYS = require('../constants/headersKeys')
 const API_RESULTS = require('../constants/apiResults')
 
 async function getAllUsers(req, res) {
-    // #swagger.tags = ['Users']
+    /* 
+    #swagger.tags = ['Users']
+
+    #swagger.parameters['limit'] = {
+        in: 'query',
+    }
+
+    #swagger.parameters['offset'] = {
+        in: 'query',
+    }
+
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            count: 1,
+            rows: [
+                { $ref: '#/definitions/User' }
+            ]
+        }
+    } 
+    */
 
     saveLogFromEndpointRequest(req);
 
@@ -17,15 +37,6 @@ async function getAllUsers(req, res) {
     const parsedOffset = offset ? parseInt(offset, 10) : 0;
 
     try {
-        if (req.params.id) {
-            const user = await User.findByPk(req.params.id);
-            if (user) {
-                return res.json(user);
-            } else {
-                return res.json({});
-            }
-        }
-
         const users = await User.findAndCountAll({
             order: [['createdAt', 'DESC']],
             limit: parsedLimit,
@@ -44,31 +55,49 @@ async function getAllUsers(req, res) {
     }
 }
 
-const getMe = async (req, res) => {
-    // #swagger.tags = ['Users']
-    saveLogFromEndpointRequest(req)
-
+const getOneUser = async (req, res) => {
     /* 
+    #swagger.tags = ['Users']
+
     #swagger.responses[200] = {
-        description: 'Zwraca obiekt aktualnie zalogowanego użytkownika',
-        schema: {
-            id: 1,
-            isActivated: true,
-            email: "john@doe.dev",
-            userName: "john123",
-            nameLastname: "John Doe",
-            role: {
-                id: 1,
-                name: "User",
-                short: "user"
-            },
-            isLoggedIn: true,
-            updatedAt: "2023-11-15T04:17:54.000Z",
-            createdAt: "2023-11-07T20:16:13.000Z"
-        }
+        description: 'Wszystko poszło GIT',
+        schema: { $ref: '#/definitions/User' }
     } 
     */
+
+    saveLogFromEndpointRequest(req);
+    try {
+        if (req.params.id) {
+            const user = await User.findByPk(req.params.id);
+            if (user) {
+                return res.json(user);
+            } else {
+                return res.json({});
+            }
+        }
+    } catch (error) {
+        res.status(API_RESULTS.ERR_GET_USERS.status_code).json({ error: API_RESULTS.ERR_GET_USERS.code });
+    }
+}
+
+const getMe = async (req, res) => {
+    /* 
+    #swagger.tags = ['Users']
+    #swagger.description = "Zwraca obiekt aktualnie zalogowanego użytkownika"
+
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { $ref: '#/definitions/User' }
+    } 
+    */
+
+    saveLogFromEndpointRequest(req)
     res.json(req.user);
 }
 
-module.exports = { getAllUsers, getMe }
+module.exports = { getAllUsers, getOneUser, getMe }

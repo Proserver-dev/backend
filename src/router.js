@@ -29,7 +29,7 @@ router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konie
 router.get('/users/me', requireJWT, UserController.getMe);
 
 
-router.get('/users/:id', UserController.getAllUsers);
+router.get('/users/:id', UserController.getOneUser);
 router.get('/users', UserController.getAllUsers);
 
 router.get('/roles/:id', requireJWT, requireAdmin, RoleController.getRoles);

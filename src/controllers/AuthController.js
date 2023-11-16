@@ -18,9 +18,85 @@ const generateAuthPin = () => {
 }
 
 const register = async (req, res) => {
-    // #swagger.tags = ['Auth']
-    // #swagger.summary = 'Some summary...'
-    // #swagger.description = 'Some description...'
+    /*
+    #swagger.tags = ['Auth']
+    #swagger.description = 'Endpoint do rejestracji'
+
+    #swagger.parameters['Device-Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            email: "john@doe.com",
+            password: "secret",
+            userName: "johndoe123",
+            nameLastname: "John Doe"
+        }
+    }
+
+    #swagger.responses[423] = { 
+        description: "Rejestracja wyłączona",
+        schema: {
+            error: 'ERR_REGISTRATION_DISABLED'
+        }  
+    }
+
+    #swagger.responses[400] = { 
+        description: "Musisz przekazać wszystkie poprawne dane",
+        schema: {
+            error: ['ERR_PROVIDE_EMAIL_FIELD', 'ERR_PROVIDE_PASSWORD_FIELD']
+        }  
+    }
+
+    #swagger.responses[403] = { 
+        description: "Brakuje Device-Token w nagłówku",
+        schema: {
+            error: ['ERR_PROVIDE_DEVICE_TOKEN']
+        }  
+    }
+
+    #swagger.responses[422] = { 
+        description: "Nieprawidłowe dane wejściowe",
+        schema: {
+            error: ['ERR_INVALID_EMAIL_ADDRESS']
+        }  
+    }
+
+    #swagger.responses[409] = { 
+        description: "Konflikt, taki user już istnieje",
+        schema: {
+            error: ['ERR_USER_ALREADY_EXISTS']
+        }  
+    }
+
+    #swagger.responses[503] = { 
+        description: "Nie udało się wysłać maila z powodu niedostępności usługi pocztowej, ale konto się utworzyło",
+        schema: {
+            error: 'ERR_SEND_EMAIL'
+        }  
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_REGISTER_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            success: 'SUCCESS_USER_REGISTERED',
+            user: { $ref: '#/definitions/User' } 
+        }  
+    }
+
+
+    */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
@@ -58,13 +134,9 @@ const register = async (req, res) => {
 
         let default_role = await Role.findOne({ where: { name: DEFAULT_ROLE } })
 
-        if(default_role) {
-            default_role = default_role.id
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10);
         const registerPin = generateAuthPin();
-        const user = await User.create({ email, password: hashedPassword, userName, nameLastname, deviceToken, roleId: default_role, authPin: registerPin });
+        const user = await User.create({ email, password: hashedPassword, userName, nameLastname, deviceToken, roleId: default_role?.id, authPin: registerPin });
 
         AuthHistory.create({ userId: user.id, type: 'register', content: 'Utworzenie konta przy rejestracji' })
 
@@ -73,7 +145,7 @@ const register = async (req, res) => {
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'ProServer - Kod aktywacyjny',
+            subject: 'DriveClub - Kod aktywacyjny',
             html: `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`,
         };
 
@@ -85,6 +157,7 @@ const register = async (req, res) => {
                 console.log('E-mail wysłany: ' + info.response);
                 const now = Date.now();
                 user.update({ lastEmailSentTime: now })
+                user.roleId = default_role
                 res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
             }
         });
@@ -321,21 +394,20 @@ const refreshLoginToken = async (req, res) => {
     
     #swagger.parameters['Token'] = {
         in: 'header',
-        description: 'Jeśli refreshToken i loginToken będą nieważne, to posłuży do wyczyszczenia loginToken w bazie',
         required: true
     }
 
     #swagger.parameters['Refresh-Token'] = {
         in: 'header',
-        description: 'Wymagany do odświeżenia loginToken',
         required: true
     }
 
     #swagger.parameters['Device-Token'] = {
         in: 'header',
-        description: 'Wymagany do weryfikacji usera',
         required: true
     }
+
+    #swagger.responses[500] = { error: 'ERR_REFRESH_TOKEN' }
 
     */
 
@@ -433,7 +505,6 @@ const refreshLoginToken = async (req, res) => {
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         } else {
             console.error(error);
-            // #swagger.responses[500] = { error: 'ERR_REFRESH_TOKEN' }
             res.status(API_RESULTS.ERR_REFRESH_TOKEN.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN.code });
         }
     } 
@@ -445,9 +516,44 @@ const logout = async (req, res) => {
 
     #swagger.parameters['Token'] = {
         in: 'header',
-        description: 'Jeśli refreshToken i loginToken będą nieważne, to posłuży do wyczyszczenia loginToken w bazie',
         required: true
     }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_LOGOUT_ERROR'
+        }  
+    }
+
+    #swagger.responses[400] = { 
+        description: "Musisz dostarczyć Token w nagłówku",
+        schema: {
+            error: 'ERR_PROVIDE_LOGIN_TOKEN'
+        }  
+    }
+
+    #swagger.responses[401] = { 
+        description: "Token logowania wygasł lub jest niepoprawny",
+        schema: {
+            error: ['ERR_TOKEN_EXPIRED', 'ERR_VERIFY_TOKEN']
+        }  
+    }
+
+    #swagger.responses[404] = { 
+        description: "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+        schema: {
+            error: 'ERR_USER_FROM_TOKEN_NOT_EXISTS'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            success: 'SUCCESS_LOGOUT'
+        }  
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
@@ -481,7 +587,7 @@ const logout = async (req, res) => {
         // bez await, bo odpowiedź API nie musi czekać na aktualizację w bazie danych
         user.update({ loginToken: null });
         AuthHistory.create({ userId: user.id, type: 'logout', content: 'Pomyślnie wylogowano' })
-        res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
+        res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code });
 
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
@@ -490,11 +596,14 @@ const logout = async (req, res) => {
             if(user) {
                 user.update({ loginToken: null });
                 AuthHistory.create({ userId: user.id, type: 'logout', content: 'Pomyślnie wylogowano' })
-                res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code, user });
+                res.status(API_RESULTS.SUCCESS_LOGOUT.status_code).json({ success: API_RESULTS.SUCCESS_LOGOUT.code });
             } else {
                 // tutaj nie jesteśmy w stanie wyczyścić loginToken usera, bo nie wiemy do kogo należał ten wygaśnięty token i nie znaleziono go w bazie
                 return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });   
             } 
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            console.error(error);
+            res.status(API_RESULTS.ERR_VERIFY_TOKEN.status_code).json({ error: API_RESULTS.ERR_VERIFY_TOKEN.code });
         } else {
             console.error(error);
             res.status(API_RESULTS.ERR_LOGOUT_ERROR.status_code).json({ error: API_RESULTS.ERR_LOGOUT_ERROR.code });

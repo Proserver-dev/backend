@@ -1,6 +1,5 @@
 {
   "swagger": "2.0",
-  "openapi": "2.0",
   "info": {
     "title": "Ride Club",
     "description": "Najlepsza apka dla kierowców",
@@ -11,11 +10,19 @@
       "url": "http://rideclub.pl"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000/"
-    }
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
   ],
+  "securityDefinitions": {
+    "apiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-API-KEY",
+      "description": "Some description..."
+    }
+  },
   "paths": {
     "/": {
       "get": {
@@ -95,34 +102,185 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Some summary...",
-        "description": "Some description...",
+        "description": "Endpoint do rejestracji",
         "parameters": [
+          {
+            "name": "Device-Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "john@doe.com"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "secret"
                 },
                 "userName": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "johndoe123"
                 },
                 "nameLastname": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "John Doe"
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_USER_REGISTERED"
+                },
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz przekazać wszystkie poprawne dane",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_PROVIDE_EMAIL_FIELD",
+                    "ERR_PROVIDE_PASSWORD_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Brakuje Device-Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_PROVIDE_DEVICE_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "Konflikt, taki user już istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_ALREADY_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "422": {
+            "description": "Nieprawidłowe dane wejściowe",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_INVALID_EMAIL_ADDRESS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "423": {
+            "description": "Rejestracja wyłączona",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_REGISTRATION_DISABLED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_REGISTER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "503": {
+            "description": "Nie udało się wysłać maila z powodu niedostępności usługi pocztowej, ale konto się utworzyło",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_SEND_EMAIL"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -225,21 +383,18 @@
           {
             "name": "Token",
             "in": "header",
-            "description": "Jeśli refreshToken i loginToken będą nieważne, to posłuży do wyczyszczenia loginToken w bazie",
             "required": true,
             "type": "string"
           },
           {
             "name": "Refresh-Token",
             "in": "header",
-            "description": "Wymagany do odświeżenia loginToken",
             "required": true,
             "type": "string"
           },
           {
             "name": "Device-Token",
             "in": "header",
-            "description": "Wymagany do weryfikacji usera",
             "required": true,
             "type": "string"
           }
@@ -265,9 +420,95 @@
           "Auth"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_LOGOUT"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGOUT_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -277,66 +518,20 @@
         "tags": [
           "Users"
         ],
-        "description": "",
+        "description": "Zwraca obiekt aktualnie zalogowanego użytkownika",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Zwraca obiekt aktualnie zalogowanego użytkownika",
+            "description": "Wszystko poszło GIT",
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number",
-                  "example": 1
-                },
-                "isActivated": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "email": {
-                  "type": "string",
-                  "example": "john@doe.dev"
-                },
-                "userName": {
-                  "type": "string",
-                  "example": "john123"
-                },
-                "nameLastname": {
-                  "type": "string",
-                  "example": "John Doe"
-                },
-                "role": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "number",
-                      "example": 1
-                    },
-                    "name": {
-                      "type": "string",
-                      "example": "User"
-                    },
-                    "short": {
-                      "type": "string",
-                      "example": "user"
-                    }
-                  }
-                },
-                "isLoggedIn": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "example": "2023-11-15T04:17:54.000Z"
-                },
-                "createdAt": {
-                  "type": "string",
-                  "example": "2023-11-07T20:16:13.000Z"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
+              "$ref": "#/definitions/User"
             }
           }
         }
@@ -354,21 +549,14 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
         }
       }
@@ -389,11 +577,39 @@
             "name": "offset",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "schema",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "number",
+                  "example": 1
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -585,13 +801,117 @@
       }
     }
   },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "isActivated": {
+          "type": "boolean",
+          "example": true
+        },
+        "email": {
+          "type": "string",
+          "example": "john@doe.dev"
+        },
+        "userName": {
+          "type": "string",
+          "example": "john123"
+        },
+        "nameLastname": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "role": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "example": 2
+            },
+            "name": {
+              "type": "string",
+              "example": "User"
+            },
+            "short": {
+              "type": "string",
+              "example": "user"
+            }
+          }
+        },
+        "isLoggedIn": {
+          "type": "boolean",
+          "example": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2023-11-15T04:17:54.000Z"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2023-11-07T20:16:13.000Z"
+        }
+      }
+    }
+  },
   "components": {
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-API-KEY",
-        "description": "Some description..."
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "isActivated": {
+            "type": "boolean",
+            "example": true
+          },
+          "email": {
+            "type": "string",
+            "example": "john@doe.dev"
+          },
+          "userName": {
+            "type": "string",
+            "example": "john123"
+          },
+          "nameLastname": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 2
+              },
+              "name": {
+                "type": "string",
+                "example": "User"
+              },
+              "short": {
+                "type": "string",
+                "example": "user"
+              }
+            }
+          },
+          "isLoggedIn": {
+            "type": "boolean",
+            "example": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2023-11-15T04:17:54.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2023-11-07T20:16:13.000Z"
+          }
+        }
       }
     }
   }

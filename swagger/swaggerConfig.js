@@ -9,7 +9,6 @@ module.exports = {
       url: "http://rideclub.pl",
     },
   },
-  openapi: '2.0',
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
@@ -17,5 +16,22 @@ module.exports = {
       name: 'X-API-KEY',
       description: 'Some description...'
     }
+  },
+  definitions: {
+    User: {
+      id: 1,
+      isActivated: true,
+      email: "john@doe.dev",
+      userName: "john123",
+      nameLastname: "John Doe",
+      role: {
+          id: 2,
+          name: "User",
+          short: "user"
+      },
+      isLoggedIn: true,
+      updatedAt: "2023-11-15T04:17:54.000Z",
+      createdAt: "2023-11-07T20:16:13.000Z"
+    },
   }
 };

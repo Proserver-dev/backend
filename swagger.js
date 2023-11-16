@@ -5,7 +5,15 @@ const SwaggerOptions = require('./swagger/swaggerConfig')
 
 const outputFile = './swagger/swaggerDefinitions.json';
 const endpointsFiles = ['./src/router.js'];
-swaggerAutogen(outputFile, endpointsFiles, SwaggerOptions);
+
+const doc = {
+    ...SwaggerOptions,
+    components: {
+      schemas: SwaggerOptions.definitions,
+    },
+};
+
+swaggerAutogen(outputFile, endpointsFiles, doc);
 
 const swaggerDefinitions = require(outputFile);
 
