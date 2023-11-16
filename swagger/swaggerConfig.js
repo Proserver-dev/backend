@@ -12,6 +12,7 @@ module.exports = {
     },
   },
   host: SETTINGS.SWAGGER_HOST,
+  schemes: ['https'],
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
