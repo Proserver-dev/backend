@@ -20,6 +20,7 @@ const generateAuthPin = () => {
 const register = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
+    #swagger.summary = 'Endpoint do rejestracji'
     #swagger.description = 'Endpoint do rejestracji'
 
     #swagger.parameters['Device-Token'] = {
@@ -168,8 +169,94 @@ const register = async (req, res) => {
 }
 
 const activateAccount = async (req, res) => {
-    // #swagger.tags = ['Auth']
-    // #swagger.summary = 'Some summary...'
+    /*
+    #swagger.tags = ['Auth']
+    #swagger.summary = 'Endpoint do aktywacji konta'
+    #swagger.description = 'Endpoint do aktywacji konta'
+
+    #swagger.parameters['Device-Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            authPin: "123456",
+            email: "john@doe.com"
+        }
+    }
+
+
+    #swagger.responses[400] = { 
+        description: "Musisz przekazać wszystkie poprawne dane",
+        schema: {
+            error: ['ERR_PROVIDE_EMAIL_FIELD']
+        }  
+    }
+
+    #swagger.responses[401] = { 
+        description: "Kod do aktywacji konta jest niepoprawny",
+        schema: {
+            error: ['ERR_WRONG_AUTH_PIN']
+        }  
+    }
+
+    #swagger.responses[403] = { 
+        description: "Brakuje Device-Token w nagłówku lub jest nieprawidłowy",
+        schema: {
+            error: ['ERR_PROVIDE_DEVICE_TOKEN', 'ERR_WRONG_DEVICE_TOKEN']
+        }  
+    }
+
+    #swagger.responses[404] = { 
+        description: "Taki email nie istnieje w bazie",
+        schema: {
+            error: ['ERR_USER_NOT_EXISTS']
+        }  
+    }
+
+    #swagger.responses[409] = { 
+        description: "Konto już jest aktywowane",
+        schema: {
+            error: ['ERR_USER_IS_ALREADY_ACTIVATED']
+        }  
+    }
+
+    #swagger.responses[422] = { 
+        description: "Nieprawidłowe dane wejściowe",
+        schema: {
+            error: ['ERR_INVALID_EMAIL_ADDRESS']
+        }  
+    }
+
+    #swagger.responses[423] = { 
+        description: "Logowanie wyłączone",
+        schema: {
+            error: 'ERR_LOGIN_DISABLED'
+        }  
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_ACTIVATE_ACCOUNT_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            token: 'string',
+            refreshToken: 'string',
+            user: { $ref: '#/definitions/User' } 
+        }  
+    }
+
+
+
+    */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);

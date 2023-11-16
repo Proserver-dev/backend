@@ -10,10 +10,10 @@
       "url": "http://rideclub.pl"
     }
   },
-  "host": "localhost:3005",
+  "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -102,6 +102,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Endpoint do rejestracji",
         "description": "Endpoint do rejestracji",
         "parameters": [
           {
@@ -290,20 +291,29 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Some summary...",
-        "description": "",
+        "summary": "Endpoint do aktywacji konta",
+        "description": "Endpoint do aktywacji konta",
         "parameters": [
+          {
+            "name": "Device-Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "authPin": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "123456"
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "john@doe.com"
                 }
               }
             }
@@ -311,7 +321,177 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "refreshToken": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz przekazać wszystkie poprawne dane",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_PROVIDE_EMAIL_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Kod do aktywacji konta jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_WRONG_AUTH_PIN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Brakuje Device-Token w nagłówku lub jest nieprawidłowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_PROVIDE_DEVICE_TOKEN",
+                    "ERR_WRONG_DEVICE_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Taki email nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "Konto już jest aktywowane",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_IS_ALREADY_ACTIVATED"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "422": {
+            "description": "Nieprawidłowe dane wejściowe",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_INVALID_EMAIL_ADDRESS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "423": {
+            "description": "Logowanie wyłączone",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGIN_DISABLED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ACTIVATE_ACCOUNT_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
