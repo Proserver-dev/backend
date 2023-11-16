@@ -1,3 +1,5 @@
+const { SETTINGS } = require("../settings");
+
 module.exports = {
   info: {
     title: 'Ride Club',
@@ -9,6 +11,7 @@ module.exports = {
       url: "http://rideclub.pl",
     },
   },
+  host: SETTINGS.SWAGGER_HOST,
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',

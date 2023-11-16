@@ -32,7 +32,8 @@ const SETTINGS = {
             'USER': 'user@domain.com',
             'PASS': 'secret'
         }
-    }
+    },
+    'SWAGGER_HOST': 'localhost:3000'
 }
 
 module.exports = { SETTINGS }
