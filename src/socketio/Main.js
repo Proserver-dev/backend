@@ -26,7 +26,7 @@ async function mainSocket(io, socket) {
 
     if(!token) {
         logToFile(`Socket.io - próba połączenia, ale musisz przekazać Token w nagłówku`)
-        socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Musisz przekazać Token w nagłówku' });
+        socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
         return socket.disconnect(true);
     }
 
@@ -34,7 +34,7 @@ async function mainSocket(io, socket) {
         const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET, { algorithms: SETTINGS.LOGIN_TOKEN.ALGORITHM });
         if (!decodedToken || !decodedToken.userId) {
             logToFile('Socket.io - Błąd uwierzytelniania - Niepoprawny token JWT');
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Niepoprawny token JWT' });
+            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_VERIFY_TOKEN.code });
             return socket.disconnect(true);
         }
 
@@ -65,10 +65,10 @@ async function mainSocket(io, socket) {
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             logToFile('Socket.io - Token jest nieaktualny');
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Token jest nieaktualny, nie udało się połączyć z serwerem' });
+            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
         } else {
             logToFile('Socket.io - Błąd weryfikacji tokenu JWT - ' + error.message);
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Błąd weryfikacji tokenu JWT, nie udało się połączyć z serwerem' });
+            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_VERIFY_TOKEN.code });
         }
         socket.disconnect(true);
     }
