@@ -37,5 +37,19 @@ module.exports = {
       updatedAt: "2023-11-15T04:17:54.000Z",
       createdAt: "2023-11-07T20:16:13.000Z"
     },
+    PrivateMessage: {
+      id: 1,
+      sourceUserId: 5,
+      targetUserId: 8,
+      message: 'Example message',
+      isRead: false,
+      updatedAt: '2023-11-15T04:17:54.000Z',
+      createdAt: '2023-11-15T04:17:54.000Z'
+    },
+    Role: {
+      id: 2,
+      name: "User",
+      short: "user"
+    }
   }
 };

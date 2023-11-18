@@ -40,6 +40,8 @@ router.delete('/roles/:id', requireJWT, requireAdmin, RoleController.deleteRole)
 
 router.get('/messages-to-all', requireJWT, requireAdmin, MessageController.getAllMessagesToAll)
 
+router.get('/private-messages/:userId', requireJWT, MessageController.getPrivateMessages)
+
 router.get('/admin/users/get-auth-history', requireJWT, requireAdmin, AuthHistoryController.getAuthHistory)
 
 router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)

@@ -23,7 +23,11 @@ const isShortFieldUnique = async (short, id) => {
 };
 
 const getRoles = async (req, res) => {
-    // #swagger.tags = ['Roles']
+    /*
+    #swagger.tags = ['Roles']
+    #swagger.summary = 'tylko dla admina'
+
+    */
 
     saveLogFromEndpointRequest(req)
 
@@ -45,7 +49,11 @@ const getRoles = async (req, res) => {
 }
 
 const addRole = async (req, res) => {
-    // #swagger.tags = ['Roles']
+    /*
+    #swagger.tags = ['Roles']
+    #swagger.summary = 'tylko dla admina'
+
+    */
 
     saveLogFromEndpointRequest(req)
 
@@ -73,7 +81,11 @@ const addRole = async (req, res) => {
 }
 
 const editRole = async (req, res) => {
-    // #swagger.tags = ['Roles']
+    /*
+    #swagger.tags = ['Roles']
+    #swagger.summary = 'tylko dla admina'
+
+    */
 
     saveLogFromEndpointRequest(req)
 
@@ -124,7 +136,11 @@ const editRole = async (req, res) => {
 }
 
 const deleteRole = async (req, res) => {
-    // #swagger.tags = ['Roles']
+    /*
+    #swagger.tags = ['Roles']
+    #swagger.summary = 'tylko dla admina'
+
+    */
     
     saveLogFromEndpointRequest(req)
 

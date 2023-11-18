@@ -40,6 +40,10 @@ const User = sequelize.define('User', {
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    references: {
+      model: 'roles',
+      key: 'id'
+    }
   },
   isActivated: {
     type: DataTypes.BOOLEAN,

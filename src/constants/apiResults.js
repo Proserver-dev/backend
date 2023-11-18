@@ -17,6 +17,7 @@ const API_RESULTS = {
     ERR_GET_AUTH_HISTORY: { description: 'Wystąpił problem z pobraniem auth history', code: 'ERR_GET_AUTH_HISTORY', status_code: 500 },
     ERR_GET_APP_CONFIG: { description: 'Wystąpił problem z pobraniem konfiguracji aplikacji', code: 'ERR_GET_APP_CONFIG', status_code: 500 },
     ERR_EDIT_APP_CONFIG: { description: 'Wystąpił problem z edycją konfiguracji aplikacji', code: 'ERR_EDIT_APP_CONFIG', status_code: 500 },
+    ERR_INTERNAL_SERVER_ERROR: { description: 'Internal Server Error', code: 'ERR_INTERNAL_SERVER_ERROR', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { description: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { description: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },

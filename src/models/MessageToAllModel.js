@@ -6,6 +6,10 @@ const User = require('./UserModel')
     sendBy: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     message: {
       type: DataTypes.TEXT,

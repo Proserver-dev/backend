@@ -5,6 +5,7 @@ const { logToFile } = require('../../src/functions')
 const { disconnect } = require('./Disconnect')
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const { messageToAll } = require('./messageToAll');
+const { privateMessage, privateMessageWritte } = require('./privateMessage')
 const { getSocketIdByUserId } = require('../utils/socketio');
 const HEADERS_KEYS = require('../constants/headersKeys');
 const getAppSetting = require('../utils/getAppSetting')
@@ -59,6 +60,8 @@ async function mainSocket(io, socket) {
         // socket.join("admins");
 
         socket.on(SOCKET_EVENTS.SEND_MESSAGE_TO_ALL, (data) => { messageToAll(io, socket, data, currentUserId) })
+        socket.on(SOCKET_EVENTS.SEND_PRIVATE_MESSAGE, (data) => { privateMessage(io, socket, data, currentUserId) })
+        socket.on(SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_WRITE, (data) => { privateMessageWritte(io, socket, data, currentUserId) })
 
         socket.on('disconnect', () => { disconnect(socket, currentUserId, myCache) });
 
