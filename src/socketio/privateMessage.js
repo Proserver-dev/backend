@@ -18,18 +18,21 @@ async function privateMessage(io, socket, data, currentUserId) {
     if(target_socket) {
         target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, { sourceUserId: currentUserId, message: data.message });
     }
-    // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, data);
 }
 
-async function privateMessageWritte(io, socket, data, currentUserId) {
+async function privateMessageWrite(io, socket, data, currentUserId) {
 
     // tutaj dodać warunki, że musi być targetUserId i że nie może być taki sam, jak sourceUserId(on będzie z tokena)
     // dodać warunek, że targetUserId musi istnieć
 
     logToFile(`Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_WRITE} | target: ${data.targetUserId} | source: ${currentUserId}`);
 
-    io.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE_WRITE, { sourceUserId: currentUserId, isWritting: true });
-    // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, data);
+    const target_socket = getSocketIdByUserId(data.targetUserId)
+
+    // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
+    if(target_socket) {
+        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE_WRITE, { sourceUserId: currentUserId, isWritting: true });
+    }
 }
 
-module.exports = { privateMessage, privateMessageWritte }
+module.exports = { privateMessage, privateMessageWrite }
