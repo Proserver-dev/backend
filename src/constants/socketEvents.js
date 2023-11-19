@@ -3,6 +3,10 @@ const SOCKET_EVENTS = {
 
     SEND_PRIVATE_MESSAGE: 'privateMessage',
     RECEIVE_PRIVATE_MESSAGE: 'privateMessage',
+
+    SEND_PRIVATE_MESSAGE_CREATED_VIA_API: 'privateMessageCreatedViaAPI',
+    RECEIVE_PRIVATE_MESSAGE_CREATED_VIA_API: 'privateMessageCreatedViaAPI',
+
     SEND_PRIVATE_MESSAGE_WRITE: 'privateMessageWrite', // kiedy zaczynasz coś pisać
     RECEIVE_PRIVATE_MESSAGE_WRITE: 'privateMessageWrite', // kiedy rozmówca zaczyna coś pisać
 

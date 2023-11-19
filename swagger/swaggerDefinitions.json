@@ -13,7 +13,7 @@
   "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -831,7 +831,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "$ref": "#/definitions/Role"
+            }
           },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
@@ -892,6 +895,21 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_GET_ROLES"
                 }
               },
               "xml": {
@@ -921,6 +939,24 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_EDIT_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
             "schema": {
@@ -980,6 +1016,21 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_EDIT_ROLE"
                 }
               },
               "xml": {
@@ -1004,6 +1055,24 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_DELETE_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
             "schema": {
@@ -1063,6 +1132,21 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_DELETE_ROLE"
                 }
               },
               "xml": {
@@ -1082,7 +1166,16 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Role"
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
@@ -1143,6 +1236,21 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_GET_ROLES"
                 }
               },
               "xml": {
@@ -1173,6 +1281,24 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_CREATED_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
             "schema": {
@@ -1238,6 +1364,21 @@
                 "name": "main"
               }
             }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_CREATE_ROLE"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -1245,7 +1386,7 @@
     "/messages-to-all": {
       "get": {
         "tags": [
-          "Messages"
+          "Admin"
         ],
         "summary": "tylko dla admina",
         "description": "",
@@ -1337,7 +1478,7 @@
     "/private-messages/{userId}": {
       "get": {
         "tags": [
-          "Messages"
+          "Private Messages"
         ],
         "description": "",
         "parameters": [
@@ -1424,13 +1565,164 @@
             }
           },
           "404": {
+            "description": "Użytkownik nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
+                    "ERR_USER_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
             "description": "Błąd serwerowy",
             "schema": {
               "type": "object",
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "ERR_USER_NOT_EXISTS"
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Private Messages"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID usera, z którym prowadzimy rozmowę"
+          },
+          {
+            "name": "Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Testowa wiadomość"
+                }
+              }
+            }
+          },
+          {
+            "name": "attachments",
+            "in": "formData",
+            "type": "array",
+            "items": {
+              "type": "file"
+            },
+            "description": "Tablica plików, załączniki do wiadomości"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "$ref": "#/definitions/PrivateMessage"
+            }
+          },
+          "400": {
+            "description": "Jeden z przesyłanych plików posiada niedozwolone rozszerzenie albo nie dostarczono wszystkich danych",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_INVALID_FILE_TYPE",
+                    "ERR_PROVIDE_MESSAGE_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
+                    "ERR_USER_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "413": {
+            "description": "Jeden z przesyłanych plików przekracza dozwolony rozmiar 5MB",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_FILE_SIZE_EXCEEDS_LIMIT"
                 }
               },
               "xml": {
@@ -1799,6 +2091,25 @@
         "createdAt": {
           "type": "string",
           "example": "2023-11-15T04:17:54.000Z"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PrivateMessageAttachment"
+          }
+        }
+      }
+    },
+    "PrivateMessageAttachment": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "example": "https://backend.proserver.dev/uploads/messages/365d5d73-7be9-40cb-8497-e5baecb4fb28.jpg"
+        },
+        "type": {
+          "type": "string",
+          "example": "image"
         }
       }
     },
@@ -1906,6 +2217,25 @@
           "createdAt": {
             "type": "string",
             "example": "2023-11-15T04:17:54.000Z"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PrivateMessageAttachment"
+            }
+          }
+        }
+      },
+      "PrivateMessageAttachment": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://backend.proserver.dev/uploads/messages/365d5d73-7be9-40cb-8497-e5baecb4fb28.jpg"
+          },
+          "type": {
+            "type": "string",
+            "example": "image"
           }
         }
       },

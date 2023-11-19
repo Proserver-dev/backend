@@ -4,10 +4,13 @@ const { saveLogFromEndpointRequest } = require('../functions');
 const MessageToAll = require('../models/MessageToAllModel')
 const User = require('../models/UserModel')
 const PrivateMessage = require('../models/PrivateMessageModel')
+const PrivateMessageAttachment = require('../models/PrivateMessageAttachmentModel');
+const UPLOAD_PATHS = require('../constants/uploadPaths');
+const { SETTINGS } = require('../../settings')
 
 async function getAllMessagesToAll(req, res) {
     /*
-    #swagger.tags = ['Messages']
+    #swagger.tags = ['Admin']
     #swagger.summary = 'tylko dla admina'
 
     */
@@ -43,7 +46,7 @@ async function getAllMessagesToAll(req, res) {
 
 async function getPrivateMessages(req, res) {
     /*
-    #swagger.tags = ['Messages']
+    #swagger.tags = ['Private Messages']
 
     #swagger.parameters['userId'] = {
         in: 'path',
@@ -74,9 +77,9 @@ async function getPrivateMessages(req, res) {
     }
 
     #swagger.responses[404] = { 
-        description: "Błąd serwerowy",
+        description: "Użytkownik nie istnieje",
         schema: {
-            error: 'ERR_USER_NOT_EXISTS'
+            error: ['ERR_USER_FROM_TOKEN_NOT_EXISTS', 'ERR_USER_NOT_EXISTS']
         }  
     }
 
@@ -129,8 +132,17 @@ async function getPrivateMessages(req, res) {
               }
             );
         }
+
+        const messagesWithFullData = await Promise.all(messages.rows.map(async (message) => {
+            return await message.getFullData(); // dodaje attachments
+        }));
+
+        const result = {
+            count: messages.count,
+            rows: messagesWithFullData,
+        }
     
-        res.json(messages);
+        res.json(result);
     } catch (error) {
         console.error(error);
         // TODO: ten błąd chyba można zrobić bardziej generyczny, we wszystkich endpointach w takim przypadku błędu serwerowego
@@ -138,4 +150,114 @@ async function getPrivateMessages(req, res) {
     }
 }
 
-module.exports = { getAllMessagesToAll, getPrivateMessages }
+async function addPrivateMessage(req, res) {
+    /*
+    #swagger.tags = ['Private Messages']
+
+    #swagger.parameters['userId'] = {
+        in: 'path',
+        required: true,
+        description: "ID usera, z którym prowadzimy rozmowę"
+    }
+
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            message: "Testowa wiadomość",
+        }
+    }
+
+    #swagger.parameters['attachments'] = {
+        in: 'formData',
+        type: 'array',
+        items: {
+            type: 'file'
+        },
+        description: 'Tablica plików, załączniki do wiadomości',
+    }
+
+    #swagger.responses[400] = {
+        description: 'Jeden z przesyłanych plików posiada niedozwolone rozszerzenie albo nie dostarczono wszystkich danych',
+        schema: {
+            error: ['ERR_INVALID_FILE_TYPE', 'ERR_PROVIDE_MESSAGE_FIELD']
+        } 
+    }
+
+    #swagger.responses[413] = {
+        description: 'Jeden z przesyłanych plików przekracza dozwolony rozmiar 5MB',
+        schema: {
+            error: 'ERR_FILE_SIZE_EXCEEDS_LIMIT'
+        } 
+    }
+
+    #swagger.responses[404] = {
+        description: 'User nie istnieje',
+        schema: {
+            error: ['ERR_USER_FROM_TOKEN_NOT_EXISTS', 'ERR_USER_NOT_EXISTS']
+        } 
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_INTERNAL_SERVER_ERROR'
+        }  
+    }
+
+    #swagger.responses[201] = {
+        description: 'Wszystko poszło GIT',
+        schema: { $ref: '#/definitions/PrivateMessage' }
+    }
+
+    */
+
+    saveLogFromEndpointRequest(req);
+    try {
+        const message = req.body.message;
+        const sourceUserId = req.user.id
+        const targetUserId = req.params.userId
+
+        const targetUser = await User.findByPk(targetUserId)
+        if(!targetUser) {
+            return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
+        }
+
+        if(!message) {
+            return res.status(API_RESULTS.ERR_PROVIDE_MESSAGE_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_MESSAGE_FIELD.code });
+        }
+    
+        const newMessage = await PrivateMessage.create({
+          sourceUserId,
+          targetUserId,
+          message,
+        });
+    
+        // Przetwórz załączniki, jeśli istnieją
+        if (req.files && req.files.length > 0) {
+          const attachments = req.files.map((file) => ({
+            privateMessageId: newMessage.id,
+            url: SETTINGS.HOST+"/"+UPLOAD_PATHS.PRIVATE_MESSAGES_ATTACHMENTS+"/"+file.filename,
+            type: 'image', // na razie statycznie, bo przyjmujemy tylko grafiki
+          }));
+    
+          // Stwórz rekordy załączników w bazie danych
+          await PrivateMessageAttachment.bulkCreate(attachments);
+        }
+    
+        // Pobierz pełne dane wiadomości z użyciem metody getFullData
+        const fullMessageData = await newMessage.getFullData();
+    
+        res.status(201).json(fullMessageData);
+    } catch (error) {
+        console.error(error);
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
+    }
+}
+
+module.exports = { getAllMessagesToAll, getPrivateMessages, addPrivateMessage }

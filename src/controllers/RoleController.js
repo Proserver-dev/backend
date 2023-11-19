@@ -27,10 +27,46 @@ const getRoles = async (req, res) => {
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: [ { $ref: '#/definitions/Role' } ]
+    }
+
+    #swagger.responses[500] = {
+        description: 'Błąd serwerowy',
+        schema: { error: 'ERR_GET_ROLES' }
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
 
+    try {
+        const roles = await Role.findAll();
+        res.json(roles);
+    } catch (error) {
+        res.status(API_RESULTS.ERR_GET_ROLES.status_code).json({ error: API_RESULTS.ERR_GET_ROLES.code });
+    } 
+}
+
+const getOneRole = async (req, res) => {
+    /*
+    #swagger.tags = ['Roles']
+    #swagger.summary = 'tylko dla admina'
+
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { $ref: '#/definitions/Role' }
+    }
+
+    #swagger.responses[500] = {
+        description: 'Błąd serwerowy',
+        schema: { error: 'ERR_GET_ROLES' }
+    }
+
+    */
+
+    saveLogFromEndpointRequest(req)
     try {
         if(req.params.id) {
             const role = await Role.findByPk(req.params.id)
@@ -40,9 +76,6 @@ const getRoles = async (req, res) => {
                 return res.json({})
             }
         }
-
-        const roles = await Role.findAll();
-        res.json(roles);
     } catch (error) {
         res.status(API_RESULTS.ERR_GET_ROLES.status_code).json({ error: API_RESULTS.ERR_GET_ROLES.code });
     } 
@@ -53,11 +86,24 @@ const addRole = async (req, res) => {
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.responses[201] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            success: 'SUCCESS_CREATED_ROLE',
+            role: { $ref: '#/definitions/Role' }
+        }
+    }
+
+    #swagger.responses[500] = {
+        description: 'Błąd serwerowy',
+        schema: { error: 'ERR_CREATE_ROLE' }
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
 
-    const { name } = req.body;
+    const name = req.body.name;
     const short = generateSlug(name);
 
     if(!name) {
@@ -85,11 +131,24 @@ const editRole = async (req, res) => {
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            success: 'SUCCESS_EDIT_ROLE',
+            role: { $ref: '#/definitions/Role' }
+        }
+    }
+
+    #swagger.responses[500] = {
+        description: 'Błąd serwerowy',
+        schema: { error: 'ERR_EDIT_ROLE' }
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
 
-    const { name } = req.query;
+    const name = req.query.name;
 
     if(!name) {
         return res.status(API_RESULTS.ERR_PROVIDE_NAME_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_NAME_FIELD.code });
@@ -140,6 +199,19 @@ const deleteRole = async (req, res) => {
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            success: 'SUCCESS_DELETE_ROLE',
+            role: { $ref: '#/definitions/Role' }
+        }
+    }
+
+    #swagger.responses[500] = {
+        description: 'Błąd serwerowy',
+        schema: { error: 'ERR_DELETE_ROLE' }
+    }
+
     */
     
     saveLogFromEndpointRequest(req)
@@ -169,4 +241,4 @@ const deleteRole = async (req, res) => {
     }
 }
 
-module.exports = { getRoles, addRole, editRole, deleteRole }
+module.exports = { getRoles, getOneRole, addRole, editRole, deleteRole }

@@ -22,6 +22,7 @@ const API_RESULTS = {
     ERR_PROVIDE_LOGIN_DATA: { description: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { description: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
     ERR_PROVIDE_PASSWORD_FIELD: { description: "Musisz wypełnić pole \"password\"", code: 'ERR_PROVIDE_PASSWORD_FIELD', status_code: 400 },
+    ERR_PROVIDE_MESSAGE_FIELD: { description: "Musisz wypełnić pole \"message\"", code: 'ERR_PROVIDE_MESSAGE_FIELD', status_code: 400 },
     ERR_WRONG_PASSWORD: { description: "Niepoprawne hasło", code: 'ERR_WRONG_PASSWORD', status_code: 401 },
     ERR_PROVIDE_DEVICE_TOKEN: { description: "Musisz przekazać Device-Token w nagłówku", code: 'ERR_PROVIDE_DEVICE_TOKEN', status_code: 400 },
     ERR_PROVIDE_LOGIN_TOKEN: { description: "Musisz przekazać Token w nagłówku", code: 'ERR_PROVIDE_LOGIN_TOKEN', status_code: 400 },
@@ -47,6 +48,9 @@ const API_RESULTS = {
     ERR_REGISTRATION_DISABLED: { description: 'Rejestracja jest wyłączona', code: 'ERR_REGISTRATION_DISABLED', status_code: 423 },
     ERR_LOGIN_DISABLED: { description: 'Logowanie jest wyłączone', code: 'ERR_LOGIN_DISABLED', status_code: 423 },
     ERR_EMAIL_SEND_THROTTLE: { description: 'You have exceeded the limit of requests. Please try again later.', code: 'ERR_EMAIL_SEND_THROTTLE', status_code: 429 },
+
+    ERR_INVALID_FILE_TYPE: { description: 'Invalid file type. Only JPEG, PNG, and GIF are allowed', code: 'ERR_INVALID_FILE_TYPE', status_code: 400 },
+    ERR_FILE_SIZE_EXCEEDS_LIMIT: { description: 'File size exceeds the limit of 5 MB', code: 'ERR_FILE_SIZE_EXCEEDS_LIMIT', status_code: 413 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },

@@ -71,4 +71,10 @@ User.prototype.toJSON = function() {
   };
 };
 
+User.prototype.getFullData = async function () {
+  const user = this.toJSON();
+  user.role = await Role.findByPk(this.roleId);
+  return user;
+};
+
 module.exports = User;

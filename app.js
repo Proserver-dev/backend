@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 const swaggerDefinitions = require('./swagger/swaggerDefinitions')
 
 const myCache = require('./src/utils/node-cache')
@@ -18,19 +19,22 @@ const API_RESULTS = require('./src/constants/apiResults');
 const app = express();
 app.set("json replacer", null);
 
-const upload = multer({ 
-    dest: 'files/', // Location where files will be saved
- });
-
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(upload.any());
+
+const { uploadAttachments, handleMulterErrors } = require('./src/utils/multer');
+const UPLOAD_PATHS = require('./src/constants/uploadPaths');
+app.use(uploadAttachments.array('attachments'));
+app.use('/'+UPLOAD_PATHS.PRIVATE_MESSAGES_ATTACHMENTS, express.static(path.join(__dirname, UPLOAD_PATHS.PRIVATE_MESSAGES_ATTACHMENTS)))
+app.use(handleMulterErrors);
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinitions));
 app.use('/', router);
 
 app.use((err, req, res, next) => {
     logToFile(`Błąd serwerowy - ${API_RESULTS.ERR_SOMETHING_WENT_WRONG.code}`)
+    console.log(err)
     res.status(API_RESULTS.ERR_SOMETHING_WENT_WRONG.status_code).send({ error: API_RESULTS.ERR_SOMETHING_WENT_WRONG.code, err });
 });
 

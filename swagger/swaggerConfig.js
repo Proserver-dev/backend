@@ -12,7 +12,7 @@ module.exports = {
     },
   },
   host: SETTINGS.SWAGGER_HOST,
-  schemes: ['https'],
+  schemes: SETTINGS.SWAGGER_PROTOCOLS,
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
@@ -44,7 +44,14 @@ module.exports = {
       message: 'Example message',
       isRead: false,
       updatedAt: '2023-11-15T04:17:54.000Z',
-      createdAt: '2023-11-15T04:17:54.000Z'
+      createdAt: '2023-11-15T04:17:54.000Z',
+      attachments: [
+        { $ref: '#/definitions/PrivateMessageAttachment' }
+      ]
+    },
+    PrivateMessageAttachment: {
+      url: "https://backend.proserver.dev/uploads/messages/365d5d73-7be9-40cb-8497-e5baecb4fb28.jpg",
+      type: "image"
     },
     Role: {
       id: 2,

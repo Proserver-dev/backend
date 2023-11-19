@@ -146,7 +146,7 @@ const register = async (req, res) => {
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'DriveClub - Kod aktywacyjny',
+            subject: 'RideClub - Kod aktywacyjny',
             html: `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`,
         };
 
@@ -381,7 +381,7 @@ const resendEmailActivationCode = async (req, res) => {
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'ProServer - Kod aktywacyjny',
+            subject: 'RideClub - Kod aktywacyjny',
             html: `<p>Twój kod aktywacyjny: <strong>${newAuthPin}</strong></p>`,
         };
 
