@@ -2,7 +2,14 @@ const AuthHistory = require('../models/AuthHistory')
 const { saveLogFromEndpointRequest } = require('../functions');
 
 const getAuthHistory = async (req, res) => {
-    // #swagger.tags = ['Admin']
+    /*
+    #swagger.tags = ['Admin']
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
+    */
 
     saveLogFromEndpointRequest(req)
 

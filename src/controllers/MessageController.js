@@ -13,6 +13,10 @@ async function getAllMessagesToAll(req, res) {
     #swagger.tags = ['Admin']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
     */
 
     saveLogFromEndpointRequest(req);
@@ -54,10 +58,9 @@ async function getPrivateMessages(req, res) {
         description: "ID usera, z którym prowadzimy rozmowę"
     }
 
-    #swagger.parameters['Token'] = {
-        in: 'header',
-        required: true
-    }
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
@@ -160,10 +163,9 @@ async function addPrivateMessage(req, res) {
         description: "ID usera, z którym prowadzimy rozmowę"
     }
 
-    #swagger.parameters['Token'] = {
-        in: 'header',
-        required: true
-    }
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.parameters['body'] = {
         in: 'body',

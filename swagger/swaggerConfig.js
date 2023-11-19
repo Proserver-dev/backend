@@ -14,12 +14,24 @@ module.exports = {
   host: SETTINGS.SWAGGER_HOST,
   schemes: SETTINGS.SWAGGER_PROTOCOLS,
   securityDefinitions: {
-    apiKeyAuth: {
-      type: 'apiKey',
-      in: 'header',
-      name: 'X-API-KEY',
-      description: 'Some description...'
-    }
+    TokenAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Token',
+        description: 'login Token, e.g., "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"',
+    },
+    RefreshTokenAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Refresh-Token',
+        description: 'Refresh token, e.g., "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"',
+    },
+    DeviceTokenAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Device-Token',
+        description: 'Device token, e.g., "abcd1234efgh5678"',
+    },
   },
   definitions: {
     User: {

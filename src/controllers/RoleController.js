@@ -27,6 +27,10 @@ const getRoles = async (req, res) => {
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
         schema: [ { $ref: '#/definitions/Role' } ]
@@ -53,6 +57,10 @@ const getOneRole = async (req, res) => {
     /*
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
@@ -85,6 +93,10 @@ const addRole = async (req, res) => {
     /*
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[201] = {
         description: 'Wszystko poszło GIT',
@@ -130,6 +142,10 @@ const editRole = async (req, res) => {
     /*
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
@@ -198,6 +214,10 @@ const deleteRole = async (req, res) => {
     /*
     #swagger.tags = ['Roles']
     #swagger.summary = 'tylko dla admina'
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',

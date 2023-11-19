@@ -86,10 +86,9 @@ const getMe = async (req, res) => {
     #swagger.tags = ['Users']
     #swagger.description = "Zwraca obiekt aktualnie zalogowanego użytkownika"
 
-    #swagger.parameters['Token'] = {
-        in: 'header',
-        required: true
-    }
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',

@@ -16,11 +16,23 @@
     "http"
   ],
   "securityDefinitions": {
-    "apiKeyAuth": {
+    "TokenAuth": {
       "type": "apiKey",
       "in": "header",
-      "name": "X-API-KEY",
-      "description": "Some description..."
+      "name": "Token",
+      "description": "login Token, e.g., \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\""
+    },
+    "RefreshTokenAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Refresh-Token",
+      "description": "Refresh token, e.g., \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\""
+    },
+    "DeviceTokenAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Device-Token",
+      "description": "Device token, e.g., \"abcd1234efgh5678\""
     }
   },
   "paths": {
@@ -1864,12 +1876,6 @@
             "type": "string"
           },
           {
-            "name": "Token",
-            "in": "header",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -1979,7 +1985,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/admin/users/change-role/{userId}": {
@@ -1993,12 +2004,6 @@
           {
             "name": "userId",
             "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Token",
-            "in": "header",
             "required": true,
             "type": "string"
           },
@@ -2124,7 +2129,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/admin/app-config": {
