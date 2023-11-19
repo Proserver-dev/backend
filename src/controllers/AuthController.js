@@ -127,6 +127,8 @@ const register = async (req, res) => {
             return res.status(API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.code });
         }
 
+        // TODO: tutaj może jeszcze sprawdzać, czy hasło nie jest zbyt proste
+
         const userExist = await User.findOne({ where: { email } });
 
         if (userExist) {
