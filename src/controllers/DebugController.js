@@ -6,7 +6,7 @@ const API_RESULTS = require('../constants/apiResults')
 const User = require('../models/UserModel');
 
 function getLogs(req, res) {
-    // #swagger.tags = ['Debug']
+    // #swagger.ignore = true
 
     let fileName = getLogFileName();
 

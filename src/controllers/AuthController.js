@@ -56,21 +56,21 @@ const register = async (req, res) => {
     #swagger.responses[403] = { 
         description: "Brakuje Device-Token w nagłówku",
         schema: {
-            error: ['ERR_PROVIDE_DEVICE_TOKEN']
+            error: 'ERR_PROVIDE_DEVICE_TOKEN'
         }  
     }
 
     #swagger.responses[422] = { 
         description: "Nieprawidłowe dane wejściowe",
         schema: {
-            error: ['ERR_INVALID_EMAIL_ADDRESS']
+            error: 'ERR_INVALID_EMAIL_ADDRESS'
         }  
     }
 
     #swagger.responses[409] = { 
         description: "Konflikt, taki user już istnieje",
         schema: {
-            error: ['ERR_USER_ALREADY_EXISTS']
+            error: 'ERR_USER_ALREADY_EXISTS'
         }  
     }
 
@@ -127,6 +127,8 @@ const register = async (req, res) => {
             return res.status(API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.code });
         }
 
+        // TODO: tutaj może jeszcze sprawdzać, czy hasło nie jest zbyt proste
+
         const userExist = await User.findOne({ where: { email } });
 
         if (userExist) {
@@ -146,7 +148,7 @@ const register = async (req, res) => {
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'DriveClub - Kod aktywacyjny',
+            subject: 'RideClub - Kod aktywacyjny',
             html: `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`,
         };
 
@@ -192,14 +194,14 @@ const activateAccount = async (req, res) => {
     #swagger.responses[400] = { 
         description: "Musisz przekazać wszystkie poprawne dane",
         schema: {
-            error: ['ERR_PROVIDE_EMAIL_FIELD']
+            error: 'ERR_PROVIDE_EMAIL_FIELD'
         }  
     }
 
     #swagger.responses[401] = { 
         description: "Kod do aktywacji konta jest niepoprawny",
         schema: {
-            error: ['ERR_WRONG_AUTH_PIN']
+            error: 'ERR_WRONG_AUTH_PIN'
         }  
     }
 
@@ -213,21 +215,21 @@ const activateAccount = async (req, res) => {
     #swagger.responses[404] = { 
         description: "Taki email nie istnieje w bazie",
         schema: {
-            error: ['ERR_USER_NOT_EXISTS']
+            error: 'ERR_USER_NOT_EXISTS'
         }  
     }
 
     #swagger.responses[409] = { 
         description: "Konto już jest aktywowane",
         schema: {
-            error: ['ERR_USER_IS_ALREADY_ACTIVATED']
+            error: 'ERR_USER_IS_ALREADY_ACTIVATED'
         }  
     }
 
     #swagger.responses[422] = { 
         description: "Nieprawidłowe dane wejściowe",
         schema: {
-            error: ['ERR_INVALID_EMAIL_ADDRESS']
+            error: 'ERR_INVALID_EMAIL_ADDRESS'
         }  
     }
 
@@ -281,6 +283,7 @@ const activateAccount = async (req, res) => {
         const user = await User.findOne({ where: { email } });
     
         if (!user) {
+            // TODO: może tutaj trzeba też zwrócić kod ERR_WRONG_AUTH_PIN
           return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
         }
 
@@ -345,6 +348,7 @@ const resendEmailActivationCode = async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
+            // TODO: tutaj może jakiś ogólny błąd, że nie udało się wysłać maila czy coś
             return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
         }
 
@@ -379,7 +383,7 @@ const resendEmailActivationCode = async (req, res) => {
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'ProServer - Kod aktywacyjny',
+            subject: 'RideClub - Kod aktywacyjny',
             html: `<p>Twój kod aktywacyjny: <strong>${newAuthPin}</strong></p>`,
         };
 
@@ -415,16 +419,15 @@ const login = async (req, res) => {
 
         const user = await User.findOne({ where: { email } });
     
+        // TODO: tutaj zrobić BAD CREDENTIALS
+        // ale z drugiej strony, przecież w endpoincie do rejestracji jest zwracane czy taki email już istniej w bazie czy nie...
         if (!user) {
           return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
         }
 
-        if(!user.isActivated) {
-            return res.status(API_RESULTS.ERR_USER_IS_NOT_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_NOT_ACTIVATED.code });
-        }
-
         const user_role = await Role.findByPk(user.roleId)
 
+        // TODO: tutaj też może być luka - chyba trzeba zrobić oddzielny endpoint do logowania do panelu admina
         // konieczne do odświeżania loginToken
         if(!deviceToken && user_role?.short != "admin") {
             return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
@@ -441,8 +444,15 @@ const login = async (req, res) => {
     
         const passwordMatch = await bcrypt.compare(password, user.password);
     
+
+        // TODO: tutaj zrobić BAD CREDENTIALS
+        // ale z drugiej strony, przecież w endpoincie do rejestracji jest zwracane czy taki email już istniej w bazie czy nie...
         if (!passwordMatch) {
           return res.status(API_RESULTS.ERR_WRONG_PASSWORD.status_code).json({ error: API_RESULTS.ERR_WRONG_PASSWORD.code });
+        }
+
+        if(!user.isActivated) {
+            return res.status(API_RESULTS.ERR_USER_IS_NOT_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_NOT_ACTIVATED.code });
         }
 
         const loginTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_TOKEN_LIFE_TIME.key)

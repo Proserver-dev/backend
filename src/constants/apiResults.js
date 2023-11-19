@@ -17,10 +17,12 @@ const API_RESULTS = {
     ERR_GET_AUTH_HISTORY: { description: 'Wystąpił problem z pobraniem auth history', code: 'ERR_GET_AUTH_HISTORY', status_code: 500 },
     ERR_GET_APP_CONFIG: { description: 'Wystąpił problem z pobraniem konfiguracji aplikacji', code: 'ERR_GET_APP_CONFIG', status_code: 500 },
     ERR_EDIT_APP_CONFIG: { description: 'Wystąpił problem z edycją konfiguracji aplikacji', code: 'ERR_EDIT_APP_CONFIG', status_code: 500 },
+    ERR_INTERNAL_SERVER_ERROR: { description: 'Internal Server Error', code: 'ERR_INTERNAL_SERVER_ERROR', status_code: 500 },
     
     ERR_PROVIDE_LOGIN_DATA: { description: "Musisz wprowadzić dane logowania", code: 'ERR_PROVIDE_LOGIN_DATA', status_code: 400 },
     ERR_PROVIDE_EMAIL_FIELD: { description: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
     ERR_PROVIDE_PASSWORD_FIELD: { description: "Musisz wypełnić pole \"password\"", code: 'ERR_PROVIDE_PASSWORD_FIELD', status_code: 400 },
+    ERR_PROVIDE_MESSAGE_FIELD: { description: "Musisz wypełnić pole \"message\"", code: 'ERR_PROVIDE_MESSAGE_FIELD', status_code: 400 },
     ERR_WRONG_PASSWORD: { description: "Niepoprawne hasło", code: 'ERR_WRONG_PASSWORD', status_code: 401 },
     ERR_PROVIDE_DEVICE_TOKEN: { description: "Musisz przekazać Device-Token w nagłówku", code: 'ERR_PROVIDE_DEVICE_TOKEN', status_code: 400 },
     ERR_PROVIDE_LOGIN_TOKEN: { description: "Musisz przekazać Token w nagłówku", code: 'ERR_PROVIDE_LOGIN_TOKEN', status_code: 400 },
@@ -47,11 +49,16 @@ const API_RESULTS = {
     ERR_LOGIN_DISABLED: { description: 'Logowanie jest wyłączone', code: 'ERR_LOGIN_DISABLED', status_code: 423 },
     ERR_EMAIL_SEND_THROTTLE: { description: 'You have exceeded the limit of requests. Please try again later.', code: 'ERR_EMAIL_SEND_THROTTLE', status_code: 429 },
 
+    ERR_INVALID_FILE_TYPE: { description: 'Invalid file type. Only JPEG, PNG, and GIF are allowed', code: 'ERR_INVALID_FILE_TYPE', status_code: 400 },
+    ERR_FILE_SIZE_EXCEEDS_LIMIT: { description: 'File size exceeds the limit of 5 MB', code: 'ERR_FILE_SIZE_EXCEEDS_LIMIT', status_code: 413 },
+    ERR_CANNOT_CHANGE_SELF_ROLE: { description: 'Nie można zmienić roli samego siebie', code: 'ERR_CANNOT_CHANGE_SELF_ROLE', status_code: 403 },
+
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
     SUCCESS_DELETE_ROLE: { description: "Pomyślnie usunięto rolę", code: 'SUCCESS_DELETE_ROLE', status_code: 200 },
     SUCCESS_USER_REGISTERED: { description: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 },
-    SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 }
+    SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 },
+    SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 }
 }
 
 module.exports = API_RESULTS

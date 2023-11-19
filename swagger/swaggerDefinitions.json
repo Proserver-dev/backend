@@ -13,64 +13,29 @@
   "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
-    "apiKeyAuth": {
+    "TokenAuth": {
       "type": "apiKey",
       "in": "header",
-      "name": "X-API-KEY",
-      "description": "Some description..."
+      "name": "Token",
+      "description": "login Token, e.g., \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\""
+    },
+    "RefreshTokenAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Refresh-Token",
+      "description": "Refresh token, e.g., \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\""
+    },
+    "DeviceTokenAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Device-Token",
+      "description": "Device token, e.g., \"abcd1234efgh5678\""
     }
   },
   "paths": {
-    "/": {
-      "get": {
-        "tags": [
-          "Debug"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/logs/{fileName}": {
-      "get": {
-        "tags": [
-          "Debug"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "fileName",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/logs": {
-      "get": {
-        "tags": [
-          "Debug"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/socket-connections": {
       "get": {
         "tags": [
@@ -93,6 +58,72 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -184,13 +215,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_PROVIDE_DEVICE_TOKEN"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_PROVIDE_DEVICE_TOKEN"
                 }
               },
               "xml": {
@@ -204,13 +230,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_USER_ALREADY_EXISTS"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_USER_ALREADY_EXISTS"
                 }
               },
               "xml": {
@@ -224,13 +245,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_INVALID_EMAIL_ADDRESS"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_INVALID_EMAIL_ADDRESS"
                 }
               },
               "xml": {
@@ -348,13 +364,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_PROVIDE_EMAIL_FIELD"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_PROVIDE_EMAIL_FIELD"
                 }
               },
               "xml": {
@@ -368,13 +379,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_WRONG_AUTH_PIN"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_WRONG_AUTH_PIN"
                 }
               },
               "xml": {
@@ -409,13 +415,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_USER_NOT_EXISTS"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_USER_NOT_EXISTS"
                 }
               },
               "xml": {
@@ -429,13 +430,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_USER_IS_ALREADY_ACTIVATED"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_USER_IS_ALREADY_ACTIVATED"
                 }
               },
               "xml": {
@@ -449,13 +445,8 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_INVALID_EMAIL_ADDRESS"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "example": "ERR_INVALID_EMAIL_ADDRESS"
                 }
               },
               "xml": {
@@ -713,6 +704,57 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -757,16 +799,6 @@
             "name": "offset",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "schema",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
@@ -799,6 +831,7 @@
         "tags": [
           "Roles"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "parameters": [
           {
@@ -810,7 +843,91 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "$ref": "#/definitions/Role"
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_GET_ROLES"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -818,6 +935,7 @@
         "tags": [
           "Roles"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "parameters": [
           {
@@ -833,8 +951,104 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_EDIT_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_EDIT_ROLE"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -842,6 +1056,7 @@
         "tags": [
           "Roles"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "parameters": [
           {
@@ -852,8 +1067,104 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_DELETE_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_DELETE_ROLE"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -863,10 +1174,101 @@
         "tags": [
           "Roles"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Role"
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_GET_ROLES"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -874,6 +1276,7 @@
         "tags": [
           "Roles"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "parameters": [
           {
@@ -890,8 +1293,104 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_CREATED_ROLE"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_CREATE_ROLE"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -901,6 +1400,7 @@
         "tags": [
           "Admin"
         ],
+        "summary": "tylko dla admina",
         "description": "",
         "parameters": [
           {
@@ -917,6 +1417,345 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private-messages/{userId}": {
+      "get": {
+        "tags": [
+          "Private Messages"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID usera, z którym prowadzimy rozmowę"
+          },
+          {
+            "name": "Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "number",
+                  "example": 1
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PrivateMessage"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Użytkownik nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
+                    "ERR_USER_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Private Messages"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID usera, z którym prowadzimy rozmowę"
+          },
+          {
+            "name": "Token",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Testowa wiadomość"
+                }
+              }
+            }
+          },
+          {
+            "name": "attachments",
+            "in": "formData",
+            "type": "array",
+            "items": {
+              "type": "file"
+            },
+            "description": "Tablica plików, załączniki do wiadomości"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "$ref": "#/definitions/PrivateMessage"
+            }
+          },
+          "400": {
+            "description": "Jeden z przesyłanych plików posiada niedozwolone rozszerzenie albo nie dostarczono wszystkich danych",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_INVALID_FILE_TYPE",
+                    "ERR_PROVIDE_MESSAGE_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
+                    "ERR_USER_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "413": {
+            "description": "Jeden z przesyłanych plików przekracza dozwolony rozmiar 5MB",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_FILE_SIZE_EXCEEDS_LIMIT"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -952,8 +1791,350 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
+      }
+    },
+    "/admin/users/change-password/{userId}": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "tylko dla admina",
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_CHANGE_PASSWORD"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz przekazać hasło",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_PASSWORD_FIELD"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/users/change-role/{userId}": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "tylko dla admina",
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "roleId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_EDIT_ROLE"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Nie możesz sobie samemu zmienić roli albo nie masz uprawnień",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_CANNOT_CHANGE_SELF_ROLE",
+                    "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User albo rola nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_NOT_EXISTS",
+                    "ERR_ROLE_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/admin/app-config": {
@@ -965,6 +2146,72 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -976,6 +2223,72 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -1035,6 +2348,75 @@
           "example": "2023-11-07T20:16:13.000Z"
         }
       }
+    },
+    "PrivateMessage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "sourceUserId": {
+          "type": "number",
+          "example": 5
+        },
+        "targetUserId": {
+          "type": "number",
+          "example": 8
+        },
+        "message": {
+          "type": "string",
+          "example": "Example message"
+        },
+        "isRead": {
+          "type": "boolean",
+          "example": false
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2023-11-15T04:17:54.000Z"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2023-11-15T04:17:54.000Z"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PrivateMessageAttachment"
+          }
+        }
+      }
+    },
+    "PrivateMessageAttachment": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "example": "https://backend.proserver.dev/uploads/messages/365d5d73-7be9-40cb-8497-e5baecb4fb28.jpg"
+        },
+        "type": {
+          "type": "string",
+          "example": "image"
+        }
+      }
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 2
+        },
+        "name": {
+          "type": "string",
+          "example": "User"
+        },
+        "short": {
+          "type": "string",
+          "example": "user"
+        }
+      }
     }
   },
   "components": {
@@ -1090,6 +2472,75 @@
           "createdAt": {
             "type": "string",
             "example": "2023-11-07T20:16:13.000Z"
+          }
+        }
+      },
+      "PrivateMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "sourceUserId": {
+            "type": "number",
+            "example": 5
+          },
+          "targetUserId": {
+            "type": "number",
+            "example": 8
+          },
+          "message": {
+            "type": "string",
+            "example": "Example message"
+          },
+          "isRead": {
+            "type": "boolean",
+            "example": false
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2023-11-15T04:17:54.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2023-11-15T04:17:54.000Z"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PrivateMessageAttachment"
+            }
+          }
+        }
+      },
+      "PrivateMessageAttachment": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://backend.proserver.dev/uploads/messages/365d5d73-7be9-40cb-8497-e5baecb4fb28.jpg"
+          },
+          "type": {
+            "type": "string",
+            "example": "image"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 2
+          },
+          "name": {
+            "type": "string",
+            "example": "User"
+          },
+          "short": {
+            "type": "string",
+            "example": "user"
           }
         }
       }

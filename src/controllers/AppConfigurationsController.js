@@ -4,7 +4,14 @@ const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault'
 const API_RESULTS = require('../constants/apiResults')
 
 const getAppConfigurations = async (req, res) => {
-    // #swagger.tags = ['Admin']
+    /*
+    #swagger.tags = ['Admin']
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
+    */
 
     saveLogFromEndpointRequest(req)
     try {
@@ -16,7 +23,14 @@ const getAppConfigurations = async (req, res) => {
 }
 
 const editAppConfigurations = async (req, res) => {
-    // #swagger.tags = ['Admin']
+    /*
+    #swagger.tags = ['Admin']
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
+    */
     
     saveLogFromEndpointRequest(req)
     try {

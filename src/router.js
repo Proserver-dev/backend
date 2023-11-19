@@ -11,6 +11,7 @@ const UserController = require('./controllers/UserController')
 const MessageController = require('./controllers/MessageController')
 const AuthHistoryController = require('./controllers/AuthHistoryController')
 const AppConfigurationsController = require('./controllers/AppConfigurationsController')
+const AdminController = require('./controllers/AdminController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -32,7 +33,7 @@ router.get('/users/me', requireJWT, UserController.getMe);
 router.get('/users/:id', UserController.getOneUser);
 router.get('/users', UserController.getAllUsers);
 
-router.get('/roles/:id', requireJWT, requireAdmin, RoleController.getRoles);
+router.get('/roles/:id', requireJWT, requireAdmin, RoleController.getOneRole);
 router.get('/roles', requireJWT, requireAdmin, RoleController.getRoles);
 router.post('/roles', requireJWT, requireAdmin, RoleController.addRole);
 router.put('/roles/:id', requireJWT, requireAdmin, RoleController.editRole);
@@ -40,7 +41,12 @@ router.delete('/roles/:id', requireJWT, requireAdmin, RoleController.deleteRole)
 
 router.get('/messages-to-all', requireJWT, requireAdmin, MessageController.getAllMessagesToAll)
 
+router.get('/private-messages/:userId', requireJWT, MessageController.getPrivateMessages)
+router.post('/private-messages/:userId', requireJWT, MessageController.addPrivateMessage)
+
 router.get('/admin/users/get-auth-history', requireJWT, requireAdmin, AuthHistoryController.getAuthHistory)
+router.post('/admin/users/change-password/:userId', requireJWT, requireAdmin, AdminController.userChangePassword)
+router.post('/admin/users/change-role/:userId', requireJWT, requireAdmin, AdminController.userChangeRole)
 
 router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)
 router.put('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.editAppConfigurations)

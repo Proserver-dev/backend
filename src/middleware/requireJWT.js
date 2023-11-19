@@ -7,6 +7,32 @@ const API_RESULTS = require('../constants/apiResults')
 const { logToFile } = require('../functions');
 
 const requireJWT = async (req, res, next) => {
+  /*
+
+  #swagger.responses[400] = { 
+        description: "Musisz dostarczyć Token w nagłówku",
+        schema: {
+            error: 'ERR_PROVIDE_LOGIN_TOKEN'
+        }  
+  }
+
+  #swagger.responses[401] = { 
+        description: "Token logowania wygasł lub jest niepoprawny",
+        schema: {
+            error: ['ERR_TOKEN_EXPIRED', 'ERR_VERIFY_TOKEN']
+        }  
+  }
+
+  #swagger.responses[404] = { 
+        description: "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+        schema: {
+            error: 'ERR_USER_FROM_TOKEN_NOT_EXISTS'
+        }  
+    }
+
+
+  */
+
   var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   const token = req.header(HEADERS_KEYS.LOGIN_TOKEN);
 

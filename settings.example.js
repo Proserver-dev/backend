@@ -33,7 +33,9 @@ const SETTINGS = {
             'PASS': 'secret'
         }
     },
-    'SWAGGER_HOST': 'localhost:3000'
+    'SWAGGER_HOST': 'localhost:3000',
+    'SWAGGER_PROTOCOLS': ['http'],
+    'HOST': 'http://localhost:3000'
 }
 
 module.exports = { SETTINGS }

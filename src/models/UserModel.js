@@ -40,6 +40,10 @@ const User = sequelize.define('User', {
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    references: {
+      model: 'roles',
+      key: 'id'
+    }
   },
   isActivated: {
     type: DataTypes.BOOLEAN,
@@ -65,6 +69,12 @@ User.prototype.toJSON = function() {
     updatedAt: this.updatedAt,
     createdAt: this.createdAt
   };
+};
+
+User.prototype.getFullData = async function () {
+  const user = this.toJSON();
+  user.role = await Role.findByPk(this.roleId);
+  return user;
 };
 
 module.exports = User;
