@@ -10,17 +10,24 @@ async function privateMessage(io, socket, data, currentUserId) {
 
     logToFile(`Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE} | target: ${data.targetUserId} | message: ${data.message} | source: ${currentUserId}`);
 
-    const message = await PrivateMessage.create({ sourceUserId: currentUserId, targetUserId: data.targetUserId, message: data.message })
-    const messageFull = await message.getFullData() // zwracamy pełny obiekt PrivateMessage (razem z pustą tablicą attachments)
+    if(data?.targetUserId !== currentUserId) {
 
-    const target_socket = getSocketIdByUserId(data.targetUserId)
+        const message = await PrivateMessage.create({ sourceUserId: currentUserId, targetUserId: data.targetUserId, message: data.message })
+        const messageFull = await message.getFullData() // zwracamy pełny obiekt PrivateMessage (razem z pustą tablicą attachments)
 
-    // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
-    if(target_socket) {
-        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, messageFull);
+        const target_socket = getSocketIdByUserId(data.targetUserId)
+
+        // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
+        if(target_socket) {
+            target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, messageFull);
+        } else {
+            // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
+            
+        }
     } else {
-        // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
-        
+        // nie możesz wyemitować wiadomości do samego siebie
+        logToFile(`Socket.io - Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE} - proba emisji wiadomości do samego siebie. Wiadomość nie została wysłana`);
+
     }
 }
 

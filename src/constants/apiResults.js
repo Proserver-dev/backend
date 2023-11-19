@@ -52,6 +52,7 @@ const API_RESULTS = {
     ERR_INVALID_FILE_TYPE: { description: 'Invalid file type. Only JPEG, PNG, and GIF are allowed', code: 'ERR_INVALID_FILE_TYPE', status_code: 400 },
     ERR_FILE_SIZE_EXCEEDS_LIMIT: { description: 'File size exceeds the limit of 5 MB', code: 'ERR_FILE_SIZE_EXCEEDS_LIMIT', status_code: 413 },
     ERR_CANNOT_CHANGE_SELF_ROLE: { description: 'Nie można zmienić roli samego siebie', code: 'ERR_CANNOT_CHANGE_SELF_ROLE', status_code: 403 },
+    ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF: { desctiption: "Nie możesz wysłać wiadomości do siebie", code: 'ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF', status_code: 403 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },

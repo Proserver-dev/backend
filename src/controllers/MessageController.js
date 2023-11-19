@@ -205,6 +205,13 @@ async function addPrivateMessage(req, res) {
         } 
     }
 
+    #swagger.responses[403] = {
+        description: 'Nie możesz wysłać wiadomości do samego siebie',
+        schema: {
+            error: 'ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF'
+        } 
+    }
+
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
@@ -228,6 +235,10 @@ async function addPrivateMessage(req, res) {
         const targetUser = await User.findByPk(targetUserId)
         if(!targetUser) {
             return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
+        }
+
+        if(targetUserId === sourceUserId) {
+            return res.status(API_RESULTS.ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF.status_code).json({ error: API_RESULTS.ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF.code });
         }
 
         if(!message) {
@@ -266,77 +277,87 @@ async function getActiveContacts(req, res) {
     /*
     #swagger.tags = ['Private Messages']
     #swagger.summary = 'zwraca tablicę userów z dodatkowym kluczem "lastMessage"'
-
+    #swagger.parameters['limit'] = { description: "Liczba użytkowników na stronie", type: "integer" }
+    #swagger.parameters['offset'] = { description: "Przesunięcie wyników", type: "integer" }
     */
-    
+
     saveLogFromEndpointRequest(req);
     try {
-        const user_id = req.user.id
+        const user_id = req.user.id;
+        const { limit, offset } = req.query;
+
+        const limitValue = limit ? parseInt(limit) : 10;
+        const offsetValue = offset ? parseInt(offset) : 0;
+
+        const uniqueUserIDs = await PrivateMessage.findAll({
+            attributes: ['sourceUserId', 'targetUserId'],
+            where: {
+                [Op.or]: [
+                    { sourceUserId: user_id },
+                    { targetUserId: user_id }
+                ]
+            },
+            raw: true,
+            nest: true
+        });
+
         
-        const usersWithLastMessage = await User.findAll({
+        const distinctUserIDs = await [
+            ...new Set(uniqueUserIDs.map(item => item.sourceUserId)),
+            ...new Set(uniqueUserIDs.map(item => item.targetUserId))
+        ].filter(id => id !== user_id);
+
+
+        const { rows: usersWithLastMessage, count } = await User.findAndCountAll({
+            where: {
+                id: {
+                    [Op.in]: distinctUserIDs
+                }
+            },
             include: [
                 {
                     model: PrivateMessage,
                     attributes: ['id', 'sourceUserId', 'targetUserId', 'message', 'isRead', 'updatedAt', 'createdAt'],
                     as: 'sentMessages',
                     where: { targetUserId: user_id },
-                    include: [
-                        {
-                            model: PrivateMessageAttachment,
-                            as: 'attachments',
-                            attributes: ['url', 'type']
-                        }
-                    ],
                     order: [['createdAt', 'DESC']],
-                    limit: 1
+                    limit: 1,
+                    required: true
                 },
                 {
                     model: PrivateMessage,
                     attributes: ['id', 'sourceUserId', 'targetUserId', 'message', 'isRead', 'updatedAt', 'createdAt'],
                     as: 'receivedMessages',
                     where: { sourceUserId: user_id },
-                    include: [
-                        {
-                            model: PrivateMessageAttachment,
-                            as: 'attachments',
-                            attributes: ['url', 'type']
-                        }
-                    ],
                     order: [['createdAt', 'DESC']],
-                    limit: 1
+                    limit: 1,
+                    required: true
                 }
-            ]
+            ],
+            limit: limitValue,
+            offset: offsetValue,
         });
 
         // Przetwarzaj wyniki, dodając klucz "lastMessage" do każdego użytkownika
         const usersWithLastMessageArray = usersWithLastMessage
-        .map(user => {
-            const lastMessageSent = user.sentMessages.length > 0 ? user.sentMessages[0] : null;
-            const lastMessageReceived = user.receivedMessages.length > 0 ? user.receivedMessages[0] : null;
+            .map(user => {
+                const lastMessageSent = user.sentMessages.length > 0 ? user.sentMessages[0] : null;
+                const lastMessageReceived = user.receivedMessages.length > 0 ? user.receivedMessages[0] : null;
 
-            if (lastMessageSent || lastMessageReceived) {
-            const lastMessage = lastMessageSent && lastMessageReceived
-                ? lastMessageSent.createdAt > lastMessageReceived.createdAt ? lastMessageSent : lastMessageReceived
-                : lastMessageSent || lastMessageReceived;
+                if (lastMessageSent || lastMessageReceived) {
+                    let lastMessage = lastMessageSent && lastMessageReceived
+                        ? lastMessageSent.createdAt > lastMessageReceived.createdAt ? lastMessageSent : lastMessageReceived
+                        : lastMessageSent || lastMessageReceived;
 
-            return {
-                ...user.toJSON(),
-                lastMessage: {
-                    id: lastMessage.id,
-                    sourceUserId: lastMessage.sourceUserId,
-                    targetUserId: lastMessage.targetUserId,
-                    message: lastMessage.message,
-                    isRead: lastMessage.isRead,
-                    updatedAt: lastMessage.updatedAt,
-                    createdAt: lastMessage.createdAt,
-                    attachments: lastMessage.attachments,
-                },
-            };
-            }
+                    return {
+                        ...user.toJSON(),
+                        lastMessage
+                    };
+                }
 
-            return null;
-        })
-        .filter(user => user !== null);
+                return null;
+            })
+            .filter(user => user !== null);
 
         usersWithLastMessageArray.sort((a, b) => {
             const createdAtA = a.lastMessage ? new Date(a.lastMessage.createdAt) : 0;
@@ -345,7 +366,7 @@ async function getActiveContacts(req, res) {
             return createdAtB - createdAtA;
         });
 
-        res.status(200).json(usersWithLastMessageArray);
+        res.status(200).json({ count, rows: usersWithLastMessageArray });
     } catch (error) {
         console.error(error);
         res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });

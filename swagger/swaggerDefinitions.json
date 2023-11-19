@@ -1514,6 +1514,85 @@
         ]
       }
     },
+    "/private-messages/get-active-contacts": {
+      "get": {
+        "tags": [
+          "Private Messages"
+        ],
+        "summary": "zwraca tablicę userów z dodatkowym kluczem \"lastMessage\"",
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "Liczba użytkowników na stronie",
+            "type": "integer",
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "Przesunięcie wyników",
+            "type": "integer",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
     "/private-messages/{userId}": {
       "get": {
         "tags": [
@@ -1726,6 +1805,21 @@
               }
             }
           },
+          "403": {
+            "description": "Nie możesz wysłać wiadomości do samego siebie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "404": {
             "description": "User nie istnieje",
             "schema": {
@@ -1783,71 +1877,6 @@
             "TokenAuth": []
           }
         ]
-      }
-    },
-    "/private-messages/get-active-contacts": {
-      "get": {
-        "tags": [
-          "Private Messages"
-        ],
-        "summary": "zwraca tablicę userów z dodatkowym kluczem \"lastMessage\"",
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Musisz dostarczyć Token w nagłówku",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "401": {
-            "description": "Token logowania wygasł lub jest niepoprawny",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "array",
-                  "example": [
-                    "ERR_TOKEN_EXPIRED",
-                    "ERR_VERIFY_TOKEN"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "404": {
-            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          }
-        }
       }
     },
     "/admin/users/get-auth-history": {
