@@ -20,7 +20,7 @@ const PrivateMessage = sequelize.define('PrivateMessage', {
     }
   },
   message: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   isRead: {
