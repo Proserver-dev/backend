@@ -10,6 +10,11 @@ const userChangePassword = async (req, res) => {
     #swagger.tags = ['Admin']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        required: true
+    }
+
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
@@ -72,10 +77,15 @@ const userChangeRole = async (req, res) => {
     #swagger.tags = ['Admin']
     #swagger.summary = 'tylko dla admina'
 
+    #swagger.parameters['Token'] = {
+        in: 'header',
+        required: true
+    }
+
     #swagger.responses[403] = { 
-        description: "Nie możesz sobie samemu zmienić roli",
+        description: "Nie możesz sobie samemu zmienić roli albo nie masz uprawnień",
         schema: {
-            error: 'ERR_CANNOT_CHANGE_SELF_ROLE'
+            error: ['ERR_CANNOT_CHANGE_SELF_ROLE', 'ERR_ADMIN_PRIVILEGES_REQUIRED']
         }  
     }
 
