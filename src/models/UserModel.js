@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 const Role = require('./RoleModel');
+const PrivateMessage = require('./PrivateMessageModel')
 
 const User = sequelize.define('User', {
   email: {
@@ -56,6 +57,16 @@ const User = sequelize.define('User', {
 });
 
 User.belongsTo(Role, { foreignKey: 'roleId' });
+
+User.hasMany(PrivateMessage, {
+  foreignKey: 'sourceUserId',
+  as: 'sentMessages'
+});
+
+User.hasMany(PrivateMessage, {
+  foreignKey: 'targetUserId',
+  as: 'receivedMessages'
+});
 
 User.prototype.toJSON = function() {
   return { 

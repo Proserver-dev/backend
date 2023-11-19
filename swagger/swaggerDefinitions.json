@@ -690,14 +690,6 @@
           "Users"
         ],
         "description": "Zwraca obiekt aktualnie zalogowanego użytkownika",
-        "parameters": [
-          {
-            "name": "Token",
-            "in": "header",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Wszystko poszło GIT",
@@ -756,7 +748,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/users/{id}": {
@@ -929,7 +926,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -1050,7 +1052,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -1166,7 +1173,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/roles": {
@@ -1270,7 +1282,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -1392,7 +1409,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/messages-to-all": {
@@ -1484,7 +1506,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/private-messages/{userId}": {
@@ -1500,12 +1527,6 @@
             "required": true,
             "type": "string",
             "description": "ID usera, z którym prowadzimy rozmowę"
-          },
-          {
-            "name": "Token",
-            "in": "header",
-            "required": true,
-            "type": "string"
           },
           {
             "name": "limit",
@@ -1612,7 +1633,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -1626,12 +1652,6 @@
             "required": true,
             "type": "string",
             "description": "ID usera, z którym prowadzimy rozmowę"
-          },
-          {
-            "name": "Token",
-            "in": "header",
-            "required": true,
-            "type": "string"
           },
           {
             "name": "body",
@@ -1757,6 +1777,76 @@
               }
             }
           }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
+      }
+    },
+    "/private-messages/get-active-contacts": {
+      "get": {
+        "tags": [
+          "Private Messages"
+        ],
+        "summary": "zwraca tablicę userów z dodatkowym kluczem \"lastMessage\"",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
         }
       }
     },
@@ -1858,7 +1948,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/admin/users/change-password/{userId}": {
@@ -2213,7 +2308,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -2290,7 +2390,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     }
   },

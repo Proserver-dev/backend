@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 const API_RESULTS = require('../constants/apiResults');
 const { saveLogFromEndpointRequest } = require('../functions');
 const MessageToAll = require('../models/MessageToAllModel')
@@ -262,4 +262,94 @@ async function addPrivateMessage(req, res) {
     }
 }
 
-module.exports = { getAllMessagesToAll, getPrivateMessages, addPrivateMessage }
+async function getActiveContacts(req, res) {
+    /*
+    #swagger.tags = ['Private Messages']
+    #swagger.summary = 'zwraca tablicę userów z dodatkowym kluczem "lastMessage"'
+
+    */
+    
+    saveLogFromEndpointRequest(req);
+    try {
+        const user_id = req.user.id
+        
+        const usersWithLastMessage = await User.findAll({
+            include: [
+                {
+                    model: PrivateMessage,
+                    attributes: ['id', 'sourceUserId', 'targetUserId', 'message', 'isRead', 'updatedAt', 'createdAt'],
+                    as: 'sentMessages',
+                    where: { targetUserId: user_id },
+                    include: [
+                        {
+                            model: PrivateMessageAttachment,
+                            as: 'attachments',
+                            attributes: ['url', 'type']
+                        }
+                    ],
+                    order: [['createdAt', 'DESC']],
+                    limit: 1
+                },
+                {
+                    model: PrivateMessage,
+                    attributes: ['id', 'sourceUserId', 'targetUserId', 'message', 'isRead', 'updatedAt', 'createdAt'],
+                    as: 'receivedMessages',
+                    where: { sourceUserId: user_id },
+                    include: [
+                        {
+                            model: PrivateMessageAttachment,
+                            as: 'attachments',
+                            attributes: ['url', 'type']
+                        }
+                    ],
+                    order: [['createdAt', 'DESC']],
+                    limit: 1
+                }
+            ]
+        });
+
+        // Przetwarzaj wyniki, dodając klucz "lastMessage" do każdego użytkownika
+        const usersWithLastMessageArray = usersWithLastMessage
+        .map(user => {
+            const lastMessageSent = user.sentMessages.length > 0 ? user.sentMessages[0] : null;
+            const lastMessageReceived = user.receivedMessages.length > 0 ? user.receivedMessages[0] : null;
+
+            if (lastMessageSent || lastMessageReceived) {
+            const lastMessage = lastMessageSent && lastMessageReceived
+                ? lastMessageSent.createdAt > lastMessageReceived.createdAt ? lastMessageSent : lastMessageReceived
+                : lastMessageSent || lastMessageReceived;
+
+            return {
+                ...user.toJSON(),
+                lastMessage: {
+                    id: lastMessage.id,
+                    sourceUserId: lastMessage.sourceUserId,
+                    targetUserId: lastMessage.targetUserId,
+                    message: lastMessage.message,
+                    isRead: lastMessage.isRead,
+                    updatedAt: lastMessage.updatedAt,
+                    createdAt: lastMessage.createdAt,
+                    attachments: lastMessage.attachments,
+                },
+            };
+            }
+
+            return null;
+        })
+        .filter(user => user !== null);
+
+        usersWithLastMessageArray.sort((a, b) => {
+            const createdAtA = a.lastMessage ? new Date(a.lastMessage.createdAt) : 0;
+            const createdAtB = b.lastMessage ? new Date(b.lastMessage.createdAt) : 0;
+
+            return createdAtB - createdAtA;
+        });
+
+        res.status(200).json(usersWithLastMessageArray);
+    } catch (error) {
+        console.error(error);
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
+    }
+}
+
+module.exports = { getAllMessagesToAll, getPrivateMessages, addPrivateMessage, getActiveContacts }

@@ -41,6 +41,7 @@ router.delete('/roles/:id', requireJWT, requireAdmin, RoleController.deleteRole)
 
 router.get('/messages-to-all', requireJWT, requireAdmin, MessageController.getAllMessagesToAll)
 
+router.get('/private-messages/get-active-contacts', requireJWT, MessageController.getActiveContacts) // kolejność ma znaczenie
 router.get('/private-messages/:userId', requireJWT, MessageController.getPrivateMessages)
 router.post('/private-messages/:userId', requireJWT, MessageController.addPrivateMessage)
 
