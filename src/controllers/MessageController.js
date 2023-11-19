@@ -279,6 +279,36 @@ async function getActiveContacts(req, res) {
     #swagger.summary = 'zwraca tablicę userów z dodatkowym kluczem "lastMessage"'
     #swagger.parameters['limit'] = { description: "Liczba użytkowników na stronie", type: "integer" }
     #swagger.parameters['offset'] = { description: "Przesunięcie wyników", type: "integer" }
+
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            count: 1,
+            rows: [
+                {
+                    id: 1,
+                    isActivated: true,
+                    email: "john@doe.dev",
+                    userName: "john123",
+                    nameLastname: "John Doe",
+                    role: 2,
+                    isLoggedIn: true,
+                    updatedAt: "2023-11-15T04:17:54.000Z",
+                    createdAt: "2023-11-07T20:16:13.000Z",
+                    lastMessage: {
+                        "id": 30,
+                        "sourceUserId": 1,
+                        "targetUserId": 6,
+                        "message": "siema siema",
+                        "isRead": false,
+                        "updatedAt": "2023-11-19T01:30:03.000Z",
+                        "createdAt": "2023-11-19T01:30:03.000Z"
+                    }
+                }
+            ]
+        }
+    } 
+
     */
 
     saveLogFromEndpointRequest(req);
