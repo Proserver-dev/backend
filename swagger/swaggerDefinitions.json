@@ -1533,16 +1533,6 @@
             "description": "Przesunięcie wyników",
             "type": "integer",
             "in": "query"
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "schema",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
@@ -1581,8 +1571,21 @@
                         "example": "John Doe"
                       },
                       "role": {
-                        "type": "number",
-                        "example": 2
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "User"
+                          },
+                          "short": {
+                            "type": "string",
+                            "example": "user"
+                          }
+                        }
                       },
                       "isLoggedIn": {
                         "type": "boolean",
@@ -1597,37 +1600,7 @@
                         "example": "2023-11-07T20:16:13.000Z"
                       },
                       "lastMessage": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "number",
-                            "example": 30
-                          },
-                          "sourceUserId": {
-                            "type": "number",
-                            "example": 1
-                          },
-                          "targetUserId": {
-                            "type": "number",
-                            "example": 6
-                          },
-                          "message": {
-                            "type": "string",
-                            "example": "siema siema"
-                          },
-                          "isRead": {
-                            "type": "boolean",
-                            "example": false
-                          },
-                          "updatedAt": {
-                            "type": "string",
-                            "example": "2023-11-19T01:30:03.000Z"
-                          },
-                          "createdAt": {
-                            "type": "string",
-                            "example": "2023-11-19T01:30:03.000Z"
-                          }
-                        }
+                        "$ref": "#/definitions/PrivateMessage"
                       }
                     }
                   }
@@ -2591,7 +2564,7 @@
         },
         "sourceUserId": {
           "type": "number",
-          "example": 5
+          "example": 1
         },
         "targetUserId": {
           "type": "number",
@@ -2717,7 +2690,7 @@
           },
           "sourceUserId": {
             "type": "number",
-            "example": 5
+            "example": 1
           },
           "targetUserId": {
             "type": "number",

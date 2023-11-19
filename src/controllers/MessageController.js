@@ -3,6 +3,7 @@ const API_RESULTS = require('../constants/apiResults');
 const { saveLogFromEndpointRequest } = require('../functions');
 const MessageToAll = require('../models/MessageToAllModel')
 const User = require('../models/UserModel')
+const Role = require('../models/RoleModel')
 const PrivateMessage = require('../models/PrivateMessageModel')
 const PrivateMessageAttachment = require('../models/PrivateMessageAttachmentModel');
 const UPLOAD_PATHS = require('../constants/uploadPaths');
@@ -291,19 +292,15 @@ async function getActiveContacts(req, res) {
                     email: "john@doe.dev",
                     userName: "john123",
                     nameLastname: "John Doe",
-                    role: 2,
+                    role: {
+                        id: 2,
+                        name: "User",
+                        short: "user"
+                    },
                     isLoggedIn: true,
                     updatedAt: "2023-11-15T04:17:54.000Z",
                     createdAt: "2023-11-07T20:16:13.000Z",
-                    lastMessage: {
-                        "id": 30,
-                        "sourceUserId": 1,
-                        "targetUserId": 6,
-                        "message": "siema siema",
-                        "isRead": false,
-                        "updatedAt": "2023-11-19T01:30:03.000Z",
-                        "createdAt": "2023-11-19T01:30:03.000Z"
-                    }
+                    lastMessage: { $ref: '#/definitions/PrivateMessage' }
                 }
             ]
         }
@@ -314,7 +311,8 @@ async function getActiveContacts(req, res) {
     saveLogFromEndpointRequest(req);
     try {
         const user_id = req.user.id;
-        const { limit, offset } = req.query;
+        const limit = req.query.limit;
+        const offset = req.query.offset;
 
         const limitValue = limit ? parseInt(limit) : 10;
         const offsetValue = offset ? parseInt(offset) : 0;
@@ -364,13 +362,12 @@ async function getActiveContacts(req, res) {
                     required: true
                 }
             ],
-            limit: limitValue,
-            offset: offsetValue,
         });
 
-        // Przetwarzaj wyniki, dodając klucz "lastMessage" do każdego użytkownika
-        const usersWithLastMessageArray = usersWithLastMessage
-            .map(user => {
+
+        const users = await Promise.all(
+            usersWithLastMessage.map(async (user) => {
+
                 const lastMessageSent = user.sentMessages.length > 0 ? user.sentMessages[0] : null;
                 const lastMessageReceived = user.receivedMessages.length > 0 ? user.receivedMessages[0] : null;
 
@@ -379,24 +376,30 @@ async function getActiveContacts(req, res) {
                         ? lastMessageSent.createdAt > lastMessageReceived.createdAt ? lastMessageSent : lastMessageReceived
                         : lastMessageSent || lastMessageReceived;
 
-                    return {
-                        ...user.toJSON(),
-                        lastMessage
-                    };
+                    return { 
+                        ...user.toJSON(), 
+                        role: await Role.findByPk(user.roleId), 
+                        lastMessage: { 
+                            ...lastMessage.toJSON(), 
+                            attachments: await PrivateMessageAttachment.findAll({ where: { privateMessageId: lastMessage.id }}) 
+                        } 
+                    }
                 }
-
-                return null;
             })
-            .filter(user => user !== null);
+            .filter(user => user !== null)
+        );
 
-        usersWithLastMessageArray.sort((a, b) => {
+        users.sort((a, b) => {
             const createdAtA = a.lastMessage ? new Date(a.lastMessage.createdAt) : 0;
             const createdAtB = b.lastMessage ? new Date(b.lastMessage.createdAt) : 0;
 
             return createdAtB - createdAtA;
         });
 
-        res.status(200).json({ count, rows: usersWithLastMessageArray });
+        // TODO: paginacja tymczasowo działa sztucznie - trzeba to przebudować i przenieść do zapytania SQL (łącznie z sortowaniem - to powodowało problem)
+        const paginatedUsers = users.slice(offsetValue, offsetValue + limitValue);
+
+        res.status(200).json({ count, rows: paginatedUsers });
     } catch (error) {
         console.error(error);
         res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });

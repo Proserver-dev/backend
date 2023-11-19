@@ -51,7 +51,7 @@ module.exports = {
     },
     PrivateMessage: {
       id: 1,
-      sourceUserId: 5,
+      sourceUserId: 1,
       targetUserId: 8,
       message: 'Example message',
       isRead: false,
