@@ -42,7 +42,8 @@ const register = async (req, res) => {
     #swagger.responses[423] = { 
         description: "Rejestracja wyłączona",
         schema: {
-            error: 'ERR_REGISTRATION_DISABLED'
+            error: 'ERR_REGISTRATION_DISABLED',
+            reason: 'Under construction'
         }  
     }
 
@@ -236,7 +237,8 @@ const activateAccount = async (req, res) => {
     #swagger.responses[423] = { 
         description: "Logowanie wyłączone",
         schema: {
-            error: 'ERR_LOGIN_DISABLED'
+            error: 'ERR_LOGIN_DISABLED',
+            reason: 'Maintenance'
         }  
     }
 
@@ -323,7 +325,18 @@ const activateAccount = async (req, res) => {
 }
 
 const resendEmailActivationCode = async (req, res) => {
-    // #swagger.tags = ['Auth']
+    /*
+    #swagger.tags = ['Auth']
+
+    #swagger.responses[423] = { 
+        description: "Logowanie wyłączone",
+        schema: {
+            error: 'ERR_LOGIN_DISABLED',
+            reason: 'Maintenance'
+        }  
+    }
+
+    */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
@@ -402,7 +415,18 @@ const resendEmailActivationCode = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    // #swagger.tags = ['Auth']
+    /*
+    #swagger.tags = ['Auth']
+
+    #swagger.responses[423] = { 
+        description: "Logowanie wyłączone",
+        schema: {
+            error: 'ERR_LOGIN_DISABLED',
+            reason: 'Maintenance'
+        }  
+    }
+
+    */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
@@ -502,6 +526,14 @@ const refreshLoginToken = async (req, res) => {
     #swagger.parameters['Device-Token'] = {
         in: 'header',
         required: true
+    }
+
+    #swagger.responses[423] = { 
+        description: "Logowanie wyłączone",
+        schema: {
+            error: 'ERR_LOGIN_DISABLED',
+            reason: 'Maintenance'
+        }  
     }
 
     #swagger.responses[500] = { error: 'ERR_REFRESH_TOKEN' }
