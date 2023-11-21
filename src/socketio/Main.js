@@ -74,6 +74,9 @@ async function mainSocket(io, socket) {
             logToFile('Socket.io - Błąd weryfikacji tokenu JWT - ' + error.message);
             socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_VERIFY_TOKEN.code });
         }
+
+        logToFile(`Socket.io - Klient rozłączony - socket_id: ${socket.id}`);
+        myCache.del(`connection_${socket.id}`)
         socket.disconnect(true);
     }
 }
