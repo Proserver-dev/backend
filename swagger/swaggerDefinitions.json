@@ -262,6 +262,10 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_REGISTRATION_DISABLED"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Under construction"
                 }
               },
               "xml": {
@@ -462,6 +466,10 @@
                 "error": {
                   "type": "string",
                   "example": "ERR_LOGIN_DISABLED"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Maintenance"
                 }
               },
               "xml": {
@@ -500,7 +508,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
+                "description": {
+                  "example": "any"
+                },
+                "schema": {
                   "example": "any"
                 }
               }
@@ -508,8 +519,39 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "423": {
+            "description": "Logowanie wyłączone",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGIN_DISABLED"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Maintenance"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "503": {
+            "description": "Nie udało się wysłać maila z powodu niedostępności usługi pocztowej",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_SEND_EMAIL"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -527,10 +569,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
+                "description": {
                   "example": "any"
                 },
-                "password": {
+                "schema": {
                   "example": "any"
                 }
               }
@@ -540,6 +582,40 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "423": {
+            "description": "Logowanie wyłączone",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGIN_DISABLED"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Maintenance"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGIN_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -578,9 +654,39 @@
             "error": "ERR_PROVIDE_LOGIN_TOKEN",
             "description": "Bad Request"
           },
+          "423": {
+            "description": "Logowanie wyłączone",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_LOGIN_DISABLED"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Maintenance"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "500": {
-            "error": "ERR_REFRESH_TOKEN",
-            "description": "Internal Server Error"
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_REFRESH_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -2057,6 +2163,212 @@
         ]
       }
     },
+    "/admin/users/create-new-account": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "tylko dla admina",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "john@doe.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "secret"
+                },
+                "userName": {
+                  "type": "string",
+                  "example": "johndoe123"
+                },
+                "nameLastname": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "roleId": {
+                  "type": "number",
+                  "example": 2
+                },
+                "isActivated": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "sendEmail": {
+                  "type": "boolean",
+                  "example": false
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": "SUCCESS_USER_REGISTERED"
+                },
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz przekazać wszystkie poprawne dane",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_PROVIDE_EMAIL_FIELD",
+                    "ERR_PROVIDE_PASSWORD_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_FROM_TOKEN_NOT_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "Konflikt, taki user już istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_USER_ALREADY_EXISTS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "422": {
+            "description": "Nieprawidłowe dane wejściowe",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INVALID_EMAIL_ADDRESS"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "503": {
+            "description": "Nie udało się wysłać maila z powodu niedostępności usługi pocztowej, ale konto się utworzyło",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_SEND_EMAIL"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
+      }
+    },
     "/admin/users/change-password/{userId}": {
       "post": {
         "tags": [
@@ -2297,8 +2609,144 @@
                 "error": {
                   "type": "array",
                   "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
                     "ERR_USER_NOT_EXISTS",
                     "ERR_ROLE_NOT_EXISTS"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Błąd serwerowy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_INTERNAL_SERVER_ERROR"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/users/change-is-activated/{userId}": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "tylko dla admina",
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "array",
+                  "example": [
+                    "SUCCESS_USER_ACTIVATED",
+                    "SUCCESS_USER_DEACTIVATED"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Musisz dostarczyć Token w nagłówku",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_PROVIDE_LOGIN_TOKEN"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Token logowania wygasł lub jest niepoprawny",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_TOKEN_EXPIRED",
+                    "ERR_VERIFY_TOKEN"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Wymagane uprawnienia admina",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ERR_ADMIN_PRIVILEGES_REQUIRED"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User nie istnieje",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "array",
+                  "example": [
+                    "ERR_USER_FROM_TOKEN_NOT_EXISTS",
+                    "ERR_USER_NOT_EXISTS"
                   ],
                   "items": {
                     "type": "string"

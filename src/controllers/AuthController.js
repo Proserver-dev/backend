@@ -5,6 +5,7 @@ const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
 const { saveLogFromEndpointRequest } = require('../functions');
 const isValidEmail = require('../utils/isValidEmail')
+const generateAuthPin = require('../utils/generateAuthPin')
 const { SETTINGS } = require('../../settings');
 const { DEFAULT_ROLE } = require('../constants/roleBlocked')
 const HEADERS_KEYS = require('../constants/headersKeys')
@@ -12,10 +13,6 @@ const API_RESULTS = require('../constants/apiResults')
 const emailClient = require('../utils/emailClient')
 const getAppSetting = require('../utils/getAppSetting')
 const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
-
-const generateAuthPin = () => {
-    return Math.floor(100000 + Math.random() * 900000)
-}
 
 const register = async (req, res) => {
     /*
@@ -336,6 +333,13 @@ const resendEmailActivationCode = async (req, res) => {
         }  
     }
 
+    #swagger.responses[503] = { 
+        description: "Nie udało się wysłać maila z powodu niedostępności usługi pocztowej",
+        schema: {
+            error: 'ERR_SEND_EMAIL'
+        }  
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
@@ -423,6 +427,13 @@ const login = async (req, res) => {
         schema: {
             error: 'ERR_LOGIN_DISABLED',
             reason: 'Maintenance'
+        }  
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_LOGIN_ERROR'
         }  
     }
 
@@ -536,7 +547,12 @@ const refreshLoginToken = async (req, res) => {
         }  
     }
 
-    #swagger.responses[500] = { error: 'ERR_REFRESH_TOKEN' }
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_REFRESH_TOKEN'
+        }  
+    }
 
     */
 
@@ -606,6 +622,11 @@ const refreshLoginToken = async (req, res) => {
                 const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
                 return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
             }
+        }
+
+        if(!user.isActivated) {
+            AuthHistory.create({ userId: user.id, type: 'logout', content: 'użytkownik został dezaktywowany - wylogowano - !user.isActivated' })
+            return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
         const loginTokenTTL = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_TOKEN_LIFE_TIME.key)
@@ -680,6 +701,13 @@ const logout = async (req, res) => {
         description: "Wszystko poszło GIT",
         schema: { 
             success: 'SUCCESS_LOGOUT'
+        }  
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_LOGOUT_ERROR'
         }  
     }
 
