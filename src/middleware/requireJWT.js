@@ -54,6 +54,11 @@ const requireJWT = async (req, res, next) => {
         return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
     }
 
+    if(!user.isActivated) {
+        logToFile(`run endpoint ${req.method} ${fullUrl} - account is not activated`);
+        return res.status(API_RESULTS.ERR_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
+    }
+
     const user_role = await Role.findByPk(user.roleId)
     user.roleId = user_role
     req.user = user;

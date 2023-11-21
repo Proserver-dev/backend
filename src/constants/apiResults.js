@@ -43,7 +43,7 @@ const API_RESULTS = {
     ERR_ADMIN_PRIVILEGES_REQUIRED: { description: "Ta czynność wymaga uprawnień admina", code: 'ERR_ADMIN_PRIVILEGES_REQUIRED', status_code: 403 },
     ERR_WRONG_AUTH_PIN: { description: 'PIN aktywacyjny jest niepoprawny', code: 'ERR_WRONG_AUTH_PIN', status_code: 401 },
     ERR_USER_IS_ALREADY_ACTIVATED: { description: 'Użytkownik jest już aktywowany', code: 'ERR_USER_IS_ALREADY_ACTIVATED', status_code: 409 },
-    ERR_USER_IS_NOT_ACTIVATED: { description: 'Użytkownik jeszcze nie został aktywowany. Musisz potwierdzić maila', code: 'ERR_USER_IS_NOT_ACTIVATED', status_code: 400 },
+    ERR_USER_IS_NOT_ACTIVATED: { description: 'Użytkownik jeszcze nie został aktywowany. Musisz potwierdzić maila', code: 'ERR_USER_IS_NOT_ACTIVATED', status_code: 403 },
     ERR_INVALID_EMAIL_ADDRESS: { description: 'Adres email jest niepoprawny', code: 'ERR_INVALID_EMAIL_ADDRESS', status_code: 422 },
     ERR_REGISTRATION_DISABLED: { description: 'Rejestracja jest wyłączona', code: 'ERR_REGISTRATION_DISABLED', status_code: 423 },
     ERR_LOGIN_DISABLED: { description: 'Logowanie jest wyłączone', code: 'ERR_LOGIN_DISABLED', status_code: 423 },
@@ -53,13 +53,16 @@ const API_RESULTS = {
     ERR_FILE_SIZE_EXCEEDS_LIMIT: { description: 'File size exceeds the limit of 5 MB', code: 'ERR_FILE_SIZE_EXCEEDS_LIMIT', status_code: 413 },
     ERR_CANNOT_CHANGE_SELF_ROLE: { description: 'Nie można zmienić roli samego siebie', code: 'ERR_CANNOT_CHANGE_SELF_ROLE', status_code: 403 },
     ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF: { description: "Nie możesz wysłać wiadomości do siebie", code: 'ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF', status_code: 403 },
+    ERR_CANNOT_CHANGE_SELF_ACTIVATION: { description: 'Nie możesz zmienić sobie statusu aktywacji konta', code: 'ERR_CANNOT_CHANGE_SELF_ACTIVATION', status_code: 403 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
     SUCCESS_DELETE_ROLE: { description: "Pomyślnie usunięto rolę", code: 'SUCCESS_DELETE_ROLE', status_code: 200 },
     SUCCESS_USER_REGISTERED: { description: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 },
     SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 },
-    SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 }
+    SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 },
+    SUCCESS_USER_DEACTIVATED: { description: "Pomyślnie dezaktywowano konto", code: 'SUCCESS_USER_DEACTIVATED', status_code: 200 },
+    SUCCESS_USER_ACTIVATED: { description: "Pomyślnie aktywowano konto", code: 'SUCCESS_USER_ACTIVATED', status_code: 200 }
 }
 
 module.exports = API_RESULTS
