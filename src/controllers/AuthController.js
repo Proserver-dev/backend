@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
+const EmailSendHistory = require('../models/EmailSendHistoryModel')
 const { saveLogFromEndpointRequest } = require('../functions');
 const isValidEmail = require('../utils/isValidEmail')
 const generateAuthPin = require('../utils/generateAuthPin')
@@ -143,19 +144,40 @@ const register = async (req, res) => {
 
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
+        const subject = 'RideClub - Kod aktywacyjny'
+        const html = `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`
+
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'RideClub - Kod aktywacyjny',
-            html: `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`,
+            subject: subject,
+            html: html,
         };
 
         emailClient.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error(error);
+                EmailSendHistory.create({ 
+                    from: SETTINGS.SMTP.AUTH.USER, 
+                    to: email,
+                    subject: subject,
+                    html: html,
+                    status: EMAIL_STATUSES.ERROR,
+                    errorLog: JSON.stringify(error)
+                })
                 res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
             } else {
                 console.log('E-mail wysłany: ' + info.response);
+
+                EmailSendHistory.create({ 
+                    from: SETTINGS.SMTP.AUTH.USER, 
+                    to: email,
+                    subject: subject,
+                    html: html,
+                    status: EMAIL_STATUSES.SUCCESS,
+                    errorLog: info.response
+                })
+
                 const now = Date.now();
                 user.update({ lastEmailSentTime: now })
                 user.roleId = default_role
@@ -397,19 +419,40 @@ const resendEmailActivationCode = async (req, res) => {
         await user.update({ authPin: newAuthPin, lastEmailSentTime: now });
         AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
+        const subject = 'RideClub - Kod aktywacyjny'
+        const html = `<p>Twój kod aktywacyjny: <strong>${newAuthPin}</strong></p>`
+
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
             to: email,
-            subject: 'RideClub - Kod aktywacyjny',
-            html: `<p>Twój kod aktywacyjny: <strong>${newAuthPin}</strong></p>`,
+            subject: subject,
+            html: html,
         };
 
         emailClient.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error(error);
+                EmailSendHistory.create({ 
+                    from: SETTINGS.SMTP.AUTH.USER, 
+                    to: email,
+                    subject: subject,
+                    html: html,
+                    status: EMAIL_STATUSES.ERROR,
+                    errorLog: JSON.stringify(error)
+                })
                 res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
             } else {
                 console.log('E-mail wysłany ponownie: ' + info.response);
+
+                EmailSendHistory.create({ 
+                    from: SETTINGS.SMTP.AUTH.USER, 
+                    to: email,
+                    subject: subject,
+                    html: html,
+                    status: EMAIL_STATUSES.SUCCESS,
+                    errorLog: info.response
+                })
+
                 res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
             }
         });

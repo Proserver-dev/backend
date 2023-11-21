@@ -3,12 +3,14 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
+const EmailSendHistory = require('../models/EmailSendHistoryModel')
 const { saveLogFromEndpointRequest } = require('../functions');
 const isValidEmail = require('../utils/isValidEmail')
 const generateAuthPin = require('../utils/generateAuthPin')
 const API_RESULTS = require('../constants/apiResults');
 const emailClient = require('../utils/emailClient')
 const { SETTINGS } = require('../../settings');
+const EMAIL_STATUSES = require('../constants/emailStatuses');
 
 const userChangePassword = async (req, res) => {
     /*
@@ -268,19 +270,39 @@ const createNewAccount = async (req, res) => {
                 html += `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`
             }
 
+            const subject = 'RideClub - dane dostępowe'
+
             const mailOptions = {
                 from: SETTINGS.SMTP.AUTH.USER,
                 to: email,
-                subject: 'RideClub - dane dostępowe',
+                subject: subject,
                 html: html,
             };
 
             emailClient.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.error(error);
+                    EmailSendHistory.create({ 
+                        from: SETTINGS.SMTP.AUTH.USER, 
+                        to: email,
+                        subject: subject,
+                        html: html,
+                        status: EMAIL_STATUSES.ERROR,
+                        errorLog: JSON.stringify(error)
+                    })
                     res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
                 } else {
                     console.log('E-mail wysłany: ' + info.response);
+
+                    EmailSendHistory.create({ 
+                        from: SETTINGS.SMTP.AUTH.USER, 
+                        to: email,
+                        subject: subject,
+                        html: html,
+                        status: EMAIL_STATUSES.SUCCESS,
+                        errorLog: info.response
+                    })
+
                     const now = Date.now();
                     user.update({ lastEmailSentTime: now })
                     user.roleId = role
