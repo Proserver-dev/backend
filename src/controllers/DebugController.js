@@ -4,6 +4,7 @@ const { getLogFileName } = require('../functions');
 const { saveLogFromEndpointRequest } = require('../functions');
 const API_RESULTS = require('../constants/apiResults')
 const User = require('../models/UserModel');
+const Role = require('../models/RoleModel')
 
 function getLogs(req, res) {
     // #swagger.ignore = true
@@ -40,6 +41,8 @@ async function getSocketConnections(req, res) {
           const socketId = key.replace("connection_", "");
           const userId = allData[key].v;
           const user = await User.findByPk(userId);
+          const role = await Role.findByPk(user.roleId)
+          user.roleId = role
           dataArray.push({ socket_id: socketId, userId, user });
       }
   }

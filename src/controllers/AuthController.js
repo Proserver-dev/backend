@@ -14,6 +14,7 @@ const API_RESULTS = require('../constants/apiResults')
 const emailClient = require('../utils/emailClient')
 const getAppSetting = require('../utils/getAppSetting')
 const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
+const EMAIL_STATUSES = require('../constants/emailStatuses');
 
 const register = async (req, res) => {
     /*
@@ -416,7 +417,7 @@ const resendEmailActivationCode = async (req, res) => {
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
         const newAuthPin = generateAuthPin()
-        await user.update({ authPin: newAuthPin, lastEmailSentTime: now });
+        await user.update({ authPin: newAuthPin });
         AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
         const subject = 'RideClub - Kod aktywacyjny'
@@ -452,6 +453,8 @@ const resendEmailActivationCode = async (req, res) => {
                     status: EMAIL_STATUSES.SUCCESS,
                     errorLog: info.response
                 })
+
+                user.update({ lastEmailSentTime: now })
 
                 res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
             }
