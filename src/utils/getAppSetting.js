@@ -7,11 +7,13 @@ const getAppSetting = async (key) => {
     });
 
     if(option) {
-        if(option.value == 1)
-            return true;
+        if(option.type == "main") {
+            if(option.value == 1)
+                return true;
 
-        if(option.value == 0)
-            return false
+            if(option.value == 0)
+                return false
+        }
 
         return option.value
     }

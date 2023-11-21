@@ -15,7 +15,13 @@ const getAppConfigurations = async (req, res) => {
 
     saveLogFromEndpointRequest(req)
     try {
-        const config = await AppConfiguration.findAll();
+        const type = req.query.type
+        const filters = {}
+        if(type) {
+            filters.type = type
+        }
+
+        const config = await AppConfiguration.findAll({ where: filters });
         res.json(config);
     } catch (error) {
         res.status(API_RESULTS.ERR_GET_APP_CONFIG.status_code).json({ error: API_RESULTS.ERR_GET_APP_CONFIG.code });

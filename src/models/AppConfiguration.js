@@ -10,6 +10,10 @@ const AppConfiguration = sequelize.define('AppConfiguration', {
   value: {
     type: DataTypes.STRING,
   },
+  type: {
+    type: DataTypes.STRING,
+    defaultValue: 'main'
+  },
 }, {
   timestamps: true,
   underscored: false,
@@ -21,6 +25,7 @@ AppConfiguration.prototype.toJSON = function() {
     id: this.id,
     key: this.key,
     value: this.value,
+    type: this.type,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

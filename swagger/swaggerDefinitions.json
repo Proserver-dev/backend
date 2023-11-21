@@ -196,12 +196,33 @@
                 "error": {
                   "type": "array",
                   "example": [
+                    "ERR_WEAK_PASSWORD",
                     "ERR_PROVIDE_EMAIL_FIELD",
                     "ERR_PROVIDE_PASSWORD_FIELD"
                   ],
                   "items": {
                     "type": "string"
                   }
+                },
+                "PASSWORD_MIN_CHARS": {
+                  "type": "number",
+                  "example": 8
+                },
+                "PASSWORD_MIN_SMALL_LETTERS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_BIG_LETTERS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_DIGITS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_SPECIAL_CHARS": {
+                  "type": "number",
+                  "example": 1
                 }
               },
               "xml": {
@@ -2413,13 +2434,39 @@
             }
           },
           "400": {
-            "description": "Musisz przekazać hasło",
+            "description": "Musisz przekazać wszystkie poprawne dane",
             "schema": {
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "ERR_PROVIDE_PASSWORD_FIELD"
+                  "type": "array",
+                  "example": [
+                    "ERR_WEAK_PASSWORD",
+                    "ERR_PROVIDE_PASSWORD_FIELD"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "PASSWORD_MIN_CHARS": {
+                  "type": "number",
+                  "example": 8
+                },
+                "PASSWORD_MIN_SMALL_LETTERS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_BIG_LETTERS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_DIGITS": {
+                  "type": "number",
+                  "example": 1
+                },
+                "PASSWORD_MIN_SPECIAL_CHARS": {
+                  "type": "number",
+                  "example": 1
                 }
               },
               "xml": {
@@ -2787,6 +2834,13 @@
           "Admin"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"

@@ -54,6 +54,7 @@ const API_RESULTS = {
     ERR_CANNOT_CHANGE_SELF_ROLE: { description: 'Nie można zmienić roli samego siebie', code: 'ERR_CANNOT_CHANGE_SELF_ROLE', status_code: 403 },
     ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF: { description: "Nie możesz wysłać wiadomości do siebie", code: 'ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF', status_code: 403 },
     ERR_CANNOT_CHANGE_SELF_ACTIVATION: { description: 'Nie możesz zmienić sobie statusu aktywacji konta', code: 'ERR_CANNOT_CHANGE_SELF_ACTIVATION', status_code: 403 },
+    ERR_WEAK_PASSWORD: { description: 'Hasło jest zbyt słabe', code: 'ERR_WEAK_PASSWORD', status_code: 400 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
