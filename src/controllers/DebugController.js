@@ -30,7 +30,19 @@ function getLogs(req, res) {
 }
 
 async function getSocketConnections(req, res) {
-  // #swagger.tags = ['Debug']
+  /* 
+  #swagger.tags = ['Debug']
+
+  #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: [ {
+          socket_id: "5D_nQCcfdSfN794KAAAB",
+          userId: 1,
+          user: { $ref: '#/definitions/User' } 
+        } ]
+  }
+
+  */
 
   saveLogFromEndpointRequest(req)
   const allData = myCache.data;
@@ -51,7 +63,30 @@ async function getSocketConnections(req, res) {
 }
 
 function getAllApiResultsConstants(req, res) {
-  // #swagger.tags = ['Debug']
+  /* 
+  #swagger.tags = ['Debug']
+
+  #swagger.security = [{
+      TokenAuth: []
+  }]
+
+  #swagger.responses[200] = {
+    description: 'Wszystko poszło GIT',
+    schema: {
+      ERR_READ_FILE: {
+        description: "Błąd odczytu pliku",
+        code: "ERR_READ_FILE",
+        status_code: 500
+      },
+      ERR_GET_ROLES: {
+        description: "Wystąpił błąd podczas pobierania ról",
+        code: "ERR_GET_ROLES",
+        status_code: 500
+      },
+    }
+  }
+
+  */
   
   saveLogFromEndpointRequest(req)
   res.json(API_RESULTS)

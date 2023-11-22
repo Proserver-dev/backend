@@ -32,7 +32,29 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "socket_id": {
+                    "type": "string",
+                    "example": "5D_nQCcfdSfN794KAAAB"
+                  },
+                  "userId": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "user": {
+                    "$ref": "#/definitions/User"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -45,7 +67,49 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ERR_READ_FILE": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "example": "Błąd odczytu pliku"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "ERR_READ_FILE"
+                    },
+                    "status_code": {
+                      "type": "number",
+                      "example": 500
+                    }
+                  }
+                },
+                "ERR_GET_ROLES": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "example": "Wystąpił błąd podczas pobierania ról"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "ERR_GET_ROLES"
+                    },
+                    "status_code": {
+                      "type": "number",
+                      "example": 500
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Musisz dostarczyć Token w nagłówku",
@@ -113,7 +177,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ]
       }
     },
     "/auth/register": {
