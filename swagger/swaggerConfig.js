@@ -19,19 +19,7 @@ module.exports = {
         in: 'header',
         name: 'Token',
         description: 'login Token, e.g., "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"',
-    },
-    RefreshTokenAuth: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'Refresh-Token',
-        description: 'Refresh token, e.g., "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"',
-    },
-    DeviceTokenAuth: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'Device-Token',
-        description: 'Device token, e.g., "abcd1234efgh5678"',
-    },
+    }
   },
   definitions: {
     User: {

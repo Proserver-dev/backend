@@ -1,7 +1,4 @@
 const API_RESULTS = {
-    ERR_LOGIN_ERROR: { description: "Błąd logowania", code: 'ERR_LOGIN_ERROR', status_code: 500 },
-    ERR_REGISTER_ERROR: { description: "Błąd rejestracji", code: 'ERR_REGISTER_ERROR', status_code: 500 },
-    ERR_REFRESH_TOKEN: { description: "Błąd odświeżania tokena", code: 'ERR_REFRESH_TOKEN', status_code: 500 },
     ERR_VERIFY_TOKEN: { description: "Błąd weryfikacji tokenu", code: 'ERR_VERIFY_TOKEN', status_code: 401 },
     ERR_READ_FILE: { description: "Błąd odczytu pliku", code: 'ERR_READ_FILE', status_code: 500 },
     ERR_GET_ROLES: { description: "Wystąpił błąd podczas pobierania ról", code: 'ERR_GET_ROLES', status_code: 500 },
@@ -10,9 +7,7 @@ const API_RESULTS = {
     ERR_DELETE_ROLE: { description: "Wystąpił błąd podczas usuwania roli", code: 'ERR_DELETE_ROLE', status_code: 500 },
     ERR_GET_USERS: { description: "Wystąpił błąd podczas pobierania użytkowników", code: 'ERR_GET_USERS', status_code: 500 },
     ERR_GET_MESSAGES: { description: "Wystąpił błąd podczas pobierania wiadomości", code: 'ERR_GET_MESSAGES', status_code: 500 },
-    ERR_LOGOUT_ERROR: { description: "Wystąpił problem z wylogowaniem", code: 'ERR_LOGOUT_ERROR', status_code: 500 },
     ERR_SEND_EMAIL: { description: 'Wystąpił problem z wysyłką wiadomości email', code: 'ERR_SEND_EMAIL', status_code: 503 },
-    ERR_ACTIVATE_ACCOUNT_ERROR: { description: 'Wystąpił problem z aktywacją konta', code: 'ERR_ACTIVATE_ACCOUNT_ERROR', status_code: 500 },
     ERR_SOMETHING_WENT_WRONG: { description: 'Coś poszło nie tak', code: 'ERR_SOMETHING_WENT_WRONG', status_code: 500 },
     ERR_GET_AUTH_HISTORY: { description: 'Wystąpił problem z pobraniem auth history', code: 'ERR_GET_AUTH_HISTORY', status_code: 500 },
     ERR_GET_APP_CONFIG: { description: 'Wystąpił problem z pobraniem konfiguracji aplikacji', code: 'ERR_GET_APP_CONFIG', status_code: 500 },
@@ -23,13 +18,13 @@ const API_RESULTS = {
     ERR_PROVIDE_EMAIL_FIELD: { description: "Musisz wypełnić pole \"email\"", code: 'ERR_PROVIDE_EMAIL_FIELD', status_code: 400 },
     ERR_PROVIDE_PASSWORD_FIELD: { description: "Musisz wypełnić pole \"password\"", code: 'ERR_PROVIDE_PASSWORD_FIELD', status_code: 400 },
     ERR_PROVIDE_MESSAGE_FIELD: { description: "Musisz wypełnić pole \"message\"", code: 'ERR_PROVIDE_MESSAGE_FIELD', status_code: 400 },
-    ERR_WRONG_PASSWORD: { description: "Niepoprawne hasło", code: 'ERR_WRONG_PASSWORD', status_code: 401 },
-    ERR_PROVIDE_DEVICE_TOKEN: { description: "Musisz przekazać Device-Token w nagłówku", code: 'ERR_PROVIDE_DEVICE_TOKEN', status_code: 400 },
+    ERR_BAD_CREDENTIALS: { description: "Niepoprawne dane logowania", code: 'ERR_BAD_CREDENTIALS', status_code: 401 },
+    ERR_PROVIDE_DEVICE_TOKEN: { description: "Musisz przekazać Device-Token w nagłówku", code: 'ERR_PROVIDE_DEVICE_TOKEN', status_code: 403 },
     ERR_PROVIDE_LOGIN_TOKEN: { description: "Musisz przekazać Token w nagłówku", code: 'ERR_PROVIDE_LOGIN_TOKEN', status_code: 400 },
     ERR_PROVIDE_REFRESH_TOKEN: { description: "Musisz przekazać Refresh-Token w nagłówku", code: 'ERR_PROVIDE_REFRESH_TOKEN', status_code: 400 },
     ERR_REFRESH_TOKEN_EXPIRED: { description: "Refresh-Token jest nieaktualny", code: 'ERR_REFRESH_TOKEN_EXPIRED', status_code: 401 },
     ERR_TOKEN_EXPIRED: { description: "Token jest nieaktualny", code: 'ERR_TOKEN_EXPIRED', status_code: 401 },
-    ERR_WRONG_DEVICE_TOKEN: { description: "Device-Token jest niepoprawny", code: 'ERR_WRONG_DEVICE_TOKEN', status_code: 401 },
+    ERR_WRONG_DEVICE_TOKEN: { description: "Device-Token jest niepoprawny", code: 'ERR_WRONG_DEVICE_TOKEN', status_code: 403 },
     ERR_USER_FROM_TOKEN_NOT_EXISTS: { description: "Użytkownik z tokena nie istnieje", code: 'ERR_USER_FROM_TOKEN_NOT_EXISTS', status_code: 404 },
     ERR_USER_NOT_EXISTS: { description: "Użytkownik nie istnieje", code: 'ERR_USER_NOT_EXISTS', status_code: 404 },
     ERR_USER_ALREADY_EXISTS: { description: "Użytkownik z takim mailem już istnieje", code: 'ERR_USER_ALREADY_EXISTS', status_code: 409 },
@@ -63,7 +58,8 @@ const API_RESULTS = {
     SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 },
     SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 },
     SUCCESS_USER_DEACTIVATED: { description: "Pomyślnie dezaktywowano konto", code: 'SUCCESS_USER_DEACTIVATED', status_code: 200 },
-    SUCCESS_USER_ACTIVATED: { description: "Pomyślnie aktywowano konto", code: 'SUCCESS_USER_ACTIVATED', status_code: 200 }
+    SUCCESS_USER_ACTIVATED: { description: "Pomyślnie aktywowano konto", code: 'SUCCESS_USER_ACTIVATED', status_code: 200 },
+    SUCCESS_RESEND_EMAIL: { description: "Pomyślnie wysłano ponownie maila", code: 'SUCCESS_RESEND_EMAIL', status_code: 200 }
 }
 
 module.exports = API_RESULTS

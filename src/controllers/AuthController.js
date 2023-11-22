@@ -21,7 +21,6 @@ const register = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
     #swagger.summary = 'Endpoint do rejestracji'
-    #swagger.description = 'Endpoint do rejestracji'
 
     #swagger.parameters['Device-Token'] = {
         in: 'header',
@@ -90,7 +89,7 @@ const register = async (req, res) => {
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
-            error: 'ERR_REGISTER_ERROR'
+            error: 'ERR_INTERNAL_SERVER_ERROR'
         }  
     }
 
@@ -215,7 +214,7 @@ const register = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(API_RESULTS.ERR_REGISTER_ERROR.status_code).json({ error: API_RESULTS.ERR_REGISTER_ERROR.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 
@@ -223,7 +222,6 @@ const activateAccount = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
     #swagger.summary = 'Endpoint do aktywacji konta'
-    #swagger.description = 'Endpoint do aktywacji konta'
 
     #swagger.parameters['Device-Token'] = {
         in: 'header',
@@ -261,13 +259,6 @@ const activateAccount = async (req, res) => {
         }  
     }
 
-    #swagger.responses[404] = { 
-        description: "Taki email nie istnieje w bazie",
-        schema: {
-            error: 'ERR_USER_NOT_EXISTS'
-        }  
-    }
-
     #swagger.responses[409] = { 
         description: "Konto już jest aktywowane",
         schema: {
@@ -293,7 +284,7 @@ const activateAccount = async (req, res) => {
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
-            error: 'ERR_ACTIVATE_ACCOUNT_ERROR'
+            error: 'ERR_INTERNAL_SERVER_ERROR'
         }  
     }
 
@@ -306,12 +297,14 @@ const activateAccount = async (req, res) => {
         }  
     }
 
-
-
     */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    if(!deviceToken) {
+        return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
+    }
 
     const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
     if(!isLoginEnabled) {
@@ -333,16 +326,7 @@ const activateAccount = async (req, res) => {
         const user = await User.findOne({ where: { email } });
     
         if (!user) {
-            // TODO: może tutaj trzeba też zwrócić kod ERR_WRONG_AUTH_PIN
-          return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
-        }
-
-        if(user.isActivated) {
-            return res.status(API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.code });
-        }
-
-        if(!deviceToken) {
-            return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
+          return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
         }
 
         if(deviceToken !== user.deviceToken) {
@@ -351,6 +335,10 @@ const activateAccount = async (req, res) => {
 
         if(authPin !== user.authPin) {
             return res.status(API_RESULTS.ERR_WRONG_AUTH_PIN.status_code).json({ error: API_RESULTS.ERR_WRONG_AUTH_PIN.code });
+        }
+
+        if(user.isActivated) {
+            return res.status(API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.code });
         }
 
         const newAuthPin = generateAuthPin()
@@ -368,19 +356,69 @@ const activateAccount = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(API_RESULTS.ERR_ACTIVATE_ACCOUNT_ERROR.status_code).json({ error: API_RESULTS.ERR_ACTIVATE_ACCOUNT_ERROR.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 
 const resendEmailActivationCode = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
+    #swagger.summary = 'Endpoint do ponownej wysyłki maila z PINem aktywacyjnym'
+
+    #swagger.parameters['Device-Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            email: "john@doe.com"
+        }
+    }
 
     #swagger.responses[423] = { 
         description: "Logowanie wyłączone",
         schema: {
             error: 'ERR_LOGIN_DISABLED',
             reason: 'Maintenance'
+        }  
+    }
+
+    #swagger.responses[403] = { 
+        description: "Brakuje Device-Token w nagłówku lub jest nieprawidłowy",
+        schema: {
+            error: ['ERR_PROVIDE_DEVICE_TOKEN', 'ERR_WRONG_DEVICE_TOKEN']
+        }  
+    }
+
+    #swagger.responses[409] = { 
+        description: "Konto już jest aktywowane",
+        schema: {
+            error: 'ERR_USER_IS_ALREADY_ACTIVATED'
+        }  
+    }
+
+    #swagger.responses[400] = { 
+        description: "Musisz przekazać wszystkie poprawne dane",
+        schema: { 
+            error: 'ERR_PROVIDE_EMAIL_FIELD'
+        }   
+    }
+
+    #swagger.responses[422] = { 
+        description: "Nieprawidłowe dane wejściowe",
+        schema: {
+            error: 'ERR_INVALID_EMAIL_ADDRESS'
+        }  
+    }
+
+    #swagger.responses[429] = { 
+        description: "Zbyt dużo rządań o wysyłkę email - można raz na minutę",
+        schema: {
+            error: 'ERR_EMAIL_SEND_THROTTLE',
+            remainingTime: 50000
         }  
     }
 
@@ -391,10 +429,28 @@ const resendEmailActivationCode = async (req, res) => {
         }  
     }
 
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_INTERNAL_SERVER_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            success: 'SUCCESS_RESEND_EMAIL'
+        }  
+    }
+
     */
 
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
+
+    if(!deviceToken) {
+        return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
+    }
 
     const isLoginEnabled = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_ENABLED.key)
     if(!isLoginEnabled) {
@@ -403,7 +459,7 @@ const resendEmailActivationCode = async (req, res) => {
     }
 
     try {
-        const { email } = req.body;
+        const email = req.body.email;
 
         if (!email) {
             return res.status(API_RESULTS.ERR_PROVIDE_EMAIL_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_EMAIL_FIELD.code });
@@ -416,20 +472,15 @@ const resendEmailActivationCode = async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            // TODO: tutaj może jakiś ogólny błąd, że nie udało się wysłać maila czy coś
-            return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
-        }
-
-        if(user.isActivated) {
-            return res.status(API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.code });
-        }
-
-        if(!deviceToken) {
-            return res.status(API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_DEVICE_TOKEN.code });
+            return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
         }
 
         if(deviceToken !== user.deviceToken) {
             return res.status(API_RESULTS.ERR_WRONG_DEVICE_TOKEN.status_code).json({ error: API_RESULTS.ERR_WRONG_DEVICE_TOKEN.code });
+        }
+
+        if(user.isActivated) {
+            return res.status(API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.status_code).json({ error: API_RESULTS.ERR_USER_IS_ALREADY_ACTIVATED.code });
         }
 
         const now = Date.now();
@@ -439,7 +490,10 @@ const resendEmailActivationCode = async (req, res) => {
         const time = await getAppSetting(APP_CONFIGURATION_DEFAULT.THROTTLE_TIME_SENDING_EMAILS.key)
 
         if (elapsedTimeSinceLastEmail < time) {
-            return res.status(API_RESULTS.ERR_EMAIL_SEND_THROTTLE.status_code).json({ error: API_RESULTS.ERR_EMAIL_SEND_THROTTLE.code });
+            return res.status(API_RESULTS.ERR_EMAIL_SEND_THROTTLE.status_code).json({ 
+                error: API_RESULTS.ERR_EMAIL_SEND_THROTTLE.code,
+                remainingTime: (time - elapsedTimeSinceLastEmail)
+            });
         }
 
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
@@ -484,17 +538,31 @@ const resendEmailActivationCode = async (req, res) => {
 
                 user.update({ lastEmailSentTime: now })
 
-                res.status(API_RESULTS.SUCCESS_USER_REGISTERED.status_code).json({ success: API_RESULTS.SUCCESS_USER_REGISTERED.code, user });
+                res.status(API_RESULTS.SUCCESS_RESEND_EMAIL.status_code).json({ success: API_RESULTS.SUCCESS_RESEND_EMAIL.code, user });
             }
         });
     } catch (error) {
-        res.status(API_RESULTS.ERR_SEND_EMAIL.status_code).json({ error: API_RESULTS.ERR_SEND_EMAIL.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 
 const login = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
+
+    #swagger.parameters['Device-Token'] = {
+        in: 'header',
+        required: true
+    }
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            email: "john@doe.com",
+            password: "secret"
+        }
+    }
 
     #swagger.responses[423] = { 
         description: "Logowanie wyłączone",
@@ -507,7 +575,44 @@ const login = async (req, res) => {
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
-            error: 'ERR_LOGIN_ERROR'
+            error: 'ERR_INTERNAL_SERVER_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            token: 'string',
+            refreshToken: 'string',
+            user: { $ref: '#/definitions/User' } 
+        }  
+    }
+
+    #swagger.responses[400] = { 
+        description: "Musisz przekazać wszystkie poprawne dane",
+        schema: { 
+            error: 'ERR_PROVIDE_LOGIN_DATA'
+        }   
+    }
+
+    #swagger.responses[403] = { 
+        description: "Brakuje Device-Token w nagłówku albo user nie jest aktywowany",
+        schema: {
+            error: ['ERR_PROVIDE_DEVICE_TOKEN', 'ERR_USER_IS_NOT_ACTIVATED']
+        }  
+    }
+
+    #swagger.responses[422] = { 
+        description: "Nieprawidłowe dane wejściowe",
+        schema: {
+            error: 'ERR_INVALID_EMAIL_ADDRESS'
+        }  
+    }
+
+    #swagger.responses[401] = { 
+        description: "Niepoprawne dane logowania",
+        schema: {
+            error: 'ERR_BAD_CREDENTIALS'
         }  
     }
 
@@ -516,7 +621,8 @@ const login = async (req, res) => {
     saveLogFromEndpointRequest(req)
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
     try {
-        const { email, password } = req.body;
+        const email = req.body.email;
+        const password = req.body.password;
 
         if (!email || !password) {
             return res.status(API_RESULTS.ERR_PROVIDE_LOGIN_DATA.status_code).json({ error: API_RESULTS.ERR_PROVIDE_LOGIN_DATA.code });
@@ -528,10 +634,14 @@ const login = async (req, res) => {
 
         const user = await User.findOne({ where: { email } });
     
-        // TODO: tutaj zrobić BAD CREDENTIALS
-        // ale z drugiej strony, przecież w endpoincie do rejestracji jest zwracane czy taki email już istniej w bazie czy nie...
         if (!user) {
-          return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
+          return res.status(API_RESULTS.ERR_BAD_CREDENTIALS.status_code).json({ error: API_RESULTS.ERR_BAD_CREDENTIALS.code });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+          return res.status(API_RESULTS.ERR_BAD_CREDENTIALS.status_code).json({ error: API_RESULTS.ERR_BAD_CREDENTIALS.code });
         }
 
         const user_role = await Role.findByPk(user.roleId)
@@ -549,15 +659,6 @@ const login = async (req, res) => {
                 const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
                 return res.status(API_RESULTS.ERR_LOGIN_DISABLED.status_code).send({ error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason })
             }
-        }
-    
-        const passwordMatch = await bcrypt.compare(password, user.password);
-    
-
-        // TODO: tutaj zrobić BAD CREDENTIALS
-        // ale z drugiej strony, przecież w endpoincie do rejestracji jest zwracane czy taki email już istniej w bazie czy nie...
-        if (!passwordMatch) {
-          return res.status(API_RESULTS.ERR_WRONG_PASSWORD.status_code).json({ error: API_RESULTS.ERR_WRONG_PASSWORD.code });
         }
 
         if(!user.isActivated) {
@@ -589,7 +690,7 @@ const login = async (req, res) => {
         res.json({ token: loginToken, refreshToken, user });
     } catch (error) {
         console.error(error);
-        res.status(API_RESULTS.ERR_LOGIN_ERROR.status_code).json({ error: API_RESULTS.ERR_LOGIN_ERROR.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 
@@ -598,9 +699,15 @@ const refreshLoginToken = async (req, res) => {
     #swagger.tags = ['Auth']
 
     
-    #swagger.parameters['Token'] = {
-        in: 'header',
-        required: true
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
+    #swagger.responses[400] = { 
+        description: "Musisz dostarczyć Token w nagłówku",
+        schema: {
+            error: ['ERR_PROVIDE_LOGIN_TOKEN', 'ERR_PROVIDE_REFRESH_TOKEN']
+        }  
     }
 
     #swagger.parameters['Refresh-Token'] = {
@@ -611,6 +718,27 @@ const refreshLoginToken = async (req, res) => {
     #swagger.parameters['Device-Token'] = {
         in: 'header',
         required: true
+    }
+
+    #swagger.responses[404] = { 
+        description: "Udało się zdekodować Token z nagłówka, ale user_id w nim zakodowany nie istnieje w bazie",
+        schema: {
+            error: 'ERR_USER_FROM_TOKEN_NOT_EXISTS'
+        }  
+    }
+
+    #swagger.responses[403] = { 
+        description: "Brakuje Device-Token w nagłówku lub jest nieprawidłowy",
+        schema: {
+            error: ['ERR_PROVIDE_DEVICE_TOKEN', 'ERR_WRONG_DEVICE_TOKEN']
+        }  
+    }
+
+    #swagger.responses[401] = { 
+        description: "Refresh-Token wygasł",
+        schema: {
+            error: 'ERR_REFRESH_TOKEN_EXPIRED'
+        }  
     }
 
     #swagger.responses[423] = { 
@@ -624,7 +752,14 @@ const refreshLoginToken = async (req, res) => {
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
-            error: 'ERR_REFRESH_TOKEN'
+            error: 'ERR_INTERNAL_SERVER_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = { 
+        description: "Wszystko poszło GIT",
+        schema: { 
+            token: 'string'
         }  
     }
 
@@ -636,7 +771,6 @@ const refreshLoginToken = async (req, res) => {
     const deviceToken = req.header(HEADERS_KEYS.DEVICE_TOKEN);
 
     if (!token) {
-        // #swagger.responses[400] = { error: 'ERR_PROVIDE_LOGIN_TOKEN' }
         return res.status(API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.status_code).json({ error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
     }
 
@@ -699,7 +833,7 @@ const refreshLoginToken = async (req, res) => {
         }
 
         if(!user.isActivated) {
-            AuthHistory.create({ userId: user.id, type: 'logout', content: 'użytkownik został dezaktywowany - wylogowano - !user.isActivated' })
+            AuthHistory.create({ userId: user.id, type: 'logout', content: 'użytkownik nie jest aktywowany - wylogowano - !user.isActivated' })
             return res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         }
 
@@ -729,7 +863,7 @@ const refreshLoginToken = async (req, res) => {
             res.status(API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN_EXPIRED.code });
         } else {
             console.error(error);
-            res.status(API_RESULTS.ERR_REFRESH_TOKEN.status_code).json({ error: API_RESULTS.ERR_REFRESH_TOKEN.code });
+            res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
         }
     } 
 }
@@ -738,17 +872,9 @@ const logout = async (req, res) => {
     /*
     #swagger.tags = ['Auth']
 
-    #swagger.parameters['Token'] = {
-        in: 'header',
-        required: true
-    }
-
-    #swagger.responses[500] = { 
-        description: "Błąd serwerowy",
-        schema: {
-            error: 'ERR_LOGOUT_ERROR'
-        }  
-    }
+    #swagger.security = [{
+        TokenAuth: []
+    }]
 
     #swagger.responses[400] = { 
         description: "Musisz dostarczyć Token w nagłówku",
@@ -781,7 +907,7 @@ const logout = async (req, res) => {
     #swagger.responses[500] = { 
         description: "Błąd serwerowy",
         schema: {
-            error: 'ERR_LOGOUT_ERROR'
+            error: 'ERR_INTERNAL_SERVER_ERROR'
         }  
     }
 
@@ -837,7 +963,7 @@ const logout = async (req, res) => {
             res.status(API_RESULTS.ERR_VERIFY_TOKEN.status_code).json({ error: API_RESULTS.ERR_VERIFY_TOKEN.code });
         } else {
             console.error(error);
-            res.status(API_RESULTS.ERR_LOGOUT_ERROR.status_code).json({ error: API_RESULTS.ERR_LOGOUT_ERROR.code });
+            res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
         }
     }
 }

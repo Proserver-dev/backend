@@ -42,7 +42,7 @@ async function privateMessageCreatedViaAPI(io, socket, data, currentUserId) {
 
     // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
     if(target_socket) {
-        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE_CREATED_VIA_API, data);
+        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, data);
     } else {
         // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
         

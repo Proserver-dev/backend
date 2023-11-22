@@ -217,9 +217,14 @@ const createNewAccount = async (req, res) => {
 
     #swagger.responses[400] = { 
         description: "Musisz przekazać wszystkie poprawne dane",
-        schema: {
-            error: ['ERR_PROVIDE_EMAIL_FIELD', 'ERR_PROVIDE_PASSWORD_FIELD']
-        }  
+        schema: { 
+            error: ['ERR_WEAK_PASSWORD', 'ERR_PROVIDE_EMAIL_FIELD', 'ERR_PROVIDE_PASSWORD_FIELD'],
+            PASSWORD_MIN_CHARS: 8,
+            PASSWORD_MIN_SMALL_LETTERS: 1,
+            PASSWORD_MIN_BIG_LETTERS: 1,
+            PASSWORD_MIN_DIGITS: 1,
+            PASSWORD_MIN_SPECIAL_CHARS: 1
+        }   
     }
 
     #swagger.responses[503] = { 
@@ -262,7 +267,29 @@ const createNewAccount = async (req, res) => {
             return res.status(API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.status_code).json({ error: API_RESULTS.ERR_PROVIDE_PASSWORD_FIELD.code });
         }
 
-        // TODO: tutaj może jeszcze sprawdzać, czy hasło nie jest zbyt proste
+        const { lowercaseCount, uppercaseCount, digitsCount, specialCharCount } = validatePassword(password)
+
+        const minCharsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_CHARS.key)
+        const minLowercaseCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SMALL_LETTERS.key)
+        const minUppercaseCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_BIG_LETTERS.key)
+        const minDigitsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_DIGITS.key)
+        const minSpecialcharsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SPECIAL_CHARS.key)
+
+        if (new_password.length < minCharsCount || 
+            lowercaseCount < minLowercaseCount || 
+            uppercaseCount < minUppercaseCount || 
+            digitsCount < minDigitsCount || 
+            specialCharCount < minSpecialcharsCount) {
+
+            return res.status(API_RESULTS.ERR_WEAK_PASSWORD.status_code).json({ 
+                error: API_RESULTS.ERR_WEAK_PASSWORD.code,
+                [APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_CHARS.key]: parseInt(minCharsCount),
+                [APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SMALL_LETTERS.key]: parseInt(minLowercaseCount),
+                [APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_BIG_LETTERS.key]: parseInt(minUppercaseCount),
+                [APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_DIGITS.key]: parseInt(minDigitsCount),
+                [APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SPECIAL_CHARS.key]: parseInt(minSpecialcharsCount)
+            });
+        }
 
         const userExist = await User.findOne({ where: { email } });
 
