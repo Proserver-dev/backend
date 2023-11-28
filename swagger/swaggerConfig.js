@@ -57,6 +57,22 @@ module.exports = {
       id: 2,
       name: "User",
       short: "user"
+    },
+    EmailSendHistory: {
+      id: 1,
+      isRead: false,
+      from: 'no-reply@rideclub.pl',
+      to: 'john@doe.com',
+      subject: 'Temat wiadomości',
+      html: 'Treść wiadomości w HTML',
+      status: 'success | error',
+      errorLog: {
+        code:"EAUTH",
+        response:"535 5.7.8 Error: authentication failed: ",
+        responseCode: 535,
+        command:"AUTH PLAIN"
+      },
+      createdAt: '2023-11-15T04:17:54.000Z'
     }
   }
 };

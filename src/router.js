@@ -12,6 +12,7 @@ const MessageController = require('./controllers/MessageController')
 const AuthHistoryController = require('./controllers/AuthHistoryController')
 const AppConfigurationsController = require('./controllers/AppConfigurationsController')
 const AdminController = require('./controllers/AdminController')
+const EmailSendHistoryController = require('./controllers/EmailSendHistoryController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -50,6 +51,8 @@ router.post('/admin/users/create-new-account', requireJWT, requireAdmin, AdminCo
 router.post('/admin/users/change-password/:userId', requireJWT, requireAdmin, AdminController.userChangePassword)
 router.post('/admin/users/change-role/:userId', requireJWT, requireAdmin, AdminController.userChangeRole)
 router.put('/admin/users/change-is-activated/:userId', requireJWT, requireAdmin, AdminController.changeIsActivated)
+
+router.get('/admin/get-email-send-history', requireJWT, requireAdmin, EmailSendHistoryController.getAllEmailSend)
 
 router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)
 router.put('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.editAppConfigurations)
