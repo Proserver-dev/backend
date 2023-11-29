@@ -502,6 +502,8 @@ const userDelete = async (req, res) => {
         // jeśli nie, to można zrobić: res.status(204).send() będzie działało szybciej
         // res.status(204).send() 
 
+        user.roleId = await Role.findByPk(user.roleId)
+
         res.status(API_RESULTS.SUCCESS_DELETE_USER.status_code).json({ success: API_RESULTS.SUCCESS_DELETE_USER.code, user });
     } catch (error) {
         console.log(error)

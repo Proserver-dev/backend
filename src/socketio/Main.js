@@ -6,6 +6,7 @@ const { disconnect } = require('./Disconnect')
 const SOCKET_EVENTS = require('../constants/socketEvents');
 const { messageToAll } = require('./messageToAll');
 const { privateMessage, privateMessageCreatedViaAPI, privateMessageWrite } = require('./privateMessage')
+const { changeLocation } = require('./changeLocation')
 const { getSocketIdByUserId } = require('../utils/socketio');
 const HEADERS_KEYS = require('../constants/headersKeys');
 const getAppSetting = require('../utils/getAppSetting')
@@ -50,7 +51,7 @@ async function mainSocket(io, socket) {
             logToFile(`Socket.io - Użytkownik id:${currentUserId} był już połączony z socketem. Stare połączenie zostało zerwane`);
             const oldSocket = Array.from(io.sockets.sockets.values()).find(s => s.id === checkConnectedSocket);
             if(oldSocket) {
-                oldSocket.emit(SOCKET_EVENTS.NEW_SOCKET_CONNECTION, { logout: true })
+                oldSocket.emit(SOCKET_EVENTS.RECEIVE_NEW_SOCKET_CONNECTION, { logout: true })
                 oldSocket.disconnect(true)
             }
             myCache.del(`connection_${checkConnectedSocket}`)
@@ -66,6 +67,7 @@ async function mainSocket(io, socket) {
         socket.on(SOCKET_EVENTS.SEND_PRIVATE_MESSAGE, (data) => { privateMessage(io, socket, data, currentUserId) })
         socket.on(SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_CREATED_VIA_API, (data) => { privateMessageCreatedViaAPI(io, socket, data, currentUserId) })
         socket.on(SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_WRITE, (data) => { privateMessageWrite(io, socket, data, currentUserId) })
+        socket.on(SOCKET_EVENTS.SEND_CHANGE_LOCATION, (data) => { changeLocation(io, socket, data, currentUserId) })
 
         socket.on('disconnect', () => { disconnect(socket, currentUserId, myCache) });
 
