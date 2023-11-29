@@ -51,6 +51,7 @@ router.post('/admin/users/create-new-account', requireJWT, requireAdmin, AdminCo
 router.post('/admin/users/change-password/:userId', requireJWT, requireAdmin, AdminController.userChangePassword)
 router.post('/admin/users/change-role/:userId', requireJWT, requireAdmin, AdminController.userChangeRole)
 router.put('/admin/users/change-is-activated/:userId', requireJWT, requireAdmin, AdminController.changeIsActivated)
+router.delete('/admin/users/:userId', requireJWT, requireAdmin, AdminController.userDelete) // kolejność ma znaczenie
 
 router.get('/admin/get-email-send-history', requireJWT, requireAdmin, EmailSendHistoryController.getAllEmailSend)
 

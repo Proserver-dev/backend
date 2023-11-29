@@ -49,11 +49,16 @@ const API_RESULTS = {
     ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF: { description: "Nie możesz wysłać wiadomości do siebie", code: 'ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF', status_code: 403 },
     ERR_CANNOT_CHANGE_SELF_ACTIVATION: { description: 'Nie możesz zmienić sobie statusu aktywacji konta', code: 'ERR_CANNOT_CHANGE_SELF_ACTIVATION', status_code: 403 },
     ERR_WEAK_PASSWORD: { description: 'Hasło jest zbyt słabe', code: 'ERR_WEAK_PASSWORD', status_code: 400 },
+    ERR_CANT_REMOVE_YOURSELF: { description: 'Nie możesz usunąć swojego konta', code: 'ERR_CANT_REMOVE_YOURSELF', status_code: 403 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
-    SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
-    SUCCESS_DELETE_ROLE: { description: "Pomyślnie usunięto rolę", code: 'SUCCESS_DELETE_ROLE', status_code: 200 },
     SUCCESS_USER_REGISTERED: { description: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 },
+
+    SUCCESS_EDIT_ROLE: { description: "Pomyślnie zaktualizowano rolę", code: 'SUCCESS_EDIT_ROLE', status_code: 200 },
+
+    SUCCESS_DELETE_ROLE: { description: "Pomyślnie usunięto rolę", code: 'SUCCESS_DELETE_ROLE', status_code: 200 },
+    SUCCESS_DELETE_USER: { description: "Pomyślnie usunięto usera", code: 'SUCCESS_DELETE_USER', status_code: 200 },
+
     SUCCESS_LOGOUT: { description: "Wylogowano pomyślnie", code: 'SUCCESS_LOGOUT', status_code: 200 },
     SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 },
     SUCCESS_USER_DEACTIVATED: { description: "Pomyślnie dezaktywowano konto", code: 'SUCCESS_USER_DEACTIVATED', status_code: 200 },

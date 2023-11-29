@@ -439,4 +439,75 @@ const changeIsActivated = async (req, res) => {
     } 
 }
 
-module.exports = { userChangePassword, userChangeRole, createNewAccount, changeIsActivated }
+const userDelete = async (req, res) => {
+    /*
+    #swagger.tags = ['Admin']
+    #swagger.summary = 'tylko dla admina'
+
+    #swagger.security = [{
+        TokenAuth: []
+    }]
+
+    #swagger.responses[403] = { 
+        description: "Nie możesz usunąć swojego konta albo nie masz uprawnień",
+        schema: {
+            error: ['ERR_CANT_REMOVE_YOURSELF', 'ERR_ADMIN_PRIVILEGES_REQUIRED']
+        }  
+    }
+
+    #swagger.responses[404] = { 
+        description: "User albo rola nie istnieje",
+        schema: {
+            error: ['ERR_USER_FROM_TOKEN_NOT_EXISTS', 'ERR_USER_NOT_EXISTS', 'ERR_ROLE_NOT_EXISTS']
+        }  
+    }
+
+    #swagger.responses[500] = { 
+        description: "Błąd serwerowy",
+        schema: {
+            error: 'ERR_INTERNAL_SERVER_ERROR'
+        }  
+    }
+
+    #swagger.responses[200] = {
+        description: 'Wszystko poszło GIT',
+        schema: { 
+            success: 'SUCCESS_DELETE_USER',
+            user: { $ref: '#/definitions/User' }
+        }
+    }
+
+    */
+
+    saveLogFromEndpointRequest(req)
+  
+    try {
+        const userId = req.params.userId
+
+        const user = await User.findByPk(userId);
+  
+        if (!user) {
+            return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
+        }
+
+        if(user.id === req.user.id) {
+            return res.status(API_RESULTS.ERR_CANT_REMOVE_YOURSELF.status_code).json({ error: API_RESULTS.ERR_CANT_REMOVE_YOURSELF.code })
+        }
+
+        await User.destroy({
+            where: { id: userId },
+        });
+
+        // TODO: tutaj kwestia, czy przy aktualizowaniu danych w bazie potrzebna będzie jakaś zwrotka jeśli się udało
+        // jeśli nie, to można zrobić: res.status(204).send() będzie działało szybciej
+        // res.status(204).send() 
+
+        res.status(API_RESULTS.SUCCESS_DELETE_USER.status_code).json({ success: API_RESULTS.SUCCESS_DELETE_USER.code, user });
+    } catch (error) {
+        console.log(error)
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
+    }
+
+}
+
+module.exports = { userChangePassword, userChangeRole, createNewAccount, changeIsActivated, userDelete }
