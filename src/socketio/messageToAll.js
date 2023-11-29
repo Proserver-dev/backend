@@ -31,8 +31,8 @@ async function messageToAll(io, socket, data, currentUserId) {
             logToFile(`Event: ${SOCKET_EVENTS.SEND_MESSAGE_TO_ALL} | target: all | message: ${data.message} | type: ${data.type} | sendBy: ${currentUser.id}`);
             MessageToAll.create({ sendBy: currentUser.id, message: data.message, type: data.type })
 
-            io.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
-            // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
+            io.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_FROM_SERVER, data);
+            // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_FROM_SERVER, data);
 
             if(data.type == "forceLogout") {
                 try {

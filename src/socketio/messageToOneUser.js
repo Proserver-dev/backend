@@ -37,7 +37,7 @@ async function messageToOneUser(io, socket, data, currentUserId) {
 
                 // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
                 if(target_socket) {
-                    target_socket.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, messageFull);
+                    target_socket.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_FROM_SERVER, messageFull);
                 } else {
                     // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
                     
