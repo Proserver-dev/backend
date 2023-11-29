@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const { Op } = require('sequelize');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const { saveLogFromEndpointRequest } = require('../functions');
@@ -56,11 +57,13 @@ async function getAllUsers(req, res) {
             queryOptions = {
                 ...queryOptions,
                 where: {
-                    [Op.or]: {
-                        email: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
-                        userName: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
-                        nameLastname: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
-                    },
+                    [Op.and]: keywordArray.map(keyword => ({
+                        [Op.or]: [
+                            { email: { [Op.like]: `%${keyword.toUpperCase()}%` } },
+                            { userName: { [Op.like]: `%${keyword.toUpperCase()}%` } },
+                            { nameLastname: { [Op.like]: `%${keyword.toUpperCase()}%` } },
+                        ],
+                    })),
                 },
             };
         }
@@ -75,6 +78,7 @@ async function getAllUsers(req, res) {
 
         res.json(modifiedUsers);
     } catch (error) {
+        console.log(error)
         res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
