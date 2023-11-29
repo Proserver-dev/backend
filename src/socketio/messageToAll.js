@@ -28,7 +28,7 @@ async function messageToAll(io, socket, data, currentUserId) {
         const currentUser = await User.findByPk(currentUserId);
         const role = await Role.findByPk(currentUser.roleId); // admin role
         if(role.short === "admin") {
-            logToFile(`Event: ${SOCKET_EVENTS.SEND_MESSAGE_TO_ALL} | client: all | message: ${data.message} | type: ${data.type} | sendBy: ${currentUser.id}`);
+            logToFile(`Event: ${SOCKET_EVENTS.SEND_MESSAGE_TO_ALL} | target: all | message: ${data.message} | type: ${data.type} | sendBy: ${currentUser.id}`);
             MessageToAll.create({ sendBy: currentUser.id, message: data.message, type: data.type })
 
             io.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);

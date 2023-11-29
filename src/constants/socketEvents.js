@@ -9,6 +9,7 @@ const SOCKET_EVENTS = {
     RECEIVE_PRIVATE_MESSAGE_WRITE: 'privateMessageWrite', // kiedy rozmówca zaczyna coś pisać
 
     SEND_MESSAGE_TO_ALL: 'messageToAll', // only admin
+    SEND_MESSAGE_TO_ONE_USER: 'messageToOneUser', // only admin
     RECEIVE_MESSAGE_TO_ALL: 'messageToAll',
 
     RECEIVE_NEW_SOCKET_CONNECTION: 'newSocketConnection', // tylko do nasłuchiwania
