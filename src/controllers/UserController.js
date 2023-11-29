@@ -18,6 +18,11 @@ async function getAllUsers(req, res) {
         in: 'query',
     }
 
+    #swagger.parameters['keywords'] = {
+        in: 'query',
+        description: 'Optional keywords for search (space-separated)',
+    }
+
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
         schema: { 
@@ -33,16 +38,34 @@ async function getAllUsers(req, res) {
 
     const limit = req.query.limit
     const offset = req.query.offset
+    const keywords = req.query.keywords;
 
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
     const parsedOffset = offset ? parseInt(offset, 10) : 0;
 
     try {
-        const users = await User.findAndCountAll({
+        let queryOptions = {
             order: [['createdAt', 'DESC']],
             limit: parsedLimit,
             offset: parsedOffset,
-        });
+        };
+
+        if (keywords) {
+            const keywordArray = keywords.split(' ');
+
+            queryOptions = {
+                ...queryOptions,
+                where: {
+                    [Op.or]: {
+                        email: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
+                        userName: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
+                        nameLastname: { [Op.iLike]: { [Op.any]: keywordArray.map(keyword => `%${keyword}%`) } },
+                    },
+                },
+            };
+        }
+
+        const users = await User.findAndCountAll(queryOptions);
 
         const usersWithRoles = await Promise.all(
             users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.roleId) }))
@@ -52,7 +75,7 @@ async function getAllUsers(req, res) {
 
         res.json(modifiedUsers);
     } catch (error) {
-        res.status(API_RESULTS.ERR_GET_USERS.status_code).json({ error: API_RESULTS.ERR_GET_USERS.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 
@@ -77,7 +100,7 @@ const getOneUser = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(API_RESULTS.ERR_GET_USERS.status_code).json({ error: API_RESULTS.ERR_GET_USERS.code });
+        res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
 }
 

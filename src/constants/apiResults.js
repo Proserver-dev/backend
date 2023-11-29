@@ -5,7 +5,6 @@ const API_RESULTS = {
     ERR_CREATE_ROLE: { description: "Wystąpił błąd podczas dodawania roli", code: 'ERR_CREATE_ROLE', status_code: 500 },
     ERR_EDIT_ROLE: { description: "Wystąpił błąd podczas aktualizacji roli", code: 'ERR_EDIT_ROLE', status_code: 500 },
     ERR_DELETE_ROLE: { description: "Wystąpił błąd podczas usuwania roli", code: 'ERR_DELETE_ROLE', status_code: 500 },
-    ERR_GET_USERS: { description: "Wystąpił błąd podczas pobierania użytkowników", code: 'ERR_GET_USERS', status_code: 500 },
     ERR_GET_MESSAGES: { description: "Wystąpił błąd podczas pobierania wiadomości", code: 'ERR_GET_MESSAGES', status_code: 500 },
     ERR_SEND_EMAIL: { description: 'Wystąpił problem z wysyłką wiadomości email', code: 'ERR_SEND_EMAIL', status_code: 503 },
     ERR_SOMETHING_WENT_WRONG: { description: 'Coś poszło nie tak', code: 'ERR_SOMETHING_WENT_WRONG', status_code: 500 },
