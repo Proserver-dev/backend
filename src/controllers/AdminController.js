@@ -14,6 +14,7 @@ const emailClient = require('../utils/emailClient')
 const { SETTINGS } = require('../../settings');
 const EMAIL_STATUSES = require('../constants/emailStatuses');
 const validatePassword = require('../utils/validatePassword');
+const getAppSetting = require('../utils/getAppSetting')
 
 const userChangePassword = async (req, res) => {
     /*
