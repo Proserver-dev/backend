@@ -87,6 +87,13 @@ const getOneUser = async (req, res) => {
     /* 
     #swagger.tags = ['Users']
 
+    #swagger.responses[404] = { 
+        description: "User nie istnieje",
+        schema: {
+            error: ['ERR_USER_FROM_TOKEN_NOT_EXISTS', 'ERR_USER_NOT_EXISTS']
+        }  
+    }
+
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
         schema: { $ref: '#/definitions/User' }
@@ -95,14 +102,18 @@ const getOneUser = async (req, res) => {
 
     saveLogFromEndpointRequest(req);
     try {
-        if (req.params.id) {
-            const user = await User.findByPk(req.params.id);
-            if (user) {
-                return res.json(user);
-            } else {
-                return res.json({});
-            }
+        const userId = req.params.userId
+
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
         }
+
+
+        user.roleId = await Role.findByPk(user.roleId)
+        return res.json(user);
+        
     } catch (error) {
         res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }
