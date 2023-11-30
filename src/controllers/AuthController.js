@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
@@ -173,7 +175,8 @@ const register = async (req, res) => {
         // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
 
         const subject = 'RideClub - Kod aktywacyjny'
-        const html = `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`
+        let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/registration.html'), 'utf-8');
+        html = html.replace('{registerPin}', registerPin);
 
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,
@@ -496,14 +499,13 @@ const resendEmailActivationCode = async (req, res) => {
             });
         }
 
-        // TODO: treść szablonu do wysyłki maila trzeba przenieść gdzieś indziej
-
         const newAuthPin = generateAuthPin()
         await user.update({ authPin: newAuthPin });
         AuthHistory.create({ userId: user.id, type: 'resend', content: 'Ponownie wysłano maila z pinem do aktywacji konta' })
 
         const subject = 'RideClub - Kod aktywacyjny'
-        const html = `<p>Twój kod aktywacyjny: <strong>${newAuthPin}</strong></p>`
+        let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/resend.html'), 'utf-8');
+        html = html.replace('{newAuthPin}', newAuthPin);
 
         const mailOptions = {
             from: SETTINGS.SMTP.AUTH.USER,

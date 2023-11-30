@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
@@ -319,11 +321,15 @@ const createNewAccount = async (req, res) => {
 
 
         if(sendEmail) {
-            let html = `<p>Login: ${email}</p>`
-            html += `<p>Hasło: ${password}</p>`
-
-            if(!user.isActivated) {
-                html += `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`
+            if(user.isActivated) {
+                let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentials.html'), 'utf-8');
+                html = html.replace('{email}', email);
+                html = html.replace('{password}', password);
+            } else {
+                let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentialsWithPIN.html'), 'utf-8');
+                html = html.replace('{email}', email);
+                html = html.replace('{password}', password);
+                html = html.replace('{registerPin}', registerPin);
             }
 
             const subject = 'RideClub - dane dostępowe'
