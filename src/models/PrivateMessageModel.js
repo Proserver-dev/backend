@@ -30,6 +30,7 @@ const PrivateMessage = sequelize.define('PrivateMessage', {
 PrivateMessage.hasMany(PrivateMessageAttachment, {
   foreignKey: 'privateMessageId',
   as: 'attachments',
+  onDelete: 'CASCADE',
 });
 
 PrivateMessage.belongsTo(User, {
