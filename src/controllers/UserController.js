@@ -5,7 +5,8 @@ const Role = require('../models/RoleModel');
 const { saveLogFromEndpointRequest } = require('../functions');
 const { DEFAULT_ROLE } = require('../constants/roleBlocked')
 const HEADERS_KEYS = require('../constants/headersKeys')
-const API_RESULTS = require('../constants/apiResults')
+const API_RESULTS = require('../constants/apiResults');
+const { getSocketIdByUserId } = require('../utils/socketio');
 
 async function getAllUsers(req, res) {
     /* 
@@ -29,7 +30,22 @@ async function getAllUsers(req, res) {
         schema: { 
             count: 1,
             rows: [
-                { $ref: '#/definitions/User' }
+                {
+                    id: 1,
+                    isActivated: true,
+                    email: "john@doe.dev",
+                    userName: "john123",
+                    nameLastname: "John Doe",
+                    role: {
+                        id: 2,
+                        name: "User",
+                        short: "user"
+                    },
+                    isLoggedIn: true,
+                    socketId: "guXSqQEoRKlhQqGrAAAH"
+                    updatedAt: "2023-11-15T04:17:54.000Z",
+                    createdAt: "2023-11-07T20:16:13.000Z"
+                }
             ]
         }
     } 
@@ -71,7 +87,11 @@ async function getAllUsers(req, res) {
         const users = await User.findAndCountAll(queryOptions);
 
         const usersWithRoles = await Promise.all(
-            users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.roleId) }))
+            users.rows.map(async (user) => ({ 
+                ...user.toJSON(), 
+                role: await Role.findByPk(user.roleId),
+                socketId: getSocketIdByUserId(user.id)
+            }))
         );
 
         const modifiedUsers = { ...users, rows: usersWithRoles };

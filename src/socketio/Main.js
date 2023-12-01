@@ -62,7 +62,7 @@ async function mainSocket(io, socket) {
         logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${currentUserId}`);
         myCache.set(`connection_${socket.id}`, currentUserId)
 
-        socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_CONNECTION_ACTION, { action: 'connected', userId: currentUserId })
+        socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_CONNECTION_ACTION, { action: 'connected', userId: currentUserId, isLoggedIn: true })
 
         // TODO: jeśli admin, to tutaj można przypisać socket do "room" dla adminów
         // socket.join("admins");
