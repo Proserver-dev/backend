@@ -323,15 +323,15 @@ const createNewAccount = async (req, res) => {
 
 
         if(sendEmail) {
+            let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentialsWithPIN.html'), 'utf-8');
+            html = html.replace('{email}', email);
+            html = html.replace('{password}', password);
+            html = html.replace('{registerPin}', registerPin);
+
             if(user.isActivated) {
-                let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentials.html'), 'utf-8');
+                html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentials.html'), 'utf-8');
                 html = html.replace('{email}', email);
                 html = html.replace('{password}', password);
-            } else {
-                let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentialsWithPIN.html'), 'utf-8');
-                html = html.replace('{email}', email);
-                html = html.replace('{password}', password);
-                html = html.replace('{registerPin}', registerPin);
             }
 
             const subject = 'RideClub - dane dostępowe'
