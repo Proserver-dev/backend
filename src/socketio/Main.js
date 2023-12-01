@@ -12,7 +12,8 @@ const { getSocketIdByUserId } = require('../utils/socketio');
 const HEADERS_KEYS = require('../constants/headersKeys');
 const getAppSetting = require('../utils/getAppSetting')
 const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
-const API_RESULTS = require('../constants/apiResults')
+const API_RESULTS = require('../constants/apiResults');
+const SOCKET_RESPONSES = require('../constants/socketResponses');
 
 async function mainSocket(io, socket) {
     const token = socket.handshake.headers[HEADERS_KEYS.LOGIN_TOKEN.toLowerCase()];
@@ -23,13 +24,13 @@ async function mainSocket(io, socket) {
     if(!isLoginEnabled) {
         logToFile(`Socket.io - próba połączenia, ale logowanie jest wyłączone`)
         const reason = await getAppSetting(APP_CONFIGURATION_DEFAULT.LOGIN_DISABLED_REASON.key)
-        socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_LOGIN_DISABLED.code, reason });
+        socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_LOGIN_DISABLED.code, reason });
         return socket.disconnect(true);
     }
 
     if(!token) {
         logToFile(`Socket.io - próba połączenia, ale musisz przekazać Token w nagłówku`)
-        socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
+        socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_PROVIDE_LOGIN_TOKEN.code });
         return socket.disconnect(true);
     }
 
@@ -37,7 +38,7 @@ async function mainSocket(io, socket) {
         const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET, { algorithms: SETTINGS.LOGIN_TOKEN.ALGORITHM });
         if (!decodedToken || !decodedToken.userId) {
             logToFile('Socket.io - Błąd uwierzytelniania - Niepoprawny token JWT');
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_VERIFY_TOKEN.code });
+            socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_VERIFY_TOKEN.code });
             return socket.disconnect(true);
         }
 
@@ -46,7 +47,7 @@ async function mainSocket(io, socket) {
         const checkConnectedSocket = getSocketIdByUserId(currentUserId)
         if(checkConnectedSocket) {
             // logToFile(`Socket.io - Użytkownik id:${currentUserId} jest już połączony z socketem. Kolejne połączenie zostało odrzucone`);
-            // socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: 'Jesteś już połączony z socketem' });
+            // socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: 'Jesteś już połączony z socketem' });
             // return socket.disconnect(true);
 
             logToFile(`Socket.io - Użytkownik id:${currentUserId} był już połączony z socketem. Stare połączenie zostało zerwane`);
@@ -57,6 +58,8 @@ async function mainSocket(io, socket) {
             }
             myCache.del(`connection_${checkConnectedSocket}`)
         }
+
+        // TODO: może tutaj emit RECEIVE_RESPONSE_FROM_SOCKET type success ?
 
         logToFile(`Socket.io - Klient połączony - socket_id: ${socket.id}, userId: ${currentUserId}`);
         myCache.set(`connection_${socket.id}`, currentUserId)
@@ -76,10 +79,10 @@ async function mainSocket(io, socket) {
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             logToFile('Socket.io - Token jest nieaktualny');
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_TOKEN_EXPIRED.code });
+            socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_TOKEN_EXPIRED.code });
         } else {
             logToFile('Socket.io - Błąd weryfikacji tokenu JWT - ' + error.message);
-            socket.emit(SOCKET_EVENTS.SEND_AUTH_FAIL, { error: API_RESULTS.ERR_VERIFY_TOKEN.code });
+            socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_VERIFY_TOKEN.code });
         }
 
         logToFile(`Socket.io - Klient rozłączony - socket_id: ${socket.id}`);
