@@ -2,12 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 
 const EmailSendHistory = sequelize.define('EmailSendHistory', {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER
-  },
   isRead: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

@@ -6,18 +6,10 @@ const PrivateMessage = sequelize.define('PrivateMessage', {
   sourceUserId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id'
-    }
   },
   targetUserId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id'
-    }
   },
   message: {
     type: DataTypes.TEXT,

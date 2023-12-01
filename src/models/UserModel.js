@@ -41,7 +41,7 @@ const User = sequelize.define('User', {
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    references: {
+    references: { // dzięki temu nie można skasować ról, które mają przypisanych jakichś userów
       model: 'roles',
       key: 'id'
     }
