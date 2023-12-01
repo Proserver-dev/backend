@@ -64,12 +64,14 @@ User.belongsTo(Role, {
 
 User.hasMany(PrivateMessage, {
   foreignKey: 'sourceUserId',
-  as: 'sentMessages'
+  as: 'sentMessages',
+  onDelete: 'CASCADE',
 });
 
 User.hasMany(PrivateMessage, {
   foreignKey: 'targetUserId',
-  as: 'receivedMessages'
+  as: 'receivedMessages',
+  onDelete: 'CASCADE',
 });
 
 User.prototype.toJSON = function() {
