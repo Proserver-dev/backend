@@ -2,8 +2,18 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Dodawanie kaskadowych operacji kasowania i aktualizowania do kolumn sourceUserId i targetUserId
-    await queryInterface.changeColumn('private_messages', 'sourceUserId', {
+    await queryInterface.changeColumn('private_messages_attachments', 'privateMessageId', {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'private_messages',
+        key: 'id',
+        onDelete: 'CASCADE', // Kaskadowe kasowanie
+        onUpdate: 'CASCADE' // Kaskadowa aktualizacja
+      },
+    });
+
+    await queryInterface.changeColumn('auth_history', 'userId', {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
@@ -14,7 +24,7 @@ module.exports = {
       },
     });
 
-    await queryInterface.changeColumn('private_messages', 'targetUserId', {
+    await queryInterface.changeColumn('messages_to_all', 'sendBy', {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
@@ -26,7 +36,5 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
-    // W przypadku cofnięcia migracji nie ma potrzeby zmian w kolumnach, więc można pozostawić puste
-  }
+  down: async (queryInterface, Sequelize) => {}
 };
