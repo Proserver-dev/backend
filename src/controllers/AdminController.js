@@ -279,7 +279,7 @@ const createNewAccount = async (req, res) => {
         const minDigitsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_DIGITS.key)
         const minSpecialcharsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SPECIAL_CHARS.key)
 
-        if (new_password.length < minCharsCount || 
+        if (password.length < minCharsCount || 
             lowercaseCount < minLowercaseCount || 
             uppercaseCount < minUppercaseCount || 
             digitsCount < minDigitsCount || 
