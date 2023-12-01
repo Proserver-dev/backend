@@ -51,11 +51,16 @@ async function mainSocket(io, socket) {
             // return socket.disconnect(true);
 
             logToFile(`Socket.io - Użytkownik id:${currentUserId} był już połączony z socketem. Stare połączenie zostało zerwane`);
+            /*
             const oldSocket = Array.from(io.sockets.sockets.values()).find(s => s.id === checkConnectedSocket);
             if(oldSocket) {
                 oldSocket.emit(SOCKET_EVENTS.RECEIVE_NEW_SOCKET_CONNECTION, { logout: true })
                 oldSocket.disconnect(true)
             }
+            */
+
+            io.to(checkConnectedSocket).emit(SOCKET_EVENTS.RECEIVE_NEW_SOCKET_CONNECTION, { logout: true })
+            io.to(checkConnectedSocket).disconnect(true)
             myCache.del(`connection_${checkConnectedSocket}`)
         }
 

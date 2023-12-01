@@ -33,10 +33,6 @@ async function messageToAll(io, socket, data, currentUserId) {
             logToFile(`Event: ${SOCKET_EVENTS.SEND_MESSAGE_TO_ALL} | target: all | message: ${data.message} | type: ${data.type} | sendBy: ${currentUser.id}`);
             MessageToAll.create({ sendBy: currentUser.id, message: data.message, type: data.type })
 
-            socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
-            // io.emit - do wszystkich włącznie z nadawcą
-            // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
-
             if(data.type == "forceLogout") {
                 try {
                       // wszyscy użytkownikcy, których roleId jest różne od role.id admina i loginToken jest różny od null
@@ -50,6 +46,11 @@ async function messageToAll(io, socket, data, currentUserId) {
                       const updatePromises = usersToLogout.map(async (user) => {
                         await User.update({ loginToken: null }, { where: { id: user.id } });
                       });
+
+                      usersToLogout.map(async (user) => {
+                        const userSocket = getSocketIdByUserId(user.id)
+                        io.to(userSocket).emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
+                      })
                   
                       await AuthHistory.bulkCreate(
                         usersToLogout.map((user) => ({
@@ -68,6 +69,9 @@ async function messageToAll(io, socket, data, currentUserId) {
                     socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
                   }
             } else {
+                socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
+                // io.emit - do wszystkich włącznie z nadawcą
+                // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
                 socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.SUCCESS, message: 'Pomyślnie wysłano wiadomość do wszystkich' });
             }
         } else {
