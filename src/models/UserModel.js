@@ -41,7 +41,7 @@ const User = sequelize.define('User', {
   roleId: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    references: { // dzięki temu nie można skasować ról, które mają przypisanych jakichś userów
+    references: { 
       model: 'roles',
       key: 'id'
     }
@@ -56,7 +56,11 @@ const User = sequelize.define('User', {
   tableName: 'users', // Ustala nazwę tabeli
 });
 
-User.belongsTo(Role, { foreignKey: 'roleId' });
+User.belongsTo(Role, { 
+  foreignKey: 'roleId' 
+  // bez kasowania kaskadowego
+  // dzięki temu nie można skasować ról, które mają przypisanych jakichś userów, że nie ma tu onDelete
+});
 
 User.hasMany(PrivateMessage, {
   foreignKey: 'sourceUserId',

@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
+const PrivateMessage = require('../models/PrivateMessageModel')
 
 const PrivateMessageAttachment = sequelize.define('PrivateMessageAttachment', {
   privateMessageId: {
@@ -24,6 +25,11 @@ const PrivateMessageAttachment = sequelize.define('PrivateMessageAttachment', {
   underscored: false,
   tableName: 'private_messages_attachments',
 });
+
+PrivateMessageAttachment.belongsTo(PrivateMessage, {
+  foreignKey: 'privateMessageId',
+  onDelete: 'CASCADE',
+})
 
 PrivateMessageAttachment.prototype.toJSON = function() {
   return {
