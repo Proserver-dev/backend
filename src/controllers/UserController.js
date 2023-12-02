@@ -5,7 +5,8 @@ const Role = require('../models/RoleModel');
 const { saveLogFromEndpointRequest } = require('../functions');
 const { DEFAULT_ROLE } = require('../constants/roleBlocked')
 const HEADERS_KEYS = require('../constants/headersKeys')
-const API_RESULTS = require('../constants/apiResults')
+const API_RESULTS = require('../constants/apiResults');
+const { getSocketIdByUserId } = require('../utils/socketio');
 
 async function getAllUsers(req, res) {
     /* 
@@ -29,7 +30,22 @@ async function getAllUsers(req, res) {
         schema: { 
             count: 1,
             rows: [
-                { $ref: '#/definitions/User' }
+                {
+                    id: 1,
+                    isActivated: true,
+                    email: "john@doe.dev",
+                    userName: "john123",
+                    nameLastname: "John Doe",
+                    role: {
+                        id: 2,
+                        name: "User",
+                        short: "user"
+                    },
+                    isLoggedIn: true,
+                    socketId: "guXSqQEoRKlhQqGrAAAH"
+                    updatedAt: "2023-11-15T04:17:54.000Z",
+                    createdAt: "2023-11-07T20:16:13.000Z"
+                }
             ]
         }
     } 
@@ -71,7 +87,11 @@ async function getAllUsers(req, res) {
         const users = await User.findAndCountAll(queryOptions);
 
         const usersWithRoles = await Promise.all(
-            users.rows.map(async (user) => ({ ...user.toJSON(), role: await Role.findByPk(user.roleId) }))
+            users.rows.map(async (user) => ({ 
+                ...user.toJSON(), 
+                role: await Role.findByPk(user.roleId),
+                socketId: getSocketIdByUserId(user.id)
+            }))
         );
 
         const modifiedUsers = { ...users, rows: usersWithRoles };
@@ -87,6 +107,13 @@ const getOneUser = async (req, res) => {
     /* 
     #swagger.tags = ['Users']
 
+    #swagger.responses[404] = { 
+        description: "User nie istnieje",
+        schema: {
+            error: ['ERR_USER_FROM_TOKEN_NOT_EXISTS', 'ERR_USER_NOT_EXISTS']
+        }  
+    }
+
     #swagger.responses[200] = {
         description: 'Wszystko poszło GIT',
         schema: { $ref: '#/definitions/User' }
@@ -95,14 +122,18 @@ const getOneUser = async (req, res) => {
 
     saveLogFromEndpointRequest(req);
     try {
-        if (req.params.id) {
-            const user = await User.findByPk(req.params.id);
-            if (user) {
-                return res.json(user);
-            } else {
-                return res.json({});
-            }
+        const userId = req.params.userId
+
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(API_RESULTS.ERR_USER_NOT_EXISTS.status_code).json({ error: API_RESULTS.ERR_USER_NOT_EXISTS.code });
         }
+
+
+        user.roleId = await Role.findByPk(user.roleId)
+        return res.json(user);
+        
     } catch (error) {
         res.status(API_RESULTS.ERR_INTERNAL_SERVER_ERROR.status_code).json({ error: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
     }

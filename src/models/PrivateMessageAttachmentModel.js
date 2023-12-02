@@ -1,14 +1,10 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 
 const PrivateMessageAttachment = sequelize.define('PrivateMessageAttachment', {
   privateMessageId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'private_messages',
-      key: 'id'
-    }
   },
   url: {
     type: DataTypes.STRING,

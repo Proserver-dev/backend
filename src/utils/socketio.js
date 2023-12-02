@@ -11,6 +11,7 @@ function getSocketIdByUserId(user_id) {
 
             if(userValue == user_id) {
                 result = socketId
+                break;
             }
         }
     }

@@ -1,7 +1,9 @@
 const { logToFile } = require('../../src/functions');
 const PrivateMessage = require('../models/PrivateMessageModel');
-const SOCKET_EVENTS = require('../constants/socketEvents');
 const { getSocketIdByUserId } = require('../utils/socketio');
+const SOCKET_EVENTS = require('../constants/socketEvents');
+const API_RESULTS = require('../constants/apiResults');
+const SOCKET_RESPONSES = require('../constants/socketResponses');
 
 async function privateMessage(io, socket, data, currentUserId) {
 
@@ -19,7 +21,7 @@ async function privateMessage(io, socket, data, currentUserId) {
 
         // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
         if(target_socket) {
-            target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, messageFull);
+            io.to(target_socket).emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, messageFull);
         } else {
             // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
             
@@ -27,6 +29,7 @@ async function privateMessage(io, socket, data, currentUserId) {
     } else {
         // nie możesz wyemitować wiadomości do samego siebie
         logToFile(`Socket.io - Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE} - proba emisji wiadomości do samego siebie. Wiadomość nie została wysłana`);
+        socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF.code });
 
     }
 }
@@ -38,14 +41,21 @@ async function privateMessageCreatedViaAPI(io, socket, data, currentUserId) {
 
     logToFile(`Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_CREATED_VIA_API} | target: ${data.targetUserId} | message: ${data.message} | source: ${currentUserId}`);
 
-    const target_socket = getSocketIdByUserId(data.targetUserId)
+    if(data?.targetUserId !== currentUserId) {
 
-    // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
-    if(target_socket) {
-        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, data);
+        const target_socket = getSocketIdByUserId(data.targetUserId)
+
+        // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
+        if(target_socket) {
+            io.to(target_socket).emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE, data);
+        } else {
+            // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
+            
+        }
     } else {
-        // TODO: jeśli gościu nie jest połączony z socketem, to możemy spróbować wysłać push notification przez firebase
-        
+        // nie możesz wyemitować wiadomości do samego siebie
+        logToFile(`Socket.io - Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE} - proba emisji wiadomości do samego siebie. Wiadomość nie została wysłana`);
+        socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF.code });
     }
 }
 
@@ -56,11 +66,17 @@ async function privateMessageWrite(io, socket, data, currentUserId) {
 
     logToFile(`Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE_WRITE} | target: ${data.targetUserId} | source: ${currentUserId}`);
 
-    const target_socket = getSocketIdByUserId(data.targetUserId)
+    if(data?.targetUserId !== currentUserId) {
+        const target_socket = getSocketIdByUserId(data.targetUserId)
 
-    // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
-    if(target_socket) {
-        target_socket.emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE_WRITE, { sourceUserId: currentUserId, isWritting: true });
+        // TODO: to jest do przetestowania, z postmana nie miałem takiej możliwości - w adminie albo apce z dwóch kont już się uda
+        if(target_socket) {
+            io.to(target_socket).emit(SOCKET_EVENTS.RECEIVE_PRIVATE_MESSAGE_WRITE, { sourceUserId: currentUserId, isWritting: true });
+        }
+    } else {
+        // nie możesz wyemitować wiadomości do samego siebie
+        logToFile(`Socket.io - Event: ${SOCKET_EVENTS.SEND_PRIVATE_MESSAGE} - proba napisania wiadomości do samego siebie. Nie możesz pisać do siebie wiadomości`);
+        socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_CANNOT_SEND_MESSAGE_TO_YOURSELF.code });
     }
 }
 

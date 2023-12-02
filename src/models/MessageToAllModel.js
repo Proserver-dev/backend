@@ -6,10 +6,6 @@ const User = require('./UserModel')
     sendBy: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
     },
     message: {
       type: DataTypes.TEXT,
@@ -29,7 +25,10 @@ const User = require('./UserModel')
     tableName: 'messages_to_all',
   });
 
-MessageToAll.belongsTo(User, { foreignKey: 'sendBy' });
+MessageToAll.belongsTo(User, { 
+  foreignKey: 'sendBy',
+  onDelete: 'CASCADE',
+});
 
 MessageToAll.prototype.toJSON = function() {
   return { 

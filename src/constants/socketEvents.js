@@ -1,6 +1,4 @@
 const SOCKET_EVENTS = {
-    SEND_AUTH_FAIL: 'authFail',
-
     SEND_PRIVATE_MESSAGE: 'privateMessage',
     SEND_PRIVATE_MESSAGE_CREATED_VIA_API: 'privateMessageCreatedViaAPI',
     RECEIVE_PRIVATE_MESSAGE: 'privateMessage',
@@ -13,6 +11,8 @@ const SOCKET_EVENTS = {
     RECEIVE_MESSAGE_FROM_SERVER: 'messageFromServer',
 
     RECEIVE_NEW_SOCKET_CONNECTION: 'newSocketConnection', // tylko do nasłuchiwania
+    RECEIVE_RESPONSE_FROM_SOCKET: 'responseFromSocket', // tylko do nasłuchiwania
+    RECEIVE_CONNECTION_ACTION: 'connectionAction', // tylko do nasłuchiwania, jesli jakiś user się połączył lub rozłączył
 
     SEND_CHANGE_LOCATION: 'changeLocation',
     RECEIVE_CHANGE_LOCATION: 'changeLocation'

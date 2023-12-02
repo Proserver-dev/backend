@@ -3,12 +3,6 @@ const sequelize = require('../utils/db');
 const User = require('./UserModel'); // Zaimportuj model User
 
 const AuthHistory = sequelize.define('AuthHistory', {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER,
-  },
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,

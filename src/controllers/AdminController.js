@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/UserModel');
 const Role = require('../models/RoleModel');
 const AuthHistory = require('../models/AuthHistory')
@@ -12,6 +14,8 @@ const emailClient = require('../utils/emailClient')
 const { SETTINGS } = require('../../settings');
 const EMAIL_STATUSES = require('../constants/emailStatuses');
 const validatePassword = require('../utils/validatePassword');
+const getAppSetting = require('../utils/getAppSetting')
+const APP_CONFIGURATION_DEFAULT = require('../constants/appConfigurationDefault')
 
 const userChangePassword = async (req, res) => {
     /*
@@ -275,7 +279,7 @@ const createNewAccount = async (req, res) => {
         const minDigitsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_DIGITS.key)
         const minSpecialcharsCount = await getAppSetting(APP_CONFIGURATION_DEFAULT.PASSWORD_MIN_SPECIAL_CHARS.key)
 
-        if (new_password.length < minCharsCount || 
+        if (password.length < minCharsCount || 
             lowercaseCount < minLowercaseCount || 
             uppercaseCount < minUppercaseCount || 
             digitsCount < minDigitsCount || 
@@ -319,11 +323,15 @@ const createNewAccount = async (req, res) => {
 
 
         if(sendEmail) {
-            let html = `<p>Login: ${email}</p>`
-            html += `<p>Hasło: ${password}</p>`
+            let html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentialsWithPIN.html'), 'utf-8');
+            html = html.replace('{email}', email);
+            html = html.replace('{password}', password);
+            html = html.replace('{registerPin}', registerPin);
 
-            if(!user.isActivated) {
-                html += `<p>Twój kod aktywacyjny: <strong>${registerPin}</strong></p>`
+            if(user.isActivated) {
+                html = fs.readFileSync(path.join(__dirname, '../emailTemplates/credentials.html'), 'utf-8');
+                html = html.replace('{email}', email);
+                html = html.replace('{password}', password);
             }
 
             const subject = 'RideClub - dane dostępowe'
