@@ -7,7 +7,7 @@ function delay(ms) {
 }
 
 async function disconnect(socket, currentUserId, myCache) {
-    await delay(2000);
+    await delay(5000);
     const user = await User.findByPk(currentUserId)
     const isLoggedIn = (user.loginToken !== null || user.loginToken !== "") // czasami przy rozłączeniu z tokenem user może być dalej zalogowany i posiadać ważny token
     socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_CONNECTION_ACTION, { 
