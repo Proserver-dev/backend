@@ -8,7 +8,7 @@ const SOCKET_EVENTS = {
 
     SEND_MESSAGE_TO_ALL: 'messageToAll', // only admin
     SEND_MESSAGE_TO_ONE_USER: 'messageToOneUser', // only admin
-    RECEIVE_MESSAGE_TO_ALL: 'messageToAll',
+    RECEIVE_MESSAGE_FROM_SERVER: 'messageFromServer',
 
     RECEIVE_NEW_SOCKET_CONNECTION: 'newSocketConnection', // tylko do nasłuchiwania
     RECEIVE_RESPONSE_FROM_SOCKET: 'responseFromSocket', // tylko do nasłuchiwania

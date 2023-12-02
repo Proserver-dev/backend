@@ -69,7 +69,7 @@ async function messageToAll(io, socket, data, currentUserId) {
                     socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.ERROR, message: API_RESULTS.ERR_INTERNAL_SERVER_ERROR.code });
                   }
             } else {
-                socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
+                socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_FROM_SERVER, data);
                 // io.emit - do wszystkich włącznie z nadawcą
                 // socket.broadcast.emit(SOCKET_EVENTS.RECEIVE_MESSAGE_TO_ALL, data);
                 socket.emit(SOCKET_EVENTS.RECEIVE_RESPONSE_FROM_SOCKET, { type: SOCKET_RESPONSES.SUCCESS, message: 'Pomyślnie wysłano wiadomość do wszystkich' });
