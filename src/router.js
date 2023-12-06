@@ -58,4 +58,6 @@ router.get('/admin/get-email-send-history', requireJWT, requireAdmin, EmailSendH
 router.get('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.getAppConfigurations)
 router.put('/admin/app-config', requireJWT, requireAdmin, AppConfigurationsController.editAppConfigurations)
 
+router.get('/config', AppConfigurationsController.getPublicAppConfig)
+
 module.exports = { router };
