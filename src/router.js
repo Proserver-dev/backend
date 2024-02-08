@@ -13,6 +13,7 @@ const AuthHistoryController = require('./controllers/AuthHistoryController')
 const AppConfigurationsController = require('./controllers/AppConfigurationsController')
 const AdminController = require('./controllers/AdminController')
 const EmailSendHistoryController = require('./controllers/EmailSendHistoryController')
+const ForgotPassword = require('./controllers/ForgotPasswordController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -27,6 +28,9 @@ router.post('/auth/login', AuthController.login);
 router.get('/auth/refresh', AuthController.refreshLoginToken);
 router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
 
+router.post('/forgot-password/send-pin', ForgotPassword.forgotPasswordMain);
+router.post('/forgot-password/check-pin', ForgotPassword.forgotPasswordCheckPin);
+router.post('/forgot-password/change-password', ForgotPassword.forgotPasswordChangePassword);
 
 router.get('/users/me', requireJWT, UserController.getMe);
 

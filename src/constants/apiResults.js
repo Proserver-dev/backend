@@ -56,7 +56,9 @@ const API_RESULTS = {
     SUCCESS_CHANGE_PASSWORD: { description: "Pomyślnie zmieniono hasło", code: 'SUCCESS_CHANGE_PASSWORD', status_code: 200 },
     SUCCESS_USER_DEACTIVATED: { description: "Pomyślnie dezaktywowano konto", code: 'SUCCESS_USER_DEACTIVATED', status_code: 200 },
     SUCCESS_USER_ACTIVATED: { description: "Pomyślnie aktywowano konto", code: 'SUCCESS_USER_ACTIVATED', status_code: 200 },
-    SUCCESS_RESEND_EMAIL: { description: "Pomyślnie wysłano ponownie maila", code: 'SUCCESS_RESEND_EMAIL', status_code: 200 }
+    SUCCESS_RESEND_EMAIL: { description: "Pomyślnie wysłano ponownie maila", code: 'SUCCESS_RESEND_EMAIL', status_code: 200 },
+    SUCCESS_SEND_EMAIL_FORGOT_PASSWORD: { description: "Pomyślnie wysłano maila z PINem do resetu hasła", code: 'SUCCESS_SEND_EMAIL_FORGOT_PASSWORD', status_code: 200 },
+    SUCCESS_CHECK_PIN: { description: "PIN do resetu hasła się zgadza", code: 'SUCCESS_CHECK_PIN', status_code: 200 }
 }
 
 module.exports = API_RESULTS
