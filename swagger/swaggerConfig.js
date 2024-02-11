@@ -73,6 +73,14 @@ module.exports = {
         command:"AUTH PLAIN"
       },
       createdAt: '2023-11-15T04:17:54.000Z'
+    },
+    Friend: {
+      id: 4,
+      sourceUserId: 1,
+      targetUserId: 4,
+      isAccepted: false,
+      updatedAt: "2024-02-11T22:36:34.875Z",
+      createdAt: "2024-02-11T22:36:34.875Z"
     }
   }
 };
