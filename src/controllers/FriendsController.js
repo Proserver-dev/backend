@@ -134,7 +134,7 @@ const acceptFriend = async (req, res) => {
 const deleteFriend = async (req, res) => {
     /* 
     #swagger.tags = ['Friends']
-    #swagger.summary = 'Usuwa znajomość z użytkownikiem, ewentualnie cofa lub anuluje zaproszenie'
+    #swagger.summary = 'Usuwa znajomość z użytkownikiem, ewentualnie cofa lub odrzuci zaproszenie'
 
     #swagger.responses[404] = { 
         description: "User nie istnieje, taka znajomość nie istnieje",
