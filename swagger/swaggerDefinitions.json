@@ -1933,7 +1933,7 @@
         "tags": [
           "Friends"
         ],
-        "summary": "Usuwa znajomość z użytkownikiem, ewentualnie cofa lub anuluje zaproszenie",
+        "summary": "Usuwa znajomość z użytkownikiem, ewentualnie cofa lub odrzuci zaproszenie",
         "description": "",
         "parameters": [
           {
@@ -2547,7 +2547,80 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Wszystko poszło GIT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "number",
+                  "example": 1
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "isActivated": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "john@doe.dev"
+                      },
+                      "userName": {
+                        "type": "string",
+                        "example": "john123"
+                      },
+                      "nameLastname": {
+                        "type": "string",
+                        "example": "John Doe"
+                      },
+                      "role": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "User"
+                          },
+                          "short": {
+                            "type": "string",
+                            "example": "user"
+                          }
+                        }
+                      },
+                      "isLoggedIn": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "socketId": {
+                        "type": "string",
+                        "example": "guXSqQEoRKlhQqGrAAAH"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2023-11-15T04:17:54.000Z"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2023-11-07T20:16:13.000Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
