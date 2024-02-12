@@ -5286,6 +5286,10 @@
           "type": "boolean",
           "example": false
         },
+        "acceptedAt": {
+          "type": "string",
+          "example": "2024-02-11T22:36:34.875Z"
+        },
         "updatedAt": {
           "type": "string",
           "example": "2024-02-11T22:36:34.875Z"
@@ -5498,6 +5502,10 @@
           "isAccepted": {
             "type": "boolean",
             "example": false
+          },
+          "acceptedAt": {
+            "type": "string",
+            "example": "2024-02-11T22:36:34.875Z"
           },
           "updatedAt": {
             "type": "string",

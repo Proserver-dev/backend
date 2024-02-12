@@ -122,6 +122,7 @@ const acceptFriend = async (req, res) => {
         }
 
         friend.isAccepted = true;
+        friend.acceptedAt = new Date();
         await friend.save();
 
         res.status(API_RESULTS.SUCCESS_ACCEPT_INVITATION_TO_FRIEND.status_code).json({ success: 'SUCCESS_ACCEPT_INVITATION_TO_FRIEND', friend: friend });

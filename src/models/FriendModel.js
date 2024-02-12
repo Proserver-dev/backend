@@ -16,6 +16,11 @@ const Friend = sequelize.define('Friend', {
     allowNull: false,
     defaultValue: false,
   },
+  acceptedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+  },
 }, {
   timestamps: true,
   underscored: false,
@@ -40,6 +45,7 @@ Friend.prototype.toJSON = function() {
     sourceUserId: this.sourceUserId,
     targetUserId: this.targetUserId,
     isAccepted: this.isAccepted,
+    acceptedAt: this.acceptedAt,
     updatedAt: this.updatedAt,
     createdAt: this.createdAt,
   };
