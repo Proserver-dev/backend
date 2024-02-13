@@ -42,7 +42,7 @@ async function getAllUsers(req, res) {
                         short: "user"
                     },
                     isLoggedIn: true,
-                    socketId: "guXSqQEoRKlhQqGrAAAH"
+                    socketId: "guXSqQEoRKlhQqGrAAAH",
                     updatedAt: "2023-11-15T04:17:54.000Z",
                     createdAt: "2023-11-07T20:16:13.000Z"
                 }

@@ -13,7 +13,8 @@ const AuthHistoryController = require('./controllers/AuthHistoryController')
 const AppConfigurationsController = require('./controllers/AppConfigurationsController')
 const AdminController = require('./controllers/AdminController')
 const EmailSendHistoryController = require('./controllers/EmailSendHistoryController')
-const ForgotPassword = require('./controllers/ForgotPasswordController')
+const ForgotPasswordController = require('./controllers/ForgotPasswordController')
+const FriendsController = require('./controllers/FriendsController')
 
 router.get('/', MainController.mainEndpoint);
 router.get('/logs/:fileName', DebugController.getLogs);
@@ -28,12 +29,19 @@ router.post('/auth/login', AuthController.login);
 router.get('/auth/refresh', AuthController.refreshLoginToken);
 router.post('/auth/logout', AuthController.logout); // requireJWT nie jest konieczne, token sprawdzany jest w tej funkcji
 
-router.post('/forgot-password/send-pin', ForgotPassword.forgotPasswordMain);
-router.post('/forgot-password/check-pin', ForgotPassword.forgotPasswordCheckPin);
-router.post('/forgot-password/change-password', ForgotPassword.forgotPasswordChangePassword);
+router.post('/forgot-password/send-pin', ForgotPasswordController.forgotPasswordMain);
+router.post('/forgot-password/check-pin', ForgotPasswordController.forgotPasswordCheckPin);
+router.post('/forgot-password/change-password', ForgotPasswordController.forgotPasswordChangePassword);
 
 router.get('/users/me', requireJWT, UserController.getMe);
 
+router.post('/friends/send-invitation/:userId', requireJWT, FriendsController.addFriend);
+router.post('/friends/accept-invitation/:userId', requireJWT, FriendsController.acceptFriend);
+router.delete('/friends/delete-friend/:userId', requireJWT, FriendsController.deleteFriend);
+router.get('/friends/my-friends', requireJWT, FriendsController.getMyFriends);
+router.get('/friends/sent-invitations', requireJWT, FriendsController.getSentInvitations);
+router.get('/friends/waiting-for-accept', requireJWT, FriendsController.getWaitingForAcceptInvitations);
+router.get('/friends/user/:userId', requireJWT, FriendsController.getFriendsForUserId);
 
 router.get('/users/:userId', UserController.getOneUser);
 router.get('/users', UserController.getAllUsers);

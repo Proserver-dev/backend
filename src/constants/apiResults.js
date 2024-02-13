@@ -43,6 +43,9 @@ const API_RESULTS = {
     ERR_CANNOT_CHANGE_SELF_ACTIVATION: { description: 'Nie możesz zmienić sobie statusu aktywacji konta', code: 'ERR_CANNOT_CHANGE_SELF_ACTIVATION', status_code: 403 },
     ERR_WEAK_PASSWORD: { description: 'Hasło jest zbyt słabe', code: 'ERR_WEAK_PASSWORD', status_code: 400 },
     ERR_CANT_REMOVE_YOURSELF: { description: 'Nie możesz usunąć swojego konta', code: 'ERR_CANT_REMOVE_YOURSELF', status_code: 403 },
+    ERR_FRIEND_INVITATION_NOT_EXISTS: { description: 'Takie zaproszenie do znajomych nie istnieje', code: 'ERR_FRIEND_INVITATION_NOT_EXISTS', status_code: 404 },
+    ERR_YOU_ARE_ALREADY_FRIENDS: { description: 'Już jesteście znajomymi, lub już zostało wysłane zaproszenie do znajomych', code: 'ERR_YOU_ARE_ALREADY_FRIENDS', status_code: 409 },
+    ERR_CANNOT_SEND_INVITATION_TO_YOURSELF: { description: 'Nie możesz wysłać zaproszenia do znajomych do siebie', code: 'ERR_CANNOT_SEND_INVITATION_TO_YOURSELF', status_code: 403 },
 
     SUCCESS_CREATED_ROLE: { description: "Pomyślnie utworzono nową rolę", code: 'SUCCESS_CREATED_ROLE', status_code: 201 },
     SUCCESS_USER_REGISTERED: { description: "Rejestracja przebiegła pomyślnie", code: 'SUCCESS_USER_REGISTERED', status_code: 201 },
@@ -58,7 +61,10 @@ const API_RESULTS = {
     SUCCESS_USER_ACTIVATED: { description: "Pomyślnie aktywowano konto", code: 'SUCCESS_USER_ACTIVATED', status_code: 200 },
     SUCCESS_RESEND_EMAIL: { description: "Pomyślnie wysłano ponownie maila", code: 'SUCCESS_RESEND_EMAIL', status_code: 200 },
     SUCCESS_SEND_EMAIL_FORGOT_PASSWORD: { description: "Pomyślnie wysłano maila z PINem do resetu hasła", code: 'SUCCESS_SEND_EMAIL_FORGOT_PASSWORD', status_code: 200 },
-    SUCCESS_CHECK_PIN: { description: "PIN do resetu hasła się zgadza", code: 'SUCCESS_CHECK_PIN', status_code: 200 }
+    SUCCESS_CHECK_PIN: { description: "PIN do resetu hasła się zgadza", code: 'SUCCESS_CHECK_PIN', status_code: 200 },
+    SUCCESS_SEND_INVITATION_TO_FRIEND: { description: 'Pomyślnie wysłano zaproszenie do grona znajomych', code: 'SUCCESS_SEND_INVITATION_TO_FRIEND', status_code: 200 },
+    SUCCESS_ACCEPT_INVITATION_TO_FRIEND: { description: 'Pomyślnie zaakceptowano zaproszenie do grona znajomych', code: 'SUCCESS_ACCEPT_INVITATION_TO_FRIEND', status_code: 200 },
+    SUCCESS_DELETED_FRIEND: { description: 'Pomyślnie usunięto znajomego, cofnięto wysłane lub odrzucono zaproszenie', code: 'SUCCESS_DELETED_FRIEND', status_code: 200 }
 }
 
 module.exports = API_RESULTS
